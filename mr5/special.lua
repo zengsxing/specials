@@ -157,9 +157,11 @@ function Duel.SpecialSummonStep(c,...)
 end
 function Duel.SpecialSummon(g,...)
 	local res=0
-	local tg=g
+    local tg=nil
 	if Auxiliary.GetValueType(g)=="Card" then
 		tg=Group.FromCards(g)
+    else
+        tg=g:Clone()
 	end
 	local groups={}
 	 groups[1]=tg:Filter(function(c)
