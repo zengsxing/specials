@@ -31,7 +31,7 @@ end
 local old_fromex=Duel.GetLocationCountFromEx
 function Duel.GetLocationCountFromEx(tp,...)
 	local c=select(3,...)
-	if not c or not c:IsType(TYPE_LINK) then
+	if not c or c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) then
 		return old_fromex(tp,...)
 	end
 	forced_to_extra[tp]=true
@@ -173,7 +173,7 @@ function Duel.SpecialSummon(g,...)
 	groups[3]=tg
 	for i=1,3 do
 		for tc in Auxiliary.Next(groups[i]) do
-			if Duel.SpecialSummonStep(c,...) then res=res+1 end
+			if Duel.SpecialSummonStep(tc,...) then res=res+1 end
 		end
 	end
 	Duel.SpecialSummonComplete()
