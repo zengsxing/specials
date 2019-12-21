@@ -1,4 +1,4 @@
-local forced_to_extra={
+forced_to_extra={
 	[0]=false,
 	[1]=false
 }
@@ -143,4 +143,39 @@ function Auxiliary.PendOperation()
 				Duel.HintSelection(Group.FromCards(rpz))
 				forced_to_extra[tp]=true
 			end
+end
+local old_spsummon_step=Duel.SpecialSummonStep
+local old_spsummon=Duel.SpecialSummon
+function Duel.SpecialSummonStep(c,...)
+	local tp=select(3,...)
+	if c:IsLocation(LOCATION_EXTRA) and (c:IsType(TYPE_PENDULUM) and not c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) or c:IsType(TYPE_LINK)) then
+		forced_to_extra[tp]=true
+	end
+	local res=old_spsummon_step(c,...)
+	forced_to_extra[tp]=false
+	return res
+end
+function Duel.SpecialSummon(g,...)
+	local res=0
+	local tg=g
+	if Auxiliary.GetValueType(g)=="Card" then
+		tg=Group.FromCards(g)
+	end
+	local groups={}
+	 groups[1]=tg:Filter(function(c)
+		return c:IsLocation(LOCATION_EXTRA) and (c:IsType(TYPE_PENDULUM) and not c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) or c:IsType(TYPE_LINK))
+	end,nil)
+	tg:Sub(groups[1])
+	groups[2]=tg:Filter(function(c)
+		return not c:IsLocation(LOCATION_EXTRA)
+	end,nil)
+	tg:Sub(groups[2])
+	groups[3]=tg
+	for i=1,3 do
+		for tc in Auxiliary.Next(groups[i]) do
+			if Duel.SpecialSummonStep(c,...) then res=res+1 end
+		end
+	end
+	Duel.SpecialSummonComplete()
+	return res
 end
