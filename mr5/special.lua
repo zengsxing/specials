@@ -36,7 +36,7 @@ function Duel.GetLocationCountFromEx(tp,...)
 	end
 	forced_to_extra[tp]=true
 	local res1,res2=old_fromex(tp,...)
-	Debug.Message(forced_to_extra[tp] and 1 or 0)
+	--Debug.Message(forced_to_extra[tp] and 1 or 0)
 	forced_to_extra[tp]=false
 	return res1,res2
 end
