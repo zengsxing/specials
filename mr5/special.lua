@@ -31,7 +31,7 @@ end
 local old_fromex=Duel.GetLocationCountFromEx
 function Duel.GetLocationCountFromEx(tp,...)
 	local c=select(3,...)
-	if not c or c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) then
+    if not c or c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) and c:IsFacedown() then
 		return old_fromex(tp,...)
 	end
 	forced_to_extra[tp]=true
@@ -148,7 +148,7 @@ local old_spsummon_step=Duel.SpecialSummonStep
 local old_spsummon=Duel.SpecialSummon
 function Duel.SpecialSummonStep(c,...)
 	local tp=select(3,...)
-	if c:IsLocation(LOCATION_EXTRA) and (c:IsType(TYPE_PENDULUM) and not c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) or c:IsType(TYPE_LINK)) then
+    if c:IsLocation(LOCATION_EXTRA) and (c:IsType(TYPE_PENDULUM) and c:IsFaceup() or c:IsType(TYPE_LINK)) then
 		forced_to_extra[tp]=true
 	end
 	local res=old_spsummon_step(c,...)
@@ -165,7 +165,7 @@ function Duel.SpecialSummon(g,...)
 	end
 	local groups={}
 	 groups[1]=tg:Filter(function(c)
-		return c:IsLocation(LOCATION_EXTRA) and (c:IsType(TYPE_PENDULUM) and not c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) or c:IsType(TYPE_LINK))
+         return c:IsLocation(LOCATION_EXTRA) and (c:IsType(TYPE_PENDULUM) and c:IsFaceup() or c:IsType(TYPE_LINK))
 	end,nil)
 	tg:Sub(groups[1])
 	groups[2]=tg:Filter(function(c)
