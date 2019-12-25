@@ -24,7 +24,7 @@ function c10813327.spfilter(c,e,tp)
 	forced_to_extra[tp]=true
 	local ft=Duel.GetLocationCountFromEx(tp)
 	forced_to_extra[tp]=false
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not c:IsLocation(LOCATION_EXTRA) or c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) or ft>0)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not c:IsLocation(LOCATION_EXTRA) or (c:IsFacedown() and c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ)) or ft>0)
 end
 function c10813327.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
