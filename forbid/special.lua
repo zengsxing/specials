@@ -2,7 +2,7 @@ Duel.LoadScript("underscore.lua")
 local _FORBID_LIST={}
 local function elimateExisting()
 	local formattedOpcodes=_.map(_FORBID_LIST,function(m)
-		return {m,OPCODE_ISCODE,OPCODE_NOT}
+		return {m.code,OPCODE_ISCODE,OPCODE_NOT}
 	end)
 	for i=2,#formattedOpcodes do
 		_.push(formattedOpcodes[i],OPCODE_AND)
@@ -21,18 +21,22 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function()
 		local tp=Duel.GetTurnPlayer()
 		local ac=Duel.AnnounceCard(1-tp,table.unpack(elimateExisting()))
-		_.push(_FORBID_LIST,ac)
+		_.push(_FORBID_LIST,{
+			code=ac,
+			turn=Duel.GetTurnCount()
+		})
 	end)
 	Duel.RegisterEffect(e1,0)
 	local e2=Effect.GlobalEffect()
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_IGNORE_RANGE)
 	e2:SetCode(EFFECT_FORBIDDEN)
 	e2:SetTargetRange(0xff,0xff)
 	e2:SetTarget(function(e,c)
 		local code1,code2=c:GetOriginalCodeRule()
-		return _.any(_FORBID_LIST,function(code)
-			return code1==code or code2==code
+		local turnID=c:IsOnField() and c:GetTurnID() or 99
+		return and _.any(_FORBID_LIST,function(m)
+			return (code1==m.code or code2==m.code) and turnID>=m.turn
 		end)
 	end)
 	Duel.RegisterEffect(e2,0)
