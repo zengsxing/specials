@@ -37,12 +37,11 @@ end
 
 function Underscore.iter(list_or_iter)
 	if type(list_or_iter) == "function" then return list_or_iter end
-	
-	return coroutine.wrap(function() 
-		for i=1,#list_or_iter do
-			coroutine.yield(list_or_iter[i])
-		end
-	end)
+	local pair_iter=ipairs(list_or_iter)
+	return function()
+		local placeholder,res=pair_iter()
+		return res
+	end
 end
 
 function Underscore.range(start_i, end_i, step)
@@ -51,11 +50,11 @@ function Underscore.range(start_i, end_i, step)
 		start_i = 1
 	end
 	step = step or 1
-	local range_iter = coroutine.wrap(function() 
-		for i=start_i, end_i, step do
-			coroutine.yield(i)
-		end
-	end)
+	local list = {}
+	for i=start_i, end_i, step do
+		table.insert(list,i)
+	end
+	local range_iter = Underscore.iter(list)
 	return Underscore:new(range_iter)
 end
 
