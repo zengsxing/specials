@@ -2,7 +2,7 @@ Duel.LoadScript("underscore.lua")
 local _FORBID_LIST={}
 function Auxiliary.PreloadUds()
 	local e1=Effect.GlobalEffect()
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_FIELD_CONTINUOUS)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_PREDRAW)
 	e1:SetCondition(function()
