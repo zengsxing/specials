@@ -36,9 +36,8 @@ function Auxiliary.PreloadUds()
 				e2:SetTargetRange(0xff,0xff)
 				e2:SetTarget(function(e,c)
 					local code1,code2=c:GetOriginalCodeRule()
-					local turnID=c:IsOnField() and c:GetTurnID() or 99
 					return _.any(_FORBID_LIST,function(m)
-						return (code1==m.code or code2==m.code) and turnID>=m.turn
+						return (code1==m.code or code2==m.code) and (not c:IsOnField() or c:GetTurnID()>=m.turn)
 					end)
 				end)
 				Duel.RegisterEffect(e2,p)
