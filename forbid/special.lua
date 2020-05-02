@@ -7,7 +7,7 @@ function Auxiliary.PreloadUds()
 	e1:SetCode(EVENT_PREDRAW)
 	e1:SetCondition(function()
 		local turnc=Duel.GetTurnCount()
-		return tunc>1 and turnc<=10
+		return turnc>1 and turnc<=10
 	end)
 	e1:SetOperation(function()
 		local tp=Duel.GetTurnPlayer()
