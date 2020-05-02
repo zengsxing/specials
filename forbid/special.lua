@@ -1,5 +1,14 @@
 Duel.LoadScript("underscore.lua")
 local _FORBID_LIST={}
+local function elimateExisting()
+	local formattedOpcodes=_.map(_FORBID_LIST,function(m)
+		return {m,OPCODE_ISCODE,OPCODE_NOT}
+	end)
+	for i=2,#formattedOpcodes do
+		_.push(formattedOpcodes[i],OPCODE_AND)
+	end
+	return _.flattern(formattedOpcodes)
+end
 function Auxiliary.PreloadUds()
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -11,7 +20,7 @@ function Auxiliary.PreloadUds()
 	end)
 	e1:SetOperation(function()
 		local tp=Duel.GetTurnPlayer()
-		local ac=Duel.AnnounceCard(tp)
+		local ac=Duel.AnnounceCard(tp,table.unpack(elimateExisting()))
 		_.push(_FORBID_LIST,ac)
 	end)
 	Duel.RegisterEffect(e1,0)
