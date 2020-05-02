@@ -40,4 +40,7 @@ function Auxiliary.PreloadUds()
 		end)
 	end)
 	Duel.RegisterEffect(e2,0)
+	local e3=e2:Clone()
+	e3:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+	Duel.RegisterEffect(e3,0)
 end
