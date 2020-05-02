@@ -37,10 +37,10 @@ end
 
 function Underscore.iter(list_or_iter)
 	if type(list_or_iter) == "function" then return list_or_iter end
-	local pair_iter=ipairs(list_or_iter)
+	local i = 0
 	return function()
-		local placeholder,res=pair_iter()
-		return res
+		i = i + 1
+		return list_or_iter[i]
 	end
 end
 
