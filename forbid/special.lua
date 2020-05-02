@@ -25,22 +25,23 @@ function Auxiliary.PreloadUds()
 			code=ac,
 			turn=Duel.GetTurnCount()
 		})
+		if not _FORBID_INITIALIZED then
+			_FORBID_INITIALIZED=true
+			local tempc=Duel.CreateToken(0,10000000)
+			local e2=Effect.CreateEffect(tempc)
+			e2:SetType(EFFECT_TYPE_FIELD)
+			e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_IGNORE_RANGE)
+			e2:SetCode(EFFECT_FORBIDDEN)
+			e2:SetTargetRange(0xff,0xff)
+			e2:SetTarget(function(e,c)
+				local code1,code2=c:GetOriginalCodeRule()
+				local turnID=c:IsOnField() and c:GetTurnID() or 99
+				return _.any(_FORBID_LIST,function(m)
+					return (code1==m.code or code2==m.code) and turnID>=m.turn
+				end)
+			end)
+			Duel.RegisterEffect(e2,0)
+		end
 	end)
 	Duel.RegisterEffect(e1,0)
-	local e2=Effect.GlobalEffect()
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_IGNORE_RANGE)
-	e2:SetCode(EFFECT_FORBIDDEN)
-	e2:SetTargetRange(0xff,0xff)
-	e2:SetTarget(function(e,c)
-		local code1,code2=c:GetOriginalCodeRule()
-		local turnID=c:IsOnField() and c:GetTurnID() or 99
-		return _.any(_FORBID_LIST,function(m)
-			return (code1==m.code or code2==m.code) and turnID>=m.turn
-		end)
-	end)
-	Duel.RegisterEffect(e2,0)
-	local e3=e2:Clone()
-	e3:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
-	Duel.RegisterEffect(e3,0)
 end
