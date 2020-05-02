@@ -35,7 +35,7 @@ function Auxiliary.PreloadUds()
 	e2:SetTarget(function(e,c)
 		local code1,code2=c:GetOriginalCodeRule()
 		local turnID=c:IsOnField() and c:GetTurnID() or 99
-		return and _.any(_FORBID_LIST,function(m)
+		return _.any(_FORBID_LIST,function(m)
 			return (code1==m.code or code2==m.code) and turnID>=m.turn
 		end)
 	end)
