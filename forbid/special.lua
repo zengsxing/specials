@@ -7,7 +7,7 @@ local function elimateExisting()
 	for i=2,#formattedOpcodes do
 		_.push(formattedOpcodes[i],OPCODE_AND)
 	end
-	return _.flattern(formattedOpcodes)
+	return _.flatten(formattedOpcodes)
 end
 function Auxiliary.PreloadUds()
 	local e1=Effect.GlobalEffect()
