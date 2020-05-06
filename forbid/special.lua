@@ -26,9 +26,10 @@ function Auxiliary.PreloadUds()
 			turn=Duel.GetTurnCount()
 		})
 		if not _FORBID_INITIALIZED then
-			_FORBID_INITIALIZED=true
+			_FORBID_INITIALIZED={}
 			for p=0,1 do
-				local tempc=Duel.CreateToken(p,10000000)
+			  _FORBID_INITIALIZED[p]=Duel.CreateToken(p,10000000)
+        local tempc=_FORBID_INITIALIZED[p]
 				local e2=Effect.CreateEffect(tempc)
 				e2:SetType(EFFECT_TYPE_FIELD)
 				e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
@@ -42,8 +43,10 @@ function Auxiliary.PreloadUds()
 				end)
 				Duel.RegisterEffect(e2,p)
 			end
-		end
-		Duel.AdjustInstantly()
+    end
+    for p=0,1 do
+		  Duel.AdjustInstantly(_FORBID_INITIALIZED[p])
+    end
 	end)
 	Duel.RegisterEffect(e1,0)
 end
