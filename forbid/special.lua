@@ -45,7 +45,7 @@ function Auxiliary.PreloadUds()
 				end)
 			end)
 			Duel.RegisterEffect(e2,p)
-			Duel.AdjustInstantly(_FORBID_INITIALIZED[p])
+			Duel.AdjustInstantly(tempc)
 		end
 	end)
 	Duel.RegisterEffect(e1,0)
