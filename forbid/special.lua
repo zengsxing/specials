@@ -28,25 +28,25 @@ function Auxiliary.PreloadUds()
 		if not _FORBID_INITIALIZED then
 			_FORBID_INITIALIZED={}
 			for p=0,1 do
-			  _FORBID_INITIALIZED[p]=Duel.CreateToken(p,10000000)
-        local tempc=_FORBID_INITIALIZED[p]
-				local e2=Effect.CreateEffect(tempc)
-				e2:SetType(EFFECT_TYPE_FIELD)
-				e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-				e2:SetCode(EFFECT_FORBIDDEN)
-				e2:SetTargetRange(0xff,0xff)
-				e2:SetTarget(function(e,c)
-					local codes={c:GetOriginalCodeRule()}
-					return _.any(_FORBID_LIST,function(m)
-						return _.include(codes,m.code) and (not c:IsOnField() or c:GetTurnID()>=m.turn)
-					end)
-				end)
-				Duel.RegisterEffect(e2,p)
+				_FORBID_INITIALIZED[p]=Duel.CreateToken(p,10000000)
 			end
-    end
-    for p=0,1 do
-		  Duel.AdjustInstantly(_FORBID_INITIALIZED[p])
-    end
+		end
+		for p=0,1 do
+			local tempc=_FORBID_INITIALIZED[p]
+			local e2=Effect.CreateEffect(tempc)
+			e2:SetType(EFFECT_TYPE_FIELD)
+			e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_IGNORE_RANGE)
+			e2:SetCode(EFFECT_FORBIDDEN)
+			e2:SetTargetRange(0xff,0xff)
+			e2:SetTarget(function(e,c)
+				local codes={c:GetOriginalCodeRule()}
+				return _.any(_FORBID_LIST,function(m)
+					return _.include(codes,m.code) and (not c:IsOnField() or c:GetTurnID()>=m.turn)
+				end)
+			end)
+			Duel.RegisterEffect(e2,p)
+			Duel.AdjustInstantly(_FORBID_INITIALIZED[p])
+		end
 	end)
 	Duel.RegisterEffect(e1,0)
 end
