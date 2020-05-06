@@ -43,6 +43,7 @@ function Auxiliary.PreloadUds()
 				Duel.RegisterEffect(e2,p)
 			end
 		end
+		Duel.AdjustInstantly()
 	end)
 	Duel.RegisterEffect(e1,0)
 end
