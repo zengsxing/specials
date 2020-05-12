@@ -276,7 +276,7 @@ function Auxiliary.PreloadUds()
 			Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP+POS_FACEDOWN)
 		end
 	end)
-	grantAll(e1,function(e,c) return c:IsType(TYPE_MONSTER) end,loc)
+	grantAll(e1,function(e,c) return c:IsType(TYPE_MONSTER) or (c:GetOriginalType()&TYPE_MONSTER)>0 end,loc)
 	local loc=LOCATION_HAND+LOCATION_MZONE
 	local e1=fieldEffect(loc)
 	e1:SetDescription(1159)
