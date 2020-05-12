@@ -308,7 +308,7 @@ function Auxiliary.PreloadUds()
 	grantAll(e1,function(e,c) return c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end)
 	local loc=LOCATION_HAND+LOCATION_EXTRA --LOCATION_DECK+LOCATION_GRAVE
 	local e1=Effect.GlobalEffect()
-	e1:SetDescription(1119)
+	e1:SetDescription(1118)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(loc)
