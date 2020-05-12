@@ -298,6 +298,7 @@ function Auxiliary.PreloadUds()
 
 	--spells and traps
 	local e1=Effect.GlobalEffect()
+	e1:SetDescription(65)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
