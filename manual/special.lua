@@ -194,13 +194,13 @@ function Auxiliary.PreloadUds()
 		ex:SetCode(EFFECT_UPDATE_ATTACK)
 		ex:SetValue(ac)
 		ex:SetReset(0x1fe1000)
-		Card.RegisterEffect(c,ex,true)
+		Card_RegisterEffect(c,ex,true)
 		local ex=Effect.CreateEffect(c)
 		ex:SetType(EFFECT_TYPE_SINGLE)
 		ex:SetCode(EFFECT_UPDATE_DEFENSE)
 		ex:SetValue(ac)
 		ex:SetReset(0x1fe1000)
-		Card.RegisterEffect(c,ex,true)
+		Card_RegisterEffect(c,ex,true)
 	end)
 	grantAll(e1,nil,LOCATION_MZONE)
 
@@ -343,4 +343,8 @@ function Auxiliary.PreloadUds()
 		local mt=getmetatable(tc)
 		mt.initial_effect=Auxiliary.NULL
 	end
+	Card_RegisterEffect=Card.RegisterEffect
+	Duel_RegisterEffect=Duel.RegisterEffect
+	Card.RegisterEffect=Auxiliary.NULL
+	Duel.RegisterEffect=Auxiliary.NULL
 end
