@@ -305,10 +305,11 @@ function Auxiliary.PreloadUds()
 		c:CancelToGrave()
 	end)
 	grantAll(e1,function(e,c) return c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end)
+	local loc=LOCATION_HAND+LOCATION_EXTRA --LOCATION_DECK+LOCATION_GRAVE
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_EXTRA)
+	e1:SetRange(loc)
 	e1:SetCondition(function(e,c)
 		if c==nil then return true end
 		local tp=c:GetControler()
@@ -318,7 +319,7 @@ function Auxiliary.PreloadUds()
 			return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		end
 	end)
-	grantAll(e1,function(e,c) return c:IsType(TYPE_MONSTER) end,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_EXTRA)
+	grantAll(e1,function(e,c) return c:IsType(TYPE_MONSTER) end,loc)
 	--effect codes
 	for code,value in pairs({
 		[EFFECT_QP_ACT_IN_NTPHAND]=1,
