@@ -27,7 +27,7 @@ local function grantDecktop(e)
 	Duel.RegisterEffect(e3,0)
 end
 
-local function fieldEffectTemplate(r)
+local function fieldEffectTemplate(r,notg)
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -36,13 +36,15 @@ local function fieldEffectTemplate(r)
 	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
 		if chk==0 then return Duel.GetCurrentChain()==0 end
 		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-		Duel.SetChainLimit(aux.FALSE)
+		if not notg then
+			Duel.SetChainLimit(aux.FALSE)
+		end
 	end)
 	return e1
 end
 
-local function deckEffectTemplate()
-	return fieldEffectTemplate(LOCATION_DECK)
+local function deckEffectTemplate(notg)
+	return fieldEffectTemplate(LOCATION_DECK,notg)
 end
 
 function Auxiliary.PreloadUds()
@@ -162,6 +164,10 @@ function Auxiliary.PreloadUds()
 		local tc=Duel.CreateToken(tp,ac)
 		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
 	end)
+	grantDecktop(e1)
+
+	local e1=deckEffectTemplate(true)
+	e1:SetDescription(1294)
 	grantDecktop(e1)
 
 	--single card effects
