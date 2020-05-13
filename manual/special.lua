@@ -29,10 +29,15 @@ end
 
 local function fieldEffect(r)
 	local e1=Effect.GlobalEffect()
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE,EFFECT_FLAG2_CONTINUOUS_OPPOTURN)
 	e1:SetRange(r)
+	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return Duel.GetCurrentChain()==0 end
+		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+		Duel.SetChainLimit(aux.FALSE)
+	end)
 	return e1
 end
 
