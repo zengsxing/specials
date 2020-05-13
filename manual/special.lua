@@ -339,6 +339,14 @@ function Auxiliary.PreloadUds()
 	end
 	grantAll(e1)
 
+	local ex=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_HAND_LIMIT)
+	e1:SetValue(0xff)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,1)
+	Duel.RegisterEffect(e1,0)
+
 	for tc in aux.Next(Duel.GetFieldGroup(0,0xff,0xff)) do
 		local mt=getmetatable(tc)
 		mt.initial_effect=Auxiliary.NULL
