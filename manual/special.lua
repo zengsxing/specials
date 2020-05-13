@@ -205,7 +205,7 @@ function Auxiliary.PreloadUds()
 	grantAll(e1,nil,LOCATION_MZONE)
 
 	local e1=fieldEffect(LOCATION_MZONE)
-	e1:SetDescription(1113)
+	e1:SetDescription(1130)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff,0xff,1,99,c)
