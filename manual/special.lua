@@ -31,7 +31,7 @@ local function fieldEffect(r)
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE,EFFECT_FLAG2_CONTINUOUS_OPPOTURN)
 	e1:SetRange(r)
 	return e1
 end
