@@ -27,6 +27,16 @@ local function grantDecktop(e)
 	Duel.RegisterEffect(e3,0)
 end
 
+local function exile(g)
+	if Auxiliary.GetValueType(g)=="Card" then
+		g=Group.FromCards(g)
+	end
+	for tc in Auxiliary.Next(g) do
+		Duel.SendtoGrave(tc:GetOverlayGroup(),REASON_RULE)
+	end
+	Duel.Exile(g,REASON_RULE)
+end
+
 local function fieldEffectTemplate(r,notg)
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -121,6 +131,15 @@ function Auxiliary.PreloadUds()
 			local tc=g:GetFirst()
 			local pos=Duel.SelectPosition(tp,tc,POS_FACEUP+POS_FACEDOWN)
 			Duel.ChangePosition(tc,pos)
+		end
+	end)
+	grantDecktop(e1)
+	local e1=deckEffectTemplate()
+	e1:SetDescription(1101)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,0x7f,0,1,99,nil)
+		if #g>0 then
+			exile(g)
 		end
 	end)
 	grantDecktop(e1)
@@ -303,6 +322,17 @@ function Auxiliary.PreloadUds()
 			end
 			local pos=Duel.SelectPosition(tp,tc,POS_ATTACK)
 			Duel.MoveToField(tc,tp,tp,loc,pos,true)
+		end
+	end)
+	grantAll(e1,nil,loc)
+
+	local loc=LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED
+	local e1=fieldEffectTemplate(loc)
+	e1:SetDescription(1101)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		local g=Group.FromCards(e:GetHandler())
+		if #g>0 then
+			exile(g)
 		end
 	end)
 	grantAll(e1,nil,loc)
