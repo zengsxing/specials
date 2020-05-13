@@ -209,7 +209,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
 		local sg=Duel.GetFieldGroup(tp,0x7f,0x7f)
-		for tc in Auxiliary.Next(g) do
+		for tc in Auxiliary.Next(sg) do
 			for oc in Auxiliary.Next(tc:GetOverlayGroup()) do
 				sg:AddCard(oc)
 			end
