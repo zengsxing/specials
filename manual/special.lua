@@ -45,7 +45,7 @@ function Auxiliary.PreloadUds()
 	local e1=deckEffect()
 	e1:SetDescription(1105)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_DECK,0xff,1,99,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_DECK,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,99,nil)
 		if #g>0 then
 			local pos=Duel.SelectPosition(tp,g:GetFirst(),POS_ATTACK)
 			Duel.SendtoDeck(g,tp,pos==POS_FACEUP_ATTACK and 0 or 1,REASON_RULE)
@@ -55,7 +55,7 @@ function Auxiliary.PreloadUds()
 	local e1=deckEffect()
 	e1:SetDescription(1104)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_HAND,0xff,1,99,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_HAND,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,99,nil)
 		if #g>0 then
 			Duel.SendtoHand(g,tp,REASON_RULE)
 		end
@@ -83,7 +83,7 @@ function Auxiliary.PreloadUds()
 	local e1=deckEffect()
 	e1:SetDescription(1118)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_MZONE,0xff-LOCATION_MZONE,1,99,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_MZONE,LOCATION_GRAVE+LOCATION_REMOVED,1,99,nil)
 		if #g>0 then
 			Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP+POS_FACEDOWN)
 		end
@@ -92,7 +92,7 @@ function Auxiliary.PreloadUds()
 	local e1=deckEffect()
 	e1:SetDescription(1159)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_SZONE,0xff,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_SZONE,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
 		if #g>0 then
 			local tc=g:GetFirst()
 			local loc=LOCATION_SZONE
@@ -208,13 +208,7 @@ function Auxiliary.PreloadUds()
 	e1:SetDescription(1130)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
-		local sg=Duel.GetFieldGroup(tp,0x7f,0x7f)
-		for tc in Auxiliary.Next(sg) do
-			for oc in Auxiliary.Next(tc:GetOverlayGroup()) do
-				sg:AddCard(oc)
-			end
-		end
-		local g=sg:Select(tp,1,99,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,99,c)
 		local og=g:Filter(Card.IsLocation,nil,LOCATION_OVERLAY)
 		g:Sub(og)
 		local tog=Group.CreateGroup()
