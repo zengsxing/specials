@@ -219,16 +219,11 @@ function Auxiliary.PreloadUds()
 		end
 		local _,_ac=Duel.AnnounceNumber(tp,table.unpack(acs))
 		local ac=acs[_ac+1]
+		local ecode=(Duel.SelectPosition(tp,c,POS_FACEUP)==POS_FACEUP_ATTACK) and EFFECT_UPDATE_ATTACK or EFFECT_UPDATE_DEFENSE
 		local ex=Effect.CreateEffect(c)
 		ex:SetType(EFFECT_TYPE_SINGLE)
 		ex:SetCode(EFFECT_UPDATE_ATTACK)
-		ex:SetValue(ac)
-		ex:SetReset(0x1fe1000)
-		Card_RegisterEffect(c,ex,true)
-		local ex=Effect.CreateEffect(c)
-		ex:SetType(EFFECT_TYPE_SINGLE)
-		ex:SetCode(EFFECT_UPDATE_DEFENSE)
-		ex:SetValue(ac)
+		ex:SetValue(ecode)
 		ex:SetReset(0x1fe1000)
 		Card_RegisterEffect(c,ex,true)
 	end)
