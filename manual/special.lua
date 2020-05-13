@@ -332,6 +332,15 @@ function Auxiliary.PreloadUds()
 	end)
 	grantAll(e1,nil,loc)
 
+	local loc=LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED
+	local e1=fieldEffectTemplate(loc)
+	e1:SetDescription(65)
+	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+		if chk==0 then return true end
+		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	end)
+	grantAll(e1,function(e,c) return c:IsFaceup() or c:IsLocation(LOCATION_HAND) end,loc)
+
 	--spells and traps
 	local e1=Effect.GlobalEffect()
 	e1:SetDescription(65)
