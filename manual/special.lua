@@ -222,7 +222,7 @@ function Auxiliary.PreloadUds()
 		end
 		Duel.Overlay(c,tog)
 		Duel.SendtoGrave(og,REASON_RULE)
-		Duel.Overlay(tc,g)
+		Duel.Overlay(c,g)
 	end)
 	grantAll(e1,function(e,c) return c:IsType(TYPE_XYZ) end,LOCATION_MZONE)
 	local loc=LOCATION_HAND+LOCATION_ONFIELD
