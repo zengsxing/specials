@@ -208,7 +208,13 @@ function Auxiliary.PreloadUds()
 	e1:SetDescription(1130)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff,0xff,1,99,c)
+		local sg=Duel.GetFieldGroup(tp,0x7f,0x7f)
+		for tc in Auxiliary.Next(g) do
+			for oc in Auxiliary.Next(tc:GetOverlayGroup()) do
+				sg:AddCard(oc)
+			end
+		end
+		local g=sg:Select(tp,1,99,nil)
 		local og=g:Filter(Card.IsLocation,nil,LOCATION_OVERLAY)
 		g:Sub(og)
 		local tog=Group.CreateGroup()
