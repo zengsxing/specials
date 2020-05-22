@@ -249,19 +249,15 @@ function Auxiliary.PreloadUds()
 	e1:SetDescription(1130)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,99,c)
-		local og=g:Filter(Card.IsLocation,nil,LOCATION_OVERLAY)
+		local ag=Duel.GetMatchingGroup(nil,tp,0x7f,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,c)
+		local eog=c:GetOverlayGroup()
+		ag:Merge(eog)
+		local g=ag:Select(tp,1,99,nil)
+		local og=g:Filter(function(c) return eog:IsContains(c) end)
 		g:Sub(og)
-		local tog=Group.CreateGroup()
 		for tc in Auxiliary.Next(g) do
-			for oc in Auxiliary.Next(tc:GetOverlayGroup()) do
-				if og:IsContains(oc) then
-					og:RemoveCard(oc)
-					tog:AddCard(oc)
-				end
-			end
+			og:Merge(tc:GetOverlayGroup())
 		end
-		Duel.Overlay(c,tog)
 		Duel.SendtoGrave(og,REASON_RULE)
 		Duel.Overlay(c,g)
 	end)
