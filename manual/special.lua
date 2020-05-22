@@ -253,7 +253,7 @@ function Auxiliary.PreloadUds()
 		local eog=c:GetOverlayGroup()
 		ag:Merge(eog)
 		local g=ag:Select(tp,1,99,nil)
-		local og=g:Filter(function(c) return eog:IsContains(c) end)
+		local og=g:Filter(function(c) return eog:IsContains(c) end,nil)
 		g:Sub(og)
 		for tc in Auxiliary.Next(g) do
 			og:Merge(tc:GetOverlayGroup())
