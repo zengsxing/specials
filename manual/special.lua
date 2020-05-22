@@ -53,6 +53,15 @@ local function fieldEffectTemplate(r,notg)
 	return e1
 end
 
+local function handleXyzMaterials(g)
+	for c in aux.Next(g:Filter(Card.IsOnField,nil)) do
+		local og=c:GetOverlayGroup()
+		if #og>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+	end
+end
+
 local function deckEffectTemplate(notg)
 	return fieldEffectTemplate(LOCATION_DECK,notg)
 end
@@ -64,6 +73,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_DECK,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,99,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			local pos=Duel.SelectPosition(tp,g:GetFirst(),POS_ATTACK)
 			Duel.SendtoDeck(g,tp,pos==POS_FACEUP_ATTACK and 0 or 1,REASON_RULE)
 		end
@@ -74,6 +84,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_HAND,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,99,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			Duel.SendtoHand(g,tp,REASON_RULE)
 		end
 	end)
@@ -83,6 +94,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_GRAVE,0,1,99,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			Duel.SendtoGrave(g,REASON_RULE)
 		end
 	end)
@@ -92,6 +104,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_REMOVED,0,1,99,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			local pos=Duel.SelectPosition(tp,g:GetFirst(),POS_ATTACK)
 			Duel.Remove(g,pos,REASON_RULE)
 		end
@@ -111,6 +124,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0xff-LOCATION_SZONE,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			local tc=g:GetFirst()
 			local loc=LOCATION_SZONE
 			if tc:IsType(TYPE_FIELD) then
@@ -128,6 +142,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			local tc=g:GetFirst()
 			local pos=Duel.SelectPosition(tp,tc,POS_FACEUP+POS_FACEDOWN)
 			Duel.ChangePosition(tc,pos)
@@ -139,6 +154,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0x7f,0,1,99,nil)
 		if #g>0 then
+			handleXyzMaterials(g)
 			exile(g)
 		end
 	end)
@@ -256,6 +272,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			local pos=Duel.SelectPosition(tp,g:GetFirst(),POS_ATTACK)
 			Duel.SendtoDeck(g,tp,pos==POS_FACEUP_ATTACK and 0 or 1,REASON_RULE)
 		end
@@ -267,6 +284,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			Duel.SendtoHand(g,tp,REASON_RULE)
 		end
 	end)
@@ -277,6 +295,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			Duel.SendtoGrave(g,REASON_RULE)
 		end
 	end)
@@ -287,6 +306,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			local pos=Duel.SelectPosition(tp,g:GetFirst(),POS_ATTACK)
 			Duel.Remove(g,pos,REASON_RULE)
 		end
@@ -298,6 +318,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP+POS_FACEDOWN)
 		end
 	end)
@@ -308,6 +329,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			local tc=g:GetFirst()
 			local loc=LOCATION_SZONE
 			if tc:IsType(TYPE_FIELD) then
@@ -327,6 +349,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.FromCards(e:GetHandler())
 		if #g>0 then
+			handleXyzMaterials(g)
 			exile(g)
 		end
 	end)
