@@ -364,6 +364,14 @@ function Auxiliary.PreloadUds()
 	end)
 	grantAll(e1,function(e,c) return c:IsFaceup() or c:IsLocation(LOCATION_HAND) end,loc)
 
+	local loc=LOCATION_HAND+LOCATION_ONFIELD
+	local e1=fieldEffectTemplate(loc)
+	e1:SetDescription(208)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		Duel.ConfirmCards(1-tp,e:GetHandler())
+	end)
+	grantAll(e1,function(e,c) return c:IsFacedown() or c:IsLocation(LOCATION_HAND) end,loc)
+
 	--spells and traps
 	local e1=Effect.GlobalEffect()
 	e1:SetDescription(65)
