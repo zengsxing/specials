@@ -9,7 +9,7 @@ function Auxiliary.PreloadUds()
 		if turn>2 then time=60 end
 		if turn>4 then time=30 end
 		for p=0,1 do
-			Duel.ResetTimeLimit(tp,time)
+			Duel.ResetTimeLimit(p,time)
 		end
 	end)
 	Duel.RegisterEffect(e1,0)
