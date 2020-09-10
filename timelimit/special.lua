@@ -7,7 +7,7 @@ function Auxiliary.PreloadUds()
 		local time=90
 		local turn=Duel.GetTurnCount()
 		if turn>2 then time=60 end
-		if turn>4 then time=30 end
+		if turn>6 then time=30 end
 		for p=0,1 do
 			Duel.ResetTimeLimit(p,time)
 		end
