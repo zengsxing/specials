@@ -140,7 +140,7 @@ function inititialize()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(effectCode)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 			e1:SetValue(1)
 			c:RegisterEffect(e1,true)
 		end
@@ -150,7 +150,7 @@ function inititialize()
 		--Debug.Message(type(buffEffects))
 		local hintGiven=false
 		for _,buffEffect in ipairs(buffEffects) do
-			local flags=EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE
+			local flags=EFFECT_FLAG_CANNOT_DISABLE
 			if not hintGiven then
 				flags=flags+EFFECT_FLAG_CLIENT_HINT
 			end
