@@ -122,7 +122,7 @@ function inititialize()
 		Duel.Hint(MSG_HINT,p,HINTMSG_TOFIELD)
 		choices[p]=monsters[p]:Select(p,1,1,nil):GetFirst()
 	end
-	for p=1,0,-1 do
+	for p=0,1 do
 		buffOptions[p]=Duel.SelectOption(p,table.unpack(AllHints))+1
 	end
 	for p=0,1 do
