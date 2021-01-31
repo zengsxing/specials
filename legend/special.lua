@@ -21,7 +21,7 @@ local buffEffectsList={
 		{
 			code=EFFECT_IMMUNE_EFFECT,
 			value=function(e,te)
-				return te:GetOwner()~=e:GetOwner() and te:IsActiveType(TYPE_MONSTER)
+				return te:IsActiveType(TYPE_MONSTER)
 			end,
 		}
 	},
@@ -29,7 +29,7 @@ local buffEffectsList={
 		{
 			code=EFFECT_IMMUNE_EFFECT,
 			value=function(e,te)
-				return te:GetOwner()~=e:GetOwner() and te:IsActiveType(TYPE_SPELL)
+				return te:IsActiveType(TYPE_SPELL)
 			end,
 		}
 	},
@@ -37,7 +37,7 @@ local buffEffectsList={
 		{
 			code=EFFECT_IMMUNE_EFFECT,
 			value=function(e,te)
-				return te:GetOwner()~=e:GetOwner() and te:IsActiveType(TYPE_TRAP)
+				return te:IsActiveType(TYPE_TRAP)
 			end,
 		}
 	},
