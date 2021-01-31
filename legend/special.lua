@@ -99,6 +99,29 @@ function isPlayerMissedOwner(p)
 	return not Duel.IsPlayerAffectedByEffect(tp,10000020+p)
 end
 
+function applyBuff(c, buffOption)
+	local buffEffects=buffEffectsList[buffOption]
+	local hintGiven=false
+	for _,buffEffect in ipairs(buffEffects) do
+		local flags=EFFECT_FLAG_CANNOT_DISABLE
+		if not hintGiven then
+			flags=flags+EFFECT_FLAG_CLIENT_HINT
+		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(AllHints[buffOption])
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(buffEffect.code)
+		e1:SetProperty(flags)
+		e1:SetValue(buffEffect.value)
+		c:RegisterEffect(e1,true)
+	end
+end
+
+function coinRandomNumber()
+	local c1,c2,c3=Duel.TossCoin(tp,3)
+	return (c1 | (c2 << 1) | (c3 << 2)) + 1
+end
+
 function inititialize()
 	local choices={}
 	local monsters={}
@@ -148,21 +171,13 @@ function inititialize()
 		end
 		local buffOption=buffOptions[p]
 		--Debug.Message(buffOption)
-		local buffEffects=buffEffectsList[buffOption]
 		--Debug.Message(type(buffEffects))
-		local hintGiven=false
-		for _,buffEffect in ipairs(buffEffects) do
-			local flags=EFFECT_FLAG_CANNOT_DISABLE
-			if not hintGiven then
-				flags=flags+EFFECT_FLAG_CLIENT_HINT
-			end
-			local e1=Effect.CreateEffect(c)
-			e1:SetDescription(AllHints[buffOption])
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(buffEffect.code)
-			e1:SetProperty(flags)
-			e1:SetValue(buffEffect.value)
-			c:RegisterEffect(e1,true)
+		applyBuff(c,buffEffects)
+		if c:GetOriginalCode()===4392470 then
+			local restBuffOptions=_.filter({1,2,3,4,5,6,7,8,9},function(option)
+				return option ~= buffOption
+			end)
+			
 		end
 	end
 	local e1=Effect.GlobalEffect()
