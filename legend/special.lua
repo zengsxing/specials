@@ -174,7 +174,7 @@ function inititialize()
 		--Debug.Message(type(buffEffects))
 		
 		if c:GetOriginalCode()==4392470 then
-			for option in buffEffectsList do
+			for option in ipairs(buffEffectsList) do
 				applyBuff(c,option)
 			end
 		else
