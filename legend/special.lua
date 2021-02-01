@@ -173,7 +173,7 @@ function inititialize()
 		--Debug.Message(buffOption)
 		--Debug.Message(type(buffEffects))
 		
-		if c:GetOriginalCode()===4392470 then
+		if c:GetOriginalCode()==4392470 then
 			for option in buffEffectsList do
 				applyBuff(c,option)
 			end
