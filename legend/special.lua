@@ -104,7 +104,7 @@ function inititialize()
 	local monsters={}
 	local buffOptions={}
 	for p=0,1 do
-		monsters[p]=Duel.GetMatchingGroup(validMonster,p,LOCATION_DECK,0,1,nil)
+		monsters[p]=Duel.GetMatchingGroup(validMonster,p,LOCATION_DECK+LOCATION_HAND,0,1,nil)
 	end
 	if _.every({monsters[0],monsters[1]}, function(g)
 		return #g==0
