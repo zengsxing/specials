@@ -172,12 +172,13 @@ function inititialize()
 		local buffOption=buffOptions[p]
 		--Debug.Message(buffOption)
 		--Debug.Message(type(buffEffects))
-		applyBuff(c,buffEffects)
+		
 		if c:GetOriginalCode()===4392470 then
-			local restBuffOptions=_.filter({1,2,3,4,5,6,7,8,9},function(option)
-				return option ~= buffOption
-			end)
-			
+			for option in buffEffectsList do
+				applyBuff(c,option)
+			end
+		else
+			applyBuff(c,buffOption)
 		end
 	end
 	local e1=Effect.GlobalEffect()
