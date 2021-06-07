@@ -11,7 +11,7 @@ Card.RegisterEffect = function(c,e,forced)
         e:SetType(EFFECT_TYPE_QUICK_O)
         e:SetCode(EVENT_FREE_CHAIN)
         local cat = e:GetCategory()
-        if cat and (cat & (CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE))>0 then
+        if cat and (cat & (CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_NEGATE))>0 then
             local prop = e:GetProperty()
             if not prop then prop = 0 end
             prop = prop | (EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP)
@@ -22,13 +22,13 @@ Card.RegisterEffect = function(c,e,forced)
 end
 
 function Auxiliary.PreloadUds()
-    -- 2 more draw
+    -- 1 more draw
     local e1=Effect.GlobalEffect()
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
     e1:SetCode(EVENT_ADJUST)
     e1:SetOperation(function(e)
-        Duel.Draw(1,2,REASON_RULE)
+        Duel.Draw(1,1,REASON_RULE)
         e:Reset()
     end)
     Duel.RegisterEffect(e1,0)
