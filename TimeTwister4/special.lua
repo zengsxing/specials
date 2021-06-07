@@ -1,28 +1,30 @@
 --所有起动效果变为2速。
 --游戏开始时，后攻者抽2张卡。
---
+--每个回合开始时，非回合玩家将【灰流丽】【效果遮蒙者】【原始生命态尼比鲁】【增殖的G】【幽鬼兔】中的随机1张加入手卡。回合结束时，那张卡里侧表示除外。
 
 local OrigSetType = Effect.SetType
+CUNGUI = {}
 
 function Auxiliary.PreloadUds()
-    Effect.SetType = function(e,typ)
-        if typ==EFFECT_TYPE_IGNITION then typ=EFFECT_TYPE_QUICK_O end
-        OrigSetType(e,typ)
-    end
-	-- 1 more draw
+	Effect.SetType = function(e,typ)
+		if typ==EFFECT_TYPE_IGNITION then
+			typ=EFFECT_TYPE_QUICK_O
+			e:SetCode(EVENT_FREE_CHAIN)
+		end
+		OrigSetType(e,typ)
+	end
+	-- 2 more draw
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetOperation(function(e)
-	    Duel.Draw(1,2,REASON_RULE)
+		Duel.Draw(1,2,REASON_RULE)
 		e:Reset()
 	end)
 	Duel.RegisterEffect(e1,0)
 	Auxiliary.PreloadUds2()
 end
-
-CUNGUI = {}
 
 function Auxiliary.PreloadUds2()
 	--adjust
@@ -46,7 +48,7 @@ function CUNGUI.GetRandomNumber()
 end
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
-	local tp = Duel.GetTurnPlayer()
+	tp = 1-Duel.GetTurnPlayer()
 	local g=Group.CreateGroup()
 	local cards = {23434538,27204311,14558127,59438930,97268402}
 	local add = Duel.CreateToken(tp,cards[CUNGUI.GetRandomNumber()])
@@ -66,6 +68,6 @@ function CUNGUI.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if tc:GetFlagEffect(23456789)>0 then
 		Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
+		e:Reset()
 	end
 end
-?
