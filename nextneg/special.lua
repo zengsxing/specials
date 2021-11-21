@@ -6,7 +6,7 @@ function Auxiliary.PreloadUds()
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
 		return ep==tp
 	end)
-	e1:SetOperation(function(e)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=re:GetHandler()
 		Duel.SetChainLimit(function(re,ep,tp)
 			return tp==ep
