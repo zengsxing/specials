@@ -14,10 +14,11 @@ function Auxiliary.PreloadUds()
 		for _,code in pairs({EFFECT_CANNOT_DISABLE, EFFECT_CANNOT_INACTIVATE, EFFECT_CANNOT_DISEFFECT}) do
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
 			e2:SetCode(code)
 			e2:SetReset(RESET_CHAIN+RESET_EVENT+RESETS_STANDARD)
 			e2:SetValue(1)
-			c:RegisterEffect(e2)
+			c:RegisterEffect(e2,true)
 		end
 		e:Reset()
 	end)
