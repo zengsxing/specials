@@ -170,16 +170,20 @@ addSkill(9952083, function(e1)
 	e1:SetValue(3)
 end)
 
+local function destroyReplaceFilter(c,tp)
+  return c:IsControler(tp) and c:IsReason(REASON_EFFECT)
+end
+
 addSkill(47529357, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EFFECT_DESTROY_REPLACE)
 	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return eg:IsExists(Card.IsControler,1,nil,tp) end
+    if chk==0 then return eg:IsExists(destroyReplaceFilter,1,nil,tp) end
     return true
   end)
 	e1:SetValue(function(e,c)
-    return c:IsControler(e:GetHandlerPlayer())
+    return destroyReplaceFilter(e:GetHandlerPlayer())
   end)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_CARD,0,47529357)
