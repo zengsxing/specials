@@ -210,11 +210,11 @@ standbyPhaseSkill(73915051, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.SpecialSummonComplete()
 end, function(e,tp)
   return Duel.IsExistingMatchingCard(c12580477_filter,tp,0,LOCATION_MZONE,1,nil)
-end， function(e,tp,eg,ep,ev,re,r,rp)
+end, function(e,tp,eg,ep,ev,re,r,rp)
   not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,73915052,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_BEAST,ATTRIBUTE_EARTH)
-end)
+end)  
 
 local function initialize()
   local skillSelections={}
