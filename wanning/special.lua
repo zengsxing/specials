@@ -126,6 +126,17 @@ addSkill(9952083, function(e1)
 	e1:SetValue(3)
 end)
 
+addSkill(47529357, function(e1)
+  e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_DESTROY_REPLACE)
+	e1:SetTarget(aux.TRUE)
+	e1:SetValue(aux.TRUE)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+    Duel.Hint(HINT_CARD,0,47529357)
+  end)
+end)
+
 local function initialize()
   local skillSelections={}
   local skillCodes=getAllSkillCodes()
