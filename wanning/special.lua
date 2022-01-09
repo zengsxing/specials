@@ -16,7 +16,6 @@ local function registerSkillForPlayer(tp, c)
   local skill=skillLists[c:GetOriginalCode()]
   local e1=Effect.GlobalEffect()
   e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-  e1:SetLabelObject(c)
   skill(e1)
   Duel.RegisterEffect(e1,tp)
 end
