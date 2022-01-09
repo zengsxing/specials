@@ -20,9 +20,27 @@ local function registerSkillForPlayer(tp, c)
   Duel.RegisterEffect(e1,tp)
 end
 
+local function wrapDeckSkill(code, effectFactory)
+  addSkill(code, function(e2)
+    e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+    e2:SetTargetRange(LOCATION_DECK,0)
+    e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
+    e2:SetTarget(function(e,c)
+      local dg=Duel.GetFieldGroup(e:GetHandlerPlayer(),LOCATION_DECK,0)
+      if #dg==0 then return false end
+      local minc=dg:GetMinGroup(Card.GetSequence):GetFirst()
+      return c==minc
+    end)
+    e2:SetLabelObject(effectFactory(code, e2))
+  end)
+end
+
 local function phaseSkill(code, phase, op, con)
-  addSkill(code, function(e1)
+  wrapDeckSkill(code, function()
+    local e1=Effect.GlobalEffect()
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+    e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+    e1:SetRange(LOCATION_DECK)
     e1:SetCode(EVENT_PHASE+phase)
     e1:SetCountLimit(1)
     e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
@@ -32,6 +50,7 @@ local function phaseSkill(code, phase, op, con)
       Duel.Hint(HINT_CARD,0,code)
       op(e,tp,eg,ep,ev,re,r,rp)
     end)
+    return e1
   end)
 end
 
@@ -59,7 +78,7 @@ local function endPhaseSkill(code, op, con)
   phaseSkill(code, PHASE_END, op, con)
 end
 
-drawPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
+standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Draw(tp,2,REASON_RULE)
 end)
 
@@ -121,14 +140,14 @@ end)
 addSkill(9952083, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
 	e1:SetValue(3)
 end)
 
 addSkill(47529357, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EFFECT_DESTROY_REPLACE)
 	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return eg:IsExists(Card.IsControler,1,nil,tp) end
