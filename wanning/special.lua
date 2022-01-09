@@ -101,7 +101,7 @@ endPhaseSkill(19523799, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Damage(1-tp,3200,REASON_EFFECT)
 end)
 
-for event in ipairs({EVENT_SUMMON_SUCCESS,EVENT_FLIP_SUMMON_SUCCESS,EVENT_SPSUMMON_SUCCESS}) do
+for _,event in ipairs({EVENT_SUMMON_SUCCESS,EVENT_FLIP_SUMMON_SUCCESS,EVENT_SPSUMMON_SUCCESS}) do
   wrapDeckSkill(23434538, function(e1)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e1:SetCode(event)
