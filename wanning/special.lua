@@ -155,26 +155,11 @@ end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.IsExistingMatchingCard(c69015963_filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 end)
 
-function c18144506_filter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
-
-standbyPhaseSkill(18144506, function(e,tp,eg,ep,ev,re,r,rp)
-  local sg=Duel.GetMatchingGroup(c18144506_filter,tp,0,LOCATION_ONFIELD,nil)
+standbyPhaseSkill(14532163, function(e,tp,eg,ep,ev,re,r,rp)
+  local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Destroy(sg,REASON_EFFECT)
 end, function(e,tp)
-  return Duel.IsExistingMatchingCard(c18144506_filter,tp,0,LOCATION_ONFIELD,1,nil)
-end)
-
-function c12580477_filter(c)
-	return true
-end
-
-standbyPhaseSkill(12580477, function(e,tp,eg,ep,ev,re,r,rp)
-  local sg=Duel.GetMatchingGroup(c12580477_filter,tp,0,LOCATION_MZONE,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
-end, function(e,tp)
-  return Duel.IsExistingMatchingCard(c12580477_filter,tp,0,LOCATION_MZONE,1,nil)
+  return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 end)
 
 addSkill(9952083, function(e1)
