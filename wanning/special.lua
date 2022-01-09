@@ -1,7 +1,10 @@
 local skillLists={}
 
 local function addSkill(code, skill)
-  skillLists[code]=skill
+  if not skillLists[code] then
+    skillLists[code]={}
+  end
+  table.insert(skillLists[code], skill)
 end
 
 local function getAllSkillCodes()
@@ -12,16 +15,22 @@ local function getAllSkillCodes()
   return skillCodes
 end
 
-local function registerSkillForPlayer(tp, c)
-  local skill=skillLists[c:GetOriginalCode()]
-  local e1=Effect.GlobalEffect()
-  e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-  skill(e1)
-  Duel.RegisterEffect(e1,tp)
+local function registerSkillForPlayer(tp, code)
+  local skills=skillLists[code]
+  for _,skill in ipairs(skills) do
+    local e1=Effect.GlobalEffect()
+    e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+    skill(e1)
+    Duel.RegisterEffect(e1,tp)
+  end
 end
 
 local function wrapDeckSkill(code, effectFactory)
   addSkill(code, function(e2)
+    local e1=Effect.GlobalEffect()
+    e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+    e1:SetRange(LOCATION_DECK)
+    effectFactory(e1)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
     e2:SetTargetRange(LOCATION_DECK,0)
     e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
@@ -31,26 +40,22 @@ local function wrapDeckSkill(code, effectFactory)
       local minc=dg:GetMinGroup(Card.GetSequence):GetFirst()
       return c==minc
     end)
-    e2:SetLabelObject(effectFactory(code, e2))
+    e2:SetLabelObject(e1)
   end)
 end
 
-local function phaseSkill(code, phase, op, con)
-  wrapDeckSkill(code, function()
-    local e1=Effect.GlobalEffect()
+local function phaseSkill(code, phase, op, con, both)
+  wrapDeckSkill(code, function(e1)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-    e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
-    e1:SetRange(LOCATION_DECK)
     e1:SetCode(EVENT_PHASE+phase)
     e1:SetCountLimit(1)
     e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-      return Duel.GetTurnPlayer()==tp and (not con or con(e,tp,eg,ep,ev,re,r,rp))
+      return (both or Duel.GetTurnPlayer()==tp) and (not con or con(e,tp,eg,ep,ev,re,r,rp))
     end)
     e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
       Duel.Hint(HINT_CARD,0,code)
       op(e,tp,eg,ep,ev,re,r,rp)
     end)
-    return e1
   end)
 end
 
@@ -66,16 +71,12 @@ local function oneTimeSkill(code, op)
   end)
 end
 
-local function drawPhaseSkill(code, op, con)
-  phaseSkill(code, PHASE_DRAW, op, con)
+local function standbyPhaseSkill(code, op, con, both)
+  phaseSkill(code, PHASE_STANDBY, op, con, both)
 end
 
-local function standbyPhaseSkill(code, op, con)
-  phaseSkill(code, PHASE_STANDBY, op, con)
-end
-
-local function endPhaseSkill(code, op, con)
-  phaseSkill(code, PHASE_END, op, con)
+local function endPhaseSkill(code, op, con, both)
+  phaseSkill(code, PHASE_END, op, con, both)
 end
 
 standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
@@ -100,6 +101,45 @@ endPhaseSkill(19523799, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Damage(1-tp,3200,REASON_EFFECT)
 end)
 
+for event in ipairs({EVENT_SUMMON_SUCCESS,EVENT_FLIP_SUMMON_SUCCESS,EVENT_SPSUMMON_SUCCESS}) do
+  wrapDeckSkill(23434538, function(e1)
+    e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+    e1:SetCode(event)
+    e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+      local count = eg:FilterCount(function(c)
+        return c:IsControler(1-tp) and c:IsType(TYPE_MONSTER)
+      end, 1, nil)
+      return ep~=tp and count>0 and Duel.GetMZoneCount(tp)>=count
+    end)
+    e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+      Duel.Hint(HINT_CARD,0,23434538)
+      local tg=eg:Filter(function(c)
+        return c:IsControler(1-tp) and c:IsType(TYPE_MONSTER)
+      end, nil)
+      for tc in aux.Next(tg) do
+        local cc=Duel.CreateToken(tp,tc:GetOriginalCode())
+        Duel.MoveToField(cc,tp,tp,LOCATION_MZONE,tc:GetPosition(),true)
+      end
+    end)
+  end)
+end
+
+wrapDeckSkill(1372887, function(e1)
+  e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+  e1:SetCode(EVENT_CHAIN_SOLVED)
+  e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+    return ep~=tp and not re:GetHandler():IsType(TYPE_TOKEN)
+  end)
+  e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+    Duel.Hint(HINT_CARD,0,1372887)
+    local cc=Duel.CreateToken(tp,re:GetHandler():GetOriginalCode())
+    Duel.SendtoHand(cc,nil,REASON_RULE)
+    if(cc:IsLocation(LOCATION_HAND)) then
+      Duel.ConfirmCards(1-tp,cc)
+    end
+    Duel.ShuffleHand(tp)
+  end)
+end)
 
 function c69015963_filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
@@ -172,7 +212,7 @@ local function initialize()
       g:AddCard(c)
     end
     local tc=g:Select(tp,1,1,nil):GetFirst()
-    skillSelections[tp]=tc
+    skillSelections[tp]=tc:GetOriginalCode()
     Duel.Exile(g,REASON_RULE)
   end
   for tp=0,1 do
