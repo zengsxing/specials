@@ -103,7 +103,7 @@ end
 
 standbyPhaseSkill(18144506, function(e,tp,eg,ep,ev,re,r,rp)
   local sg=Duel.GetMatchingGroup(c18144506_filter,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	Duel.Destroy(sg,REASON_RULE)
 end, function(e,tp)
   return Duel.IsExistingMatchingCard(c18144506_filter,tp,0,LOCATION_ONFIELD,1,nil)
 end)
@@ -114,7 +114,7 @@ end
 
 standbyPhaseSkill(12580477, function(e,tp,eg,ep,ev,re,r,rp)
   local sg=Duel.GetMatchingGroup(c12580477_filter,tp,0,LOCATION_MZONE,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	Duel.Destroy(sg,REASON_RULE)
 end, function(e,tp)
   return Duel.IsExistingMatchingCard(c12580477_filter,tp,0,LOCATION_MZONE,1,nil)
 end)
