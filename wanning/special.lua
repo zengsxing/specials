@@ -74,11 +74,11 @@ end, function(e,tp,eg,ep,ev,re,r,rp)
 end)
 
 standbyPhaseSkill(84257639, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Recover(tp,4000,REASON_RULE)
+  Duel.Recover(tp,4000,REASON_EFFECT)
 end)
 
 endPhaseSkill(19523799, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Damage(1-tp,3200,REASON_RULE)
+  Duel.Damage(1-tp,3200,REASON_EFFECT)
 end)
 
 
