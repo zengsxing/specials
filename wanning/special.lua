@@ -217,6 +217,26 @@ addSkill(53239672, function(e1)
   end)
 end)
 
+local godCodes={10000000,10000010,10000020}
+oneTimeSkill(39913299, function(e,tp,eg,ep,ev,re,r,rp)
+  for _,code in ipairs(godCodes) do
+    local tc=Duel.CreateToken(tp,code)
+    Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
+    if code==10000010 then
+      for _,ecode in ipairs({EFFECT_UPDATE_ATTACK,EFFECT_UPDATE_DEFENSE}) do
+        local e1=Effect.CreateEffect(tc)
+        e1:SetType(EFFECT_TYPE_SINGLE)
+        e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+        e1:SetRange(LOCATION_MZONE)
+        e1:SetCode(ecode)
+        e1:SetValue(4000)
+        e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+        tc:RegisterEffect(e1,true)
+      end
+    end
+  end
+end)
+
 local function initialize()
   local skillSelections={}
   local skillCodes=getAllSkillCodes()
