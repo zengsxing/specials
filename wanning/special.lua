@@ -183,7 +183,7 @@ addSkill(47529357, function(e1)
     return true
   end)
 	e1:SetValue(function(e,c)
-    return destroyReplaceFilter(e:GetHandlerPlayer())
+    return destroyReplaceFilter(c,e:GetHandlerPlayer())
   end)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_CARD,0,47529357)
