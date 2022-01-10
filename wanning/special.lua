@@ -201,7 +201,21 @@ end, function(e,tp,eg,ep,ev,re,r,rp)
   return not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,73915052,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_BEAST,ATTRIBUTE_EARTH)
-end)  
+end)
+
+addSkill(53239672, function(e1)
+  e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(function(e)
+    Duel.Hint(HINT_CARD,0,53239672)
+    return 0
+  end)
+  e1:SetCondition(function(e)
+    return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)==0
+  end)
+end)
 
 local function initialize()
   local skillSelections={}
