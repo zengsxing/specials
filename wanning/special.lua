@@ -237,6 +237,51 @@ oneTimeSkill(39913299, function(e,tp,eg,ep,ev,re,r,rp)
   end
 end)
 
+
+function c18940556_tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget() end
+  local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,0,0)
+end
+function c18940556_tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
+  if #g>0 then
+    Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+  end
+end
+
+local function initializeLion(e,tp)
+  Duel.Hint(HINT_CARD,0,4392470)
+  local cc=Duel.CreateToken(tp,4392470)
+  Duel.MoveToField(cc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
+  local e4=Effect.CreateEffect(cc)
+	e4:SetType(EFFECT_TYPE_FIELD)
+  e4:SetCode(4392470)
+  e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+  e4:SetRange(LOCATION_MZONE)
+  e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+  e4:SetTargetRange(1,0)
+  cc:RegisterEffect(e4,true)
+  local e4=Effect.CreateEffect(cc)
+	e4:SetDescription(aux.Stringid(18940556,1))
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_BATTLE_START)
+	e4:SetTarget(c18940556_tgtg)
+	e4:SetOperation(c18940556_tgop)
+  e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+  cc:RegisterEffect(e4,true)
+end
+
+wrapDeckSkill(4392470, function(e1)
+  e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+  e1:SetCode(EVENT_ADJUST)
+  e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+    return not Duel.IsPlayerAffectedByEffect(tp,4392470)
+  end)
+  e1:SetOperation(initializeLion)
+end)
+
 local function initialize()
   local skillSelections={}
   local skillCodes=getAllSkillCodes()
