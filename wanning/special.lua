@@ -86,7 +86,7 @@ end)
 standbyPhaseSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
   if g:GetCount()>0 then
-    Duel.SendtoHand(g,nil,REASON_RULE)
+    Duel.SendtoHand(g,nil,REASON_EFFECT)
     Duel.ConfirmCards(1-tp,g)
   end
 end, function(e,tp,eg,ep,ev,re,r,rp)
@@ -288,6 +288,34 @@ wrapDeckSkill(4392470, function(e1)
     return not Duel.IsPlayerAffectedByEffect(tp,4392470)
   end)
   e1:SetOperation(initializeLion)
+end)
+
+standbyPhaseSkill(42829885, function(e,tp,eg,ep,ev,re,r,rp)
+  local p=tp
+	local g=Duel.GetFieldGroup(p,0,LOCATION_HAND)
+	if g:GetCount()>0 then
+		Duel.ConfirmCards(p,g)
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
+		local sg=g:Select(p,1,1,nil)
+		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.ShuffleHand(1-p)
+	end
+end, function(e,tp,eg,ep,ev,re,r,rp)
+  return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.GetTurnPlayer()==1-tp
+end, true)
+
+addSkill(99177923, function(e1)
+  e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_LOSE_KOISHI)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(1)
+end)
+
+endPhaseSkill(99177923, function(e,tp,eg,ep,ev,re,r,rp)
+  Duel.DiscardDeck(tp,8,REASON_EFFECT)
+end, function(e,tp,eg,ep,ev,re,r,rp)
+  return Duel.GetLP(tp)<=0
 end)
 
 local function initialize()
