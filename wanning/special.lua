@@ -221,7 +221,7 @@ endPhaseSkill(53239672, function(e,tp,eg,ep,ev,re,r,rp)
   local sg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
 	Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 end, function(e,tp)
-  return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) and Duel.GetTurnPlayer()==1-tp and Duel.GetActivityCount(1-tp,ACTIVITY_ATTACK)==0 and Duel.GetTurnCount()>1
+  return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) and Duel.GetTurnPlayer()==1-tp and Duel.GetActivityCount(1-tp,ACTIVITY_ATTACK)==0 and Duel.GetTurnCount()>1
 end, true)
 
 --local godCodes={10000000,10000010,10000020}
