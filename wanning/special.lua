@@ -256,8 +256,6 @@ oneTimeSkill(21082832, function(e,tp,eg,ep,ev,re,r,rp)
   end
 end)
 
-
-
 function c18940556_tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetAttacker()==e:GetHandler() and Duel.GetAttackTarget() end
   local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
@@ -333,7 +331,9 @@ addSkill(99177923, function(e1)
 end)
 
 endPhaseSkill(99177923, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.DiscardDeck(tp,8,REASON_EFFECT)
+  local g=Duel.GetDecktopGroup(tp,8)
+	Duel.DisableShuffleCheck()
+  Duel.Exile(g,REASON_EFFECT)
 end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.GetLP(tp)<=0
 end)
