@@ -166,7 +166,7 @@ phaseSkill(71490127, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
   local num=#Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,0,nil)
   for _=1,num do
     local tc=Duel.CreateToken(tp,99267150)
-    Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEDOWN_DEFENSE,true)
+    Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
   end
 end, function(e,tp)
   return (#Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,0,nil))>0
