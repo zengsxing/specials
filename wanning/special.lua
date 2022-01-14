@@ -162,6 +162,16 @@ end, function(e,tp)
   return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 end)
 
+phaseSkill(71490127, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
+  local num=#Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,0,nil)
+  for _=1,num do
+    local tc=Duel.CreateToken(tp,99267150)
+    Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEDOWN_DEFENSE,true)
+  end
+end, function(e,tp)
+  return (#Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,0,nil))>0
+end,true)
+
 addSkill(9952083, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
@@ -245,6 +255,7 @@ oneTimeSkill(21082832, function(e,tp,eg,ep,ev,re,r,rp)
     end]]
   end
 end)
+
 
 
 function c18940556_tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
