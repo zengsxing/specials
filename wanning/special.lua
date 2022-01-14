@@ -217,13 +217,20 @@ addSkill(53239672, function(e1)
   end)
 end)
 
+endPhaseSkill(53239672, function(e,tp,eg,ep,ev,re,r,rp)
+  local sg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
+	Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
+end, function(e,tp)
+  return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) and Duel.GetTurnPlayer()==1-tp and Duel.GetActivityCount(1-tp,ACTIVITY_ATTACK)==0 and Duel.GetTurnCount()>1
+end, true)
+
 --local godCodes={10000000,10000010,10000020}
-local godCodes={37818794,37818794,37818794}
-oneTimeSkill(6172122, function(e,tp,eg,ep,ev,re,r,rp)
+local godCodes={55410871,55410871,55410871,55410871,55410871}
+oneTimeSkill(21082832, function(e,tp,eg,ep,ev,re,r,rp)
   for _,code in ipairs(godCodes) do
     local tc=Duel.CreateToken(tp,code)
     Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
-    tc:RegisterFlagEffect(37818795,RESET_EVENT+RESETS_STANDARD,0,1,2)
+    --tc:RegisterFlagEffect(37818795,RESET_EVENT+RESETS_STANDARD,0,1,2)
     --[[if code==10000010 then
       for _,ecode in ipairs({EFFECT_UPDATE_ATTACK,EFFECT_UPDATE_DEFENSE}) do
         local e1=Effect.CreateEffect(tc)
