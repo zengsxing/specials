@@ -148,8 +148,15 @@ end
 endPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c69015963_filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP_ATTACK)
+  local tc=g:GetFirst()
+	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP_ATTACK) then
+    local e1=Effect.CreateEffect(tc)
+    e1:SetType(EFFECT_TYPE_SINGLE)
+    e1:SetCode(EFFECT_UPDATE_ATTACK)
+    e1:SetValue(500)
+    e1:SetReset(RESET_EVENT+0x1fe0000)
+    tc:RegisterEffect(e1,true)
+    Duel.SpecialSummonComplete()
 	end
 end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.IsExistingMatchingCard(c69015963_filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
