@@ -274,17 +274,17 @@ end
 
 oneTimeSkill(21082832, function(e,tp,eg,ep,ev,re,r,rp)
   for i=1,5 do
-	local tc=Duel.CreateToken(tp,55410871)
-	Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
-	--cannot remove
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CANNOT_REMOVE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e4)
-	tc:CompleteProcedure()
+		local tc=Duel.CreateToken(tp,55410871)
+		Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
+		--cannot remove
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetCode(EFFECT_CANNOT_REMOVE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e4)
+		tc:CompleteProcedure()
   end
 end)
 
