@@ -250,6 +250,7 @@ end, function(e,tp)
   return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) and Duel.GetTurnPlayer()==1-tp and Duel.GetActivityCount(1-tp,ACTIVITY_ATTACK)==0 and Duel.GetTurnCount()>1
 end, true)
 
+--[[
 oneTimeSkill(13171876, function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.GetDecktopGroup(1-tp,8)
   Duel.Exile(g,REASON_RULE)
@@ -271,7 +272,7 @@ function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
 	local lp=Duel.GetLP(tp)-3000
 	if lp<0 then lp=0 end
 	Duel.SetLP(tp,lp)
-end
+end]]
 
 oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.GetFieldGroup(LOCATION_DECK+LOCATION_HAND)
