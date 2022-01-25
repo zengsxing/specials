@@ -275,7 +275,7 @@ function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
 end]]
 
 oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.GetFieldGroup(LOCATION_DECK+LOCATION_HAND)
+  local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_HAND,0)
   g:ForEach(c66957584_reg)
 end)
 
