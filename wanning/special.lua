@@ -250,19 +250,18 @@ end, function(e,tp)
   return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_HAND,1,nil) and Duel.GetTurnPlayer()==1-tp and Duel.GetActivityCount(1-tp,ACTIVITY_ATTACK)==0 and Duel.GetTurnCount()>1
 end, true)
 
---[[
 oneTimeSkill(13171876, function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.GetDecktopGroup(1-tp,8)
   Duel.Exile(g,REASON_RULE)
   for i=1,8 do
-	local tc=Duel.CreateToken(1-tp,13171876)
-	local e1=Effect.CreateEffect(tc)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCode(EVENT_DRAW)
-	e1:SetCountLimit(1)
-	e1:SetOperation(c13171876_op)
-	tc:RegisterEffect(e1)
+		local tc=Duel.CreateToken(1-tp,13171876)
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+		e1:SetCode(EVENT_DRAW)
+		e1:SetCountLimit(1)
+		e1:SetOperation(c13171876_op)
+		tc:RegisterEffect(e1)
   end
   Duel.SendtoDeck(Duel.GetFieldGroup(1-tp,LOCATION_HAND,0),nil,2,REASON_RULE)
   Duel.Draw(1-tp,5,REASON_RULE)
