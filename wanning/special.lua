@@ -154,7 +154,7 @@ endPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetValue(500)
-	e1:SetReset(RESET_EVENT+0x1fe0000)
+	e1:SetReset(RESET_EVENT+0xfe0000)
 	tc:RegisterEffect(e1,true)
 	Duel.SpecialSummonComplete()
 	end
@@ -254,14 +254,14 @@ oneTimeSkill(13171876, function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.GetDecktopGroup(1-tp,8)
   Duel.Exile(g,REASON_RULE)
   for i=1,8 do
-	local tc=Duel.CreateToken(1-tp,13171876)
-	local e1=Effect.CreateEffect(tc)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCode(EVENT_DRAW)
-	e1:SetCountLimit(1)
-	e1:SetOperation(c13171876_op)
-	tc:RegisterEffect(e1)
+		local tc=Duel.CreateToken(1-tp,13171876)
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+		e1:SetCode(EVENT_DRAW)
+		e1:SetCountLimit(1)
+		e1:SetOperation(c13171876_op)
+		tc:RegisterEffect(e1)
   end
   Duel.SendtoDeck(Duel.GetFieldGroup(1-tp,LOCATION_HAND,0),nil,2,REASON_RULE)
   Duel.Draw(1-tp,5,REASON_RULE)
@@ -271,11 +271,13 @@ function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
 	local lp=Duel.GetLP(tp)-3000
 	if lp<0 then lp=0 end
 	Duel.SetLP(tp,lp)
-end
+end]]
 
 oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.GetFieldGroup(LOCATION_DECK+LOCATION_HAND)
-  g:ForEach(c66957584_reg)
+  local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_HAND,0)
+  for c in aux.Next(g) do
+		c66957584_reg(c)
+	end
 end)
 
 function c66957584_reg(c)
@@ -302,21 +304,21 @@ end
 function c66957584_op(e,tp,eg,ep,ev,re,r,rp)
   local c=e:GetHandler()
   if c:IsRelateToEffect(e) and Duel.SendtoGrave(c) then
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetDescription(aux.Stringid(1264319,1))
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCondition(aux.exccon)
-	e1:SetTarget(c66957584_backtg)
-	e1:SetOperation(c66957584_backop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e1)
-	local g=Duel.GetDecktopGroup(tp,1)
-	if Duel.Draw(tp,1)>0 then
-	  Duel.RegisterFlagEffect(g:GetFirst(),87654321,RESET_PHASE+PHASE_END,0,1)
-	end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_IGNITION)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		e1:SetCategory(CATEGORY_TOHAND)
+		e1:SetDescription(aux.Stringid(1264319,1))
+		e1:SetRange(LOCATION_GRAVE)
+		e1:SetCondition(aux.exccon)
+		e1:SetTarget(c66957584_backtg)
+		e1:SetOperation(c66957584_backop)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1)
+		local g=Duel.GetDecktopGroup(tp,1)
+		if Duel.Draw(tp,1)>0 then
+			Duel.RegisterFlagEffect(g:GetFirst(),87654321,RESET_PHASE+PHASE_END,0,1)
+		end
   end
 end
 
