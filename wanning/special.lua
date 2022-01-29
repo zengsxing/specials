@@ -271,7 +271,7 @@ function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
 	local lp=Duel.GetLP(tp)-3000
 	if lp<0 then lp=0 end
 	Duel.SetLP(tp,lp)
-end]]
+end
 
 oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_HAND,0)
