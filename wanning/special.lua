@@ -262,9 +262,13 @@ oneTimeSkill(13171876, function(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCountLimit(1)
 		e1:SetOperation(c13171876_op)
 		tc:RegisterEffect(e1)
+		Duel.SendtoDeck(tc,nil,0,REASON_RULE)
   end
-  Duel.SendtoDeck(Duel.GetFieldGroup(1-tp,LOCATION_HAND,0),nil,2,REASON_RULE)
-  Duel.Draw(1-tp,5,REASON_RULE)
+	local hg=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
+	local startCount=#hg
+  Duel.SendtoDeck(hg,nil,0,REASON_RULE)
+	Duel.ShuffleDeck()
+  Duel.Draw(1-tp,startCount,REASON_RULE)
 end)
 
 function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
