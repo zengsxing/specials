@@ -277,12 +277,12 @@ function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,lp)
 end
 
-oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
+--[[oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_HAND,0)
   for c in aux.Next(g) do
 		c66957584_reg(c)
 	end
-end)
+end)]]
 
 function c66957584_reg(c)
   local e1=Effect.CreateEffect(c)
