@@ -267,7 +267,7 @@ oneTimeSkill(13171876, function(e,tp,eg,ep,ev,re,r,rp)
 	local hg=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
 	local startCount=#hg
   Duel.SendtoDeck(hg,nil,0,REASON_RULE)
-	Duel.ShuffleDeck()
+	Duel.ShuffleDeck(1-tp)
   Duel.Draw(1-tp,startCount,REASON_RULE)
 end)
 
