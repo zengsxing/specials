@@ -46,16 +46,16 @@ end
 
 local function phaseSkill(code, phase, op, con, both)
   wrapDeckSkill(code, function(e1)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+phase)
-	e1:SetCountLimit(1,0x7ffffff-code)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	  return (both or Duel.GetTurnPlayer()==tp) and (not con or con(e,tp,eg,ep,ev,re,r,rp))
-	end)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-	  Duel.Hint(HINT_CARD,0,code)
-	  op(e,tp,eg,ep,ev,re,r,rp)
-	end)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+phase)
+		e1:SetCountLimit(1,0x7ffffff-code)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+			return (both or Duel.GetTurnPlayer()==tp) and (not con or con(e,tp,eg,ep,ev,re,r,rp))
+		end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+			Duel.Hint(HINT_CARD,0,code)
+			op(e,tp,eg,ep,ev,re,r,rp)
+		end)
   end)
 end
 
@@ -145,7 +145,7 @@ function c69015963_filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP_ATTACK) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 
-endPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
+standbyPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c69015963_filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
   local tc=g:GetFirst()
@@ -154,7 +154,7 @@ endPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(500)
-		e1:SetReset(RESET_EVENT+0xfe0000)
+		e1:SetReset(RESET_EVENT+0x1fe0000)
 		tc:RegisterEffect(e1,true)
 	end
 	Duel.SpecialSummonComplete()
@@ -223,11 +223,6 @@ end)
 function c69015963_filter(c,e,tp)
   return c:IsCanBeSpecialSummoned(e,0,tp,true,true) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
-
-standbyPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.SelectMatchingCard(tp,c69015963_filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-  if g then Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP) end
-end)
 
 addSkill(53239672, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD)
@@ -435,6 +430,49 @@ endPhaseSkill(99177923, function(e,tp,eg,ep,ev,re,r,rp)
 end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.GetLP(tp)<=0
 end)
+
+wrapDeckSkill(72283691, function(e4)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e4:SetCondition(c72283691_atkcon)
+	e4:SetOperation(c72283691_atkop)
+end)
+
+function c72283691_atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	return tc:IsControler(1-tp)
+end
+
+local function destroyGold(tc)
+	Duel.Hint(HINT_CARD,0,72283691)
+	local atk=math.floor(tc:GetAttack()/2)
+	local tp=tc:GetControler()
+	if Duel.Destroy(tc,REASON_EFFECT)~=0 then
+		Duel.Damage(tp,atk,REASON_EFFECT)
+	end
+end
+
+function c72283691_atkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	destroyGold(tc)
+end
+
+wrapDeckSkill(72283691, function(e4)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetCondition(c72283691_chaincon)
+	e4:SetOperation(c72283691_chainop)
+end)
+
+function c72283691_chaincon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	return ep==1-tp and re:IsActiveType(TYPE_MONSTER) and tc and tc:IsControler(1-tp) and tc:IsOnField()
+end
+
+function c72283691_chainop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	destroyGold(tc)
+end
 
 local function initialize()
   local skillSelections={}
