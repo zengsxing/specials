@@ -54,9 +54,16 @@ function CUNGUI.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	local add=0
+	if not CUNGUI.DiceInit then
+		CUNGUI.DiceInit=true
+		local a1,a2,a3,a4,a5=Duel.TossDice(tp,5)
+		local a6,a7,a8,a9,a10=Duel.TossDice(tp,5)
+		local x=a1^10+a2^9+a3^8+a4^7+a5^6+a6^5+a7^4+a8^3+a9^2+a10
+		math.randomseed(x)
+	end
 	while add==0 do
 		local code=math.random(#CUNGUI.forbidden)
-		local tc=Duel.CreateToken(tp,code)
+		local tc=Duel.CreateToken(tp,CUNGUI.forbidden[code])
 		if tc then
 			add = Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		end
