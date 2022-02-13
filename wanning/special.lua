@@ -272,66 +272,25 @@ function c13171876_op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,lp)
 end
 
---[[oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_HAND,0)
-  for c in aux.Next(g) do
-		c66957584_reg(c)
-	end
-end)]]
-
-function c66957584_reg(c)
-  local e1=Effect.CreateEffect(c)
-  e1:SetType(EFFECT_TYPE_QUICK_O)
-  e1:SetCode(EVENT_FREE_CHAIN)
-  e1:SetCategory(CATEGORY_TOGRAVE)
-  e1:SetDescription(aux.Stringid(7337976,1))
-  e1:SetRange(LOCATION_HAND)
-  e1:SetCondition(c66957584_con)
-  e1:SetTarget(c66957584_tg)
-  e1:SetOperation(c66957584_op)
-end
-
-function c66957584_con(e,tp,eg,ep,ev,re,r,rp)
-  return e:GetHandler():GetFlagEffect(87654321)==0
-end
-
-function c66957584_tg(e,tp,eg,ep,ev,re,r,rp,chk)
-  if chk==0 then return e:GetHandler():IsAbleToGrave() and Duel.IsPlayerCanDraw(tp,1) end
-  Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
-end
-
-function c66957584_op(e,tp,eg,ep,ev,re,r,rp)
-  local c=e:GetHandler()
-  if c:IsRelateToEffect(e) and Duel.SendtoGrave(c) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_IGNITION)
-		e1:SetCode(EVENT_FREE_CHAIN)
-		e1:SetCategory(CATEGORY_TOHAND)
-		e1:SetDescription(aux.Stringid(1264319,1))
-		e1:SetRange(LOCATION_GRAVE)
-		e1:SetCondition(aux.exccon)
-		e1:SetTarget(c66957584_backtg)
-		e1:SetOperation(c66957584_backop)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-		local g=Duel.GetDecktopGroup(tp,1)
-		if Duel.Draw(tp,1)>0 then
-			Duel.RegisterFlagEffect(g:GetFirst(),87654321,RESET_PHASE+PHASE_END,0,1)
-		end
+oneTimeSkill(66957584,function(e,tp,eg,ep,ev,re,r,rp)
+  for i=1,3 do
+		local tc=Duel.CreateToken(tp,66957584)
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP_ATTACK,true)
   end
-end
+end)
 
-function c66957584_backtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-  if chk==0 then return e:GetHandler():IsAbleToHand() end
-  Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
-end
-
-function c66957584_backop(e,tp,eg,ep,ev,re,r,rp)
-  local c=e:GetHandler()
-  if c:IsRelateToEffect(e) then
-  	Duel.SendtoHand(c,nil,REASON_EFFECT)
-  end
-end
+addSkill(66957584,function(e1)
+  e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+  e1:SetCondition(function(e)
+		return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+  end)
+	e1:SetValue(function(e,re,tp)
+		return re:GetHandler():IsLocation(LOCATION_HAND)
+	end)
+end)
 
 oneTimeSkill(21082832, function(e,tp,eg,ep,ev,re,r,rp)
   for i=1,5 do
