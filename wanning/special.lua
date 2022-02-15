@@ -184,11 +184,11 @@ addSkill(9952083, function(e1)
 	e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
 	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
-	e1:SetValue(3)
+	e1:SetValue(0xff)
 end)
 
 local function destroyReplaceFilter(c,tp)
-  return c:IsControler(tp) and c:IsReason(REASON_EFFECT)
+  return c:IsControler(tp) and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_BATTLE))
 end
 
 addSkill(47529357, function(e1)
