@@ -430,7 +430,7 @@ function c72283691_atkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker()
 	destroyGold(tc)
 end
-
+--[[
 wrapDeckSkill(72283691, function(e4)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAINING)
@@ -447,6 +447,7 @@ function c72283691_chainop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	destroyGold(tc)
 end
+]]
 
 local function initialize()
   local skillSelections={}
