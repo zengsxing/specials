@@ -83,6 +83,21 @@ standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Draw(tp,2,REASON_RULE)
 end)
 
+phaseSkill(22959079, PHASE_STANDBY, function(e,tp,eg,ep,ev,re,r,rp)
+  local a1,a2,a3=Duel.TossCoin(tp,3)
+  local result=(a1+a2+a3)*2
+  local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+  local g2=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+  local num=#g
+  if num>result then num=result end
+  local rg=g:RandomSelect(tp,num)
+  num=#g2
+  if num>result then num=result end
+  local rg2=g2:RandomSelect(tp,num)
+  Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
+  Duel.Remove(rg2,POS_FACEUP,REASON_EFFECT)
+end)
+
 standbyPhaseSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
   if g:GetCount()>0 then
