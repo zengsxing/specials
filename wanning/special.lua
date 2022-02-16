@@ -83,7 +83,7 @@ standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
   Duel.Draw(tp,2,REASON_RULE)
 end)
 
-phaseSkill(22959079, PHASE_STANDBY, function(e,tp,eg,ep,ev,re,r,rp)
+phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
   local a1,a2,a3=Duel.TossCoin(tp,3)
   local result=(a1+a2+a3)*2
   local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
