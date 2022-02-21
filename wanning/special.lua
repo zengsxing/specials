@@ -96,7 +96,7 @@ phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
   local rg2=g2:RandomSelect(tp,num)
   Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
   Duel.Remove(rg2,POS_FACEUP,REASON_EFFECT)
-end)
+end,nil,true)
 
 standbyPhaseSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
