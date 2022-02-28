@@ -1,7 +1,7 @@
 --村规决斗：献上祭品
 --所有怪兽得到以下效果：
 --这张卡可以把自己场上的表侧表示的2只与这张卡同种族或同属性的怪兽送去墓地，
---从手卡·卡组特殊召唤。
+--从场上以外特殊召唤。
 
 CUNGUI = {}
 
@@ -31,10 +31,9 @@ function CUNGUI.RegisterMonsterSpecialEffects(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND+LOCATION_DECK)
+	e1:SetRange(0x7f-LOCATION_ONFIELD)
 	e1:SetCondition(CUNGUI.spcon)
 	e1:SetOperation(CUNGUI.spop)
-	e1:SetValue(SUMMON_VALUE_SELF)
 	c:RegisterEffect(e1)
 end
 function CUNGUI.CreateFilter(c)
