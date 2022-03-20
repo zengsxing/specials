@@ -11,7 +11,7 @@ function Auxiliary.PreloadUds()
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,1)
 	Duel.RegisterEffect(e2,0)
-	-- one more draw
+	--[[-- one more draw
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -20,5 +20,5 @@ function Auxiliary.PreloadUds()
 		inititialize()
 		e:Reset()
 	end)
-	Duel.RegisterEffect(e1,0)
+	Duel.RegisterEffect(e1,0)]]
 end
