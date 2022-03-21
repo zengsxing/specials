@@ -77,7 +77,7 @@ function CUNGUI.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function CUNGUI.recfilter(c)
-	return c:IsFaceup() and c:IsCode(76103675)
+	return c:IsFaceup() and c:IsCode(20871001)
 end
 function CUNGUI.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
