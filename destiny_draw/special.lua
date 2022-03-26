@@ -89,7 +89,7 @@ Duel.Draw = function(tp,count,reason)
 		return
 	end
 	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_DECK,0,count,count,nil)
-	Duel.SendtoHand(g,tp,REASON_DRAW | reason)
+	return Duel.SendtoHand(g,tp,REASON_DRAW | reason)
 end
 function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp)
 	aux.DrawReplaceCount=aux.DrawReplaceCount+1
