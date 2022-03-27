@@ -21,10 +21,10 @@ function CUNGUI.AdjustOperation()
 		CUNGUI.INIT = true
 		CUNGUI.RegisterCardRule(0)
 		CUNGUI.RegisterCardRule(1)
-		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,LOCATION_HAND)
-		Duel.SendtoDeck(g,nil,2,REASON_RULE)
-		Duel.Draw(0,5,REASON_RULE)
-		Duel.Draw(1,5,REASON_RULE)
+		--local g=Duel.GetFieldGroup(tp,LOCATION_HAND,LOCATION_HAND)
+		--Duel.SendtoDeck(g,nil,2,REASON_RULE)
+		--Duel.Draw(0,5,REASON_RULE)
+		--Duel.Draw(1,5,REASON_RULE)
 	end
 	if CUNGUI.RuleCard[0] and (not CUNGUI.RuleCard[0]:IsLocation(LOCATION_REMOVED) or not CUNGUI.RuleCard[0]:IsFaceup()) then
 		Duel.Remove(CUNGUI.RuleCard[0],POS_FACEUP,REASON_RULE)
