@@ -22,7 +22,7 @@ function CUNGUI.filter(c,race)
 end
 
 function CUNGUI.val(e,c)
-	if (c:GetOriginalType() & TYPE_NORMAL)==0 then return 0 end
+	if (c:GetOriginalType() & TYPE_NORMAL)==0 or (c:GetOriginalType() & (TYPE_PENDULUM+TYPE_TOKEN))>0 then return 0 end
 	local up = c:GetBaseAttack()*9
 	if e:GetLabel()==1 then up = c:GetBaseDefense()*9 end
 	return up
