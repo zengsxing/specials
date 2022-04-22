@@ -23,9 +23,9 @@ end
 
 function CUNGUI.val(e,c)
 	if (c:GetOriginalType() & TYPE_NORMAL)==0 or (c:GetOriginalType() & (TYPE_PENDULUM+TYPE_TOKEN))>0 then return 0 end
-	local up = c:GetBaseAttack()*9
-	if e:GetLabel()==1 then up = c:GetBaseDefense()*9 end
-	return up
+	local baseValue = c:GetBaseAttack()
+	if e:GetLabel()==1 then baseValue = c:GetBaseDefense() end
+	return c:IsOriginalCodeRule(89631139,74677422,46986414) and baseValue*99 or baseValue*9
 end
 
 function Auxiliary.PreloadUds()
