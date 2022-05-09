@@ -1,7 +1,7 @@
 --村规决斗：贤者之石
---所有魔法·陷阱卡发动时的效果处理改为：
+--所有魔法·陷阱卡发动时的效果处理可以变为：
 --宣言1个卡名。那个卡名的怪兽从卡组外加入卡组·额外卡组。
---加入了主卡组，且这个回合第一次以此类效果将怪兽加入主卡组的场合，再从卡组选1只怪兽加入手卡。
+--加入了主卡组，且这个回合第一次以此类效果将怪兽加入主卡组的场合，再从卡组选1只怪兽加入手卡（对方不能确认这个效果加入手卡的卡）。
 --所有陷阱卡都可以在自己的回合从手卡发动。
 --后攻多抽2张。
 CUNGUI = {}
@@ -13,8 +13,8 @@ CUNGUI.turn[1] = 0
 Register = Card.RegisterEffect
 Card.RegisterEffect = function(c,e,forced)
 	if (e:GetType() & EFFECT_TYPE_ACTIVATE) > 0 and not CUNGUI.registered[c] then
-		if not e:GetDescription() then
-			e:SetDescription(aux.Stringid(5772618,0))
+		if not e:GetDescription() or e:GetDescription()==0 then
+			e:SetDescription(7)
 		end
 		CUNGUI.registered[c] = true
 		local e1 = Effect.CreateEffect(c)
@@ -22,7 +22,7 @@ Card.RegisterEffect = function(c,e,forced)
 		e1:SetCategory(CATEGORY_TOEXTRA)
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetCountLimit(10000)
-		e1:SetDescription(aux.Stringid(269012,1))
+		e1:SetDescription(aux.Stringid(66666004,4))
 		e1:SetCondition(aux.TRUE)
 		e1:SetCost(aux.TRUE)
 		e1:SetTarget(aux.TRUE)

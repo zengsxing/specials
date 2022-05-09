@@ -1,6 +1,5 @@
 --村规决斗：影流之主
 --所有怪兽得到以下效果：
---（仅通常怪兽）这张卡也当作效果怪兽使用。
 --这张卡只要在场上存在，就尽可能地占据3个格子。
 --这张卡在1个战斗阶段可以攻击3次。
 CUNGUI = {}
@@ -26,16 +25,6 @@ end
 function CUNGUI.RegisterMonsterSpecialEffects(c)
 	if CUNGUI.RegisteredMonsters:IsContains(c) then return end
 	CUNGUI.RegisteredMonsters:AddCard(c)
-	if c:IsType(TYPE_NORMAL) then
-		--Normal monster
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_ADD_TYPE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetValue(TYPE_EFFECT)
-		c:RegisterEffect(e1)
-	end
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)

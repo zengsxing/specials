@@ -4,7 +4,7 @@
 --①1回合1次，这张卡被除外的状态下才能发动。这个效果不会被无效化。
 --宣言1个【禁止令】以外的卡名，在这场决斗中，对方的那些卡受到禁止令效果影响。
 --②1回合1次，这张卡被除外的状态下才能发动。这个效果不会被无效化。
---这张卡撕碎（效果名：卡片破坏），解除自己目前受到的所有因此类卡的①效果的禁止令效果。
+--这张卡撕碎（效果名：卡片破坏），解除自己目前受到的所有因此类①效果的禁止令效果。
 --③这张卡不是表侧表示除外状态的场合，这张卡表侧表示除外。这个效果不会被无效化，在卡组·手卡也会适用。
 
 CUNGUI = {}
@@ -68,7 +68,7 @@ function CUNGUI.RegisterForbiddenRule(tp)
 end
 
 function CUNGUI.operation2(e,tp,eg,ep,ev,re,r,rp)
-	for i,v in pairs(CUNGUI.ForbiddenEffects[1-tp]) do
+	for _,v in pairs(CUNGUI.ForbiddenEffects[1-tp]) do
 		v:Reset()
 	end
 	Duel.Exile(e:GetHandler(),REASON_RULE)
@@ -84,7 +84,6 @@ function CUNGUI.forbidop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetCode(EFFECT_FORBIDDEN)
-	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(0x7f,0)
 	e2:SetTarget(CUNGUI.bantg)
 	e2:SetLabel(code)
@@ -96,18 +95,3 @@ function CUNGUI.bantg(e,c)
 	local fcode=e:GetLabel()
 	return code1==fcode or code2==fcode
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

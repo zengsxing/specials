@@ -19,7 +19,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(CUNGUI.AdjustOperation)
 	Duel.RegisterEffect(e1,0)
 	--adjust
-	local e1=Effect.GlobalEffect()
+	e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
@@ -41,7 +41,7 @@ function CUNGUI.RegisterRuleEffect(c)
 	e2:SetCode(EVENT_ADJUST)
 	e2:SetCondition(CUNGUI.condition)
 	e2:SetOperation(CUNGUI.operation)
-	Duel.RegisterEffect(e2,0)
+	Duel.RegisterEffect(e2,c:GetControler())
 end
 
 function CUNGUI.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -50,6 +50,7 @@ function CUNGUI.condition(e,tp,eg,ep,ev,re,r,rp)
 		CUNGUI.disabled[tp]=false
 		return false
 	end
+	return true
 end
 function CUNGUI.filter(c)
 	return CUNGUI.RuleCards:IsContains(c)

@@ -28,7 +28,6 @@ Duel.SelectTarget = function(tp,f,tp2,s,o,min,max,ex,...)
 	local g1=SelectTarget(tp,nil,tp2,0x7f,0,0,max,nil,...) or Group.CreateGroup()
 	local g2=SelectTarget(tp,nil,tp2,0,0x7f,0,max,nil,...) or Group.CreateGroup()
 	g3=Group.CreateGroup()
-
 	g3:Merge(g1)
 	g3:Merge(g2)
 	until g3 and #g3>=min and #g3<=max
@@ -38,8 +37,8 @@ local DiscardHand = Duel.DiscardHand
 Duel.DiscardHand = function(tp,f,min,max,reason)
 	local g3=Group.CreateGroup()
 	repeat
-	local g1=SelectMatchingCard(tp,Card.IsDiscardable,tp2,0x7f,0,0,max,nil) or Group.CreateGroup()
-	local g2=SelectMatchingCard(tp,Card.IsDiscardable,tp2,0,0x7f,0,max,nil) or Group.CreateGroup()
+	local g1=SelectMatchingCard(tp,Card.IsDiscardable,tp,0x7f,0,0,max,nil) or Group.CreateGroup()
+	local g2=SelectMatchingCard(tp,Card.IsDiscardable,tp,0,0x7f,0,max,nil) or Group.CreateGroup()
 	g3=Group.CreateGroup()
 
 	g3:Merge(g1)
@@ -51,8 +50,8 @@ local SelectReleaseGroup = Duel.SelectReleaseGroup
 Duel.SelectReleaseGroup = function(tp,f,min,max,ex,...)
 	local g3=Group.CreateGroup()
 	repeat
-	local g1=SelectMatchingCard(tp,Card.IsReleasable,tp2,0x7f,0,0,max,nil) or Group.CreateGroup()
-	local g2=SelectMatchingCard(tp,Card.IsReleasable,tp2,0,0x7f,0,max,nil) or Group.CreateGroup()
+	local g1=SelectMatchingCard(tp,Card.IsReleasable,tp,0x7f,0,0,max,nil) or Group.CreateGroup()
+	local g2=SelectMatchingCard(tp,Card.IsReleasable,tp,0,0x7f,0,max,nil) or Group.CreateGroup()
 	g3=Group.CreateGroup()
 
 	g3:Merge(g1)
@@ -65,8 +64,8 @@ local SelectReleaseGroupEx = Duel.SelectReleaseGroupEx
 Duel.SelectReleaseGroupEx = function(tp,f,min,max,ex,...)
 	local g3=Group.CreateGroup()
 	repeat
-	local g1=SelectMatchingCard(tp,Card.IsReleasable,tp2,0x7f,0,0,max,nil) or Group.CreateGroup()
-	local g2=SelectMatchingCard(tp,Card.IsReleasable,tp2,0,0x7f,0,max,nil) or Group.CreateGroup()
+	local g1=SelectMatchingCard(tp,Card.IsReleasable,tp,0x7f,0,0,max,nil) or Group.CreateGroup()
+	local g2=SelectMatchingCard(tp,Card.IsReleasable,tp,0,0x7f,0,max,nil) or Group.CreateGroup()
 	g3=Group.CreateGroup()
 
 	g3:Merge(g1)

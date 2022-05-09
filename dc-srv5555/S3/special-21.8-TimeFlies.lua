@@ -7,8 +7,10 @@
 --3：跳过自己的下个主要阶段1。
 --4：跳过自己的下个主要阶段2。
 --5：跳过自己的下个战斗阶段。
---6：无事发生。
+--6：跳过自己的下个回合。
 --这个效果从T2开始发动和处理。
+
+--细则：投掷到6的场合，会因为未经过结束阶段而跳过1次投掷。
 
 CUNGUI = {}
 
@@ -50,7 +52,6 @@ end
 
 function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp)
 	local dice=Duel.TossDice(tp,1)
-	if dice==6 then return end
 	local code=EFFECT_SKIP_DP
 	if dice==2 then code=EFFECT_SKIP_SP end
 	if dice==3 then code=EFFECT_SKIP_M1 end
@@ -62,7 +63,14 @@ function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(code)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
+	if dice==6 then
+		e1:SetCode(EFFECT_SKIP_TURN)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetTargetRange(0,1)
+		Duel.RegisterEffect(e1,1-tp)
+	else
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)

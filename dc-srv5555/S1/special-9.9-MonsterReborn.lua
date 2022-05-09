@@ -1,3 +1,9 @@
+--村规决斗：死者苏生
+--所有卡没有苏生限制。
+--移除所有场上只能存在1张的限制。
+--从第2回合开始，每回合开始时，把1张【死者苏生】加入回合玩家手卡。
+--那张卡回合结束时里侧表示除外（移动过位置也除外）。
+
 CUNGUI = {}
 Card.EnableReviveLimit = function(card) end
 Card.SetUniqueOnField = function(c,s,o,code,loc) end
@@ -15,7 +21,7 @@ end
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnCount() > 1 then
-		local tp = Duel.GetTurnPlayer()
+		tp = Duel.GetTurnPlayer()
 		local card = Duel.CreateToken(tp,83764718)
 		if Duel.SendtoHand(card,nil,REASON_RULE)<1 then return end
 		local e1=Effect.CreateEffect(card)

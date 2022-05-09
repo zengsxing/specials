@@ -20,8 +20,8 @@ CUNGUI.RegisteredMonsters = Group.CreateGroup()
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	local g = Duel.GetMatchingGroup(Card.IsType,0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,nil,TYPE_MONSTER)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
-	if not CUNGUI.drawed then
-		CUNGUI.drawed = true
+	if not CUNGUI.InitDraw then
+		CUNGUI.InitDraw = true
 		Duel.Draw(0,1,REASON_RULE)
 	end
 end
@@ -34,6 +34,7 @@ function CUNGUI.RegisterMonsterSpecialEffects(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetDescription(aux.Stringid(66666004,5))
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetTargetRange(POS_FACEUP,1)
@@ -48,6 +49,7 @@ function CUNGUI.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.IsExistingMatchingCard(CUNGUI.spfilter,tp,0,LOCATION_MZONE,1,nil,tp)
+		and Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1)
 end
 function CUNGUI.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

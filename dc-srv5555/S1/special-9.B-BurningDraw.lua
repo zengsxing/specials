@@ -27,7 +27,7 @@ function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 		CUNGUI.INIT = true
 		Duel.SetLP(1,Duel.GetLP(1) + 4000)
 	end
-	local g = Duel.GetMatchingGroup(Card.IsType,0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_MZONE,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_MZONE,nil,TYPE_MONSTER)
+	local g = Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,TYPE_MONSTER)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
 end
 

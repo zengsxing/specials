@@ -1,8 +1,9 @@
 --村规决斗：人海战术
 --所有（非衍生物）怪兽得到以下效果：
---这张卡召唤·特殊召唤成功时发动。
---宣言1个数字（1-12），从卡组外在自己场上将1只「白骨」特殊召唤。
---这个效果特殊召唤的衍生物的等级和宣言的数字相同，属性、种族和卡名变成和特殊召唤的怪兽相同（离场后仍然生效）
+--①：这张卡召唤·特殊召唤成功时发动。
+--宣言1个数字（1-12），从卡组外在自己场上将1只「白骨」(攻0/守0)特殊召唤。
+--这个效果特殊召唤的衍生物的等级和宣言的数字相同，属性、种族和卡名变成和特殊召唤的怪兽相同（发生位置改变后后仍然生效）。
+--这个效果特殊召唤的衍生物在特殊召唤的回合不能使用这个①效果（发生位置改变后依然不能使用）。
 CUNGUI = {}
 
 function Auxiliary.PreloadUds()
@@ -19,7 +20,7 @@ end
 CUNGUI.RegisteredMonsters = Group.CreateGroup()
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
-	local g = Duel.GetMatchingGroup(Card.IsType,0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,nil,TYPE_MONSTER)
+	local g = Duel.GetMatchingGroup(Card.IsType,0,0xff,0xff,nil,TYPE_MONSTER)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
 end
 
@@ -58,7 +59,7 @@ function CUNGUI.tkop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_SET_ATTACK_FINAL)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetValue(1)
+	e2:SetValue(0)
 	token:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(token)
 	e3:SetType(EFFECT_TYPE_SINGLE)
