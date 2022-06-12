@@ -1,7 +1,7 @@
 --村规决斗：进攻部署
 --所有怪兽得到以下效果：
 --这张卡进行攻击的伤害计算时才能发动。这个效果的发动和效果不会被无效化。
---从卡组选1只与这张卡种族相同的怪兽里侧攻击表示特殊召唤。
+--从卡组选1只与这张卡种族或属性相同的怪兽里侧攻击表示特殊召唤。
 
 --细则：
 --自己卡组没有条件合适的怪兽的场合，即使对方能选，也不能发动。
@@ -50,7 +50,7 @@ end
 
 function CUNGUI.filter(c,e,tp)
 	local tc = e:GetHandler()
-	return c:IsRace(tc:GetRace()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsRace(tc:GetRace()) or c:IsAttribute(tc:GetAttribute())) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function CUNGUI.target(e,tp,eg,ep,ev,re,r,rp,chk)

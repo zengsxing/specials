@@ -1,3 +1,5 @@
+--村规决斗：反向支付
+--支付Cost时，按相反动作来支付。
 
 function Auxiliary.PreloadUds()
     --adjust

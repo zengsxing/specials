@@ -64,7 +64,7 @@ end
 
 function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 	local p=1-Duel.RockPaperScissors()
-	local g=Duel.GetFieldGroup(p,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
+	local g=Duel.GetFieldGroup(p,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0)
 	Duel.Remove(g,POS_FACEDOWN,REASON_RULE)
 	Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
 	local e1=Effect.CreateEffect(e:GetHandler())

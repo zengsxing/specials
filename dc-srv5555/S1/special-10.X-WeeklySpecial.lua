@@ -1,13 +1,13 @@
 --村规决斗：不关你事
 --所有（入连锁的）效果得到以下追加文本：
---自己在这场决斗中是后攻，且这个效果的发动是自己整场决斗中第一次把效果发动的场合，
+--这个效果的发动是自己这个回合第一次把效果发动的场合，
 --这个效果的发动和效果不能被无效化，对方不能针对这个效果的发动把魔法·陷阱·怪兽的效果发动。
 
 CUNGUI = {}
+CUNGUI.used={}
 
 CUNGUI.Registered = Group.CreateGroup()
 CUNGUI.PropertySaver = {}
-local OrigClone = Effect.Clone
 local OrigRegisterEffect = Card.RegisterEffect
 
 Card.RegisterEffect = function(c,e)
@@ -29,8 +29,8 @@ function CUNGUI.GetNewTarget(target)
 			e:SetProperty(CUNGUI.PropertySaver[e])
 			CUNGUI.PropertySaver[e]=false
 		end
-		if tp~=0 and not CUNGUI.used and e:IsHasType(0x7d0) then
-			CUNGUI.used=true
+		if not CUNGUI.used[tp] and e:IsHasType(0x7d0) then
+			CUNGUI.used[tp]=true
 			if not CUNGUI.PropertySaver[e] then CUNGUI.PropertySaver[e]=e:GetProperty() end
 			local prop=CUNGUI.PropertySaver[e]
 			prop = prop | 0x2000600
@@ -43,4 +43,19 @@ function CUNGUI.GetNewTarget(target)
 end
 function CUNGUI.climit(e,ep,tp)
 	return tp==ep
+end
+function Auxiliary.PreloadUds()
+	--adjust
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetCountLimit(1)
+	e1:SetOperation(CUNGUI.AdjustOperation)
+	Duel.RegisterEffect(e1,0)
+end
+
+function CUNGUI.AdjustOperation()
+	CUNGUI.used[0]=false
+	CUNGUI.used[1]=false
 end

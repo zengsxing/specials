@@ -38,7 +38,7 @@ end
 CUNGUI.RuleCard={}
 
 function CUNGUI.RegisterCardRule(tp)
-	local c=Duel.CreateToken(tp,3285551)
+	local c=Duel.CreateToken(tp,65830223)
 	Duel.Remove(c,POS_FACEUP,REASON_RULE)
 	CUNGUI.RuleCard[tp]=c
 	--damage

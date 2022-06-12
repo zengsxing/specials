@@ -1,7 +1,6 @@
---村规决斗：影流之主
+--村规决斗：止战之殇
 --所有怪兽得到以下效果：
---这张卡只要在场上存在，就尽可能地占据3个格子。
---这张卡在1个战斗阶段可以攻击3次。
+--这个效果不会被无效化。这张卡不会被战斗破坏，攻击守备表示怪兽时，超出的部分给予战斗伤害。
 CUNGUI = {}
 
 function Auxiliary.PreloadUds()
@@ -18,25 +17,24 @@ end
 CUNGUI.RegisteredMonsters = Group.CreateGroup()
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
-	local g = Duel.GetMatchingGroup(Card.IsType,0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,nil,TYPE_MONSTER)
+	local g = Duel.GetMatchingGroup(Card.IsType,0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_MZONE,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_MZONE,nil,TYPE_MONSTER)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
 end
 
 function CUNGUI.RegisterMonsterSpecialEffects(c)
 	if CUNGUI.RegisteredMonsters:IsContains(c) then return end
 	CUNGUI.RegisteredMonsters:AddCard(c)
+	--pierce
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_USE_EXTRA_MZONE)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetValue(2)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
+	e3:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e3)
-	--triple attack
+	--battle indestructable
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_EXTRA_ATTACK)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetValue(2)
+	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
+	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e4:SetValue(1)
 	c:RegisterEffect(e4)
 end

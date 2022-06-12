@@ -171,7 +171,8 @@ function CUNGUI.DecreaseCostWhenUsingSpellOrTrap(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsActiveType(TYPE_MONSTER) then return end
 	local p = re:GetOwner():GetControler()
 	CUNGUI.SVCosts[p] = CUNGUI.SVCosts[p] - 1
-	Debug.Message("已支付1费以发动魔法·陷阱效果。当前费用："..CUNGUI.SVCosts[p])
+	Duel.Hint(p,HINT_NUMBER,CUNGUI.SVCosts[p])
+	Duel.Hint(1-p,HINT_NUMBER,CUNGUI.SVCosts[p])
 end
 
 function CUNGUI.RecoverSVCost(e,tp,eg,ep,ev,re,r,rp)
@@ -179,11 +180,8 @@ function CUNGUI.RecoverSVCost(e,tp,eg,ep,ev,re,r,rp)
 	local svcost=math.ceil(tc/2)
 	if svcost > 10 then svcost = 10 end
 	CUNGUI.SVCosts[Duel.GetTurnPlayer()]=svcost
-	Duel.Hint(HINT_NUMBER,PLAYER_ALL,svcost)
-	Debug.Message("已回复费用，当前费用："..svcost)
-	if tc==4 or tc==5 then
-		Debug.Message("回合玩家已可进化。当前进化点："..(tc-2))
-	end
+	Duel.Hint(tp,HINT_NUMBER,svcost)
+	Duel.Hint(1-tp,HINT_NUMBER,svcost)
 end
 
 function CUNGUI.ChangeDamage(e,re,val,r,rp,rc)
@@ -276,13 +274,15 @@ function CUNGUI.MonsterUseCost(e,tp,eg,ep,ev,re,r,rp)
 	local needCost = math.floor((atk+def)/1000)
 	if CUNGUI.SVCosts[rp]>=needCost then
 		CUNGUI.SVCosts[rp] = CUNGUI.SVCosts[rp] - needCost
-		Debug.Message("已支付"..needCost.."费以召唤怪兽。当前费用："..CUNGUI.SVCosts[rp])
+		Duel.Hint(rp,HINT_NUMBER,CUNGUI.SVCosts[rp])
+		Duel.Hint(1-rp,HINT_NUMBER,CUNGUI.SVCosts[rp])
 	else
 		needCost = needCost - CUNGUI.SVCosts[rp]
 		if needCost > Duel.GetLP(rp) then needCost = Duel.GetLP(rp) end
 		CUNGUI.SVCosts[rp] = 0
 		OrigPayLPCost(rp,needCost)
-		Debug.Message("已支付全部剩余费用与"..needCost.."点基本分以召唤怪兽。")
+		Duel.Hint(rp,HINT_NUMBER,0)
+		Duel.Hint(1-rp,HINT_NUMBER,0)
 	end
 end
 
@@ -296,13 +296,15 @@ function CUNGUI.MonsterUseCostMSet(e,tp,eg,ep,ev,re,r,rp)
 	local needCost = math.floor((atk+def)/1000)
 	if CUNGUI.SVCosts[rp]>=needCost then
 		CUNGUI.SVCosts[rp] = CUNGUI.SVCosts[rp] - needCost
-		Debug.Message("已支付"..needCost.."费以覆盖怪兽。当前费用："..CUNGUI.SVCosts[rp])
+		Duel.Hint(rp,HINT_NUMBER,CUNGUI.SVCosts[rp])
+		Duel.Hint(1-rp,HINT_NUMBER,CUNGUI.SVCosts[rp])
 	else
 		needCost = needCost - CUNGUI.SVCosts[rp]
 		if needCost > Duel.GetLP(rp) then needCost = Duel.GetLP(rp) end
 		CUNGUI.SVCosts[rp] = 0
 		OrigPayLPCost(rp,needCost)
-		Debug.Message("已支付全部剩余费用与"..needCost.."点基本分以召唤怪兽。")
+		Duel.Hint(rp,HINT_NUMBER,0)
+		Duel.Hint(1-rp,HINT_NUMBER,0)
 	end
 end
 
@@ -334,7 +336,8 @@ function CUNGUI.Evolution(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
 	end
-	Debug.Message("已进行进化。当前进化点："..CUNGUI.SVEvolutionPoints[tp])
+	Duel.Hint(tp,HINT_NUMBER,CUNGUI.SVEvolutionPoints[tp])
+	Duel.Hint(1-tp,HINT_NUMBER,CUNGUI.SVEvolutionPoints[tp])
 end
 
 CUNGUI.AttackLimitEffects={}

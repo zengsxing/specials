@@ -38,13 +38,11 @@ function CUNGUI.RegisterMonsterSpecialEffects(c)
 	--change code
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(89312388,0))
-	e1:SetCountLimit(1,87654321)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(CUNGUI.target)
 	e1:SetOperation(CUNGUI.operation)
 	c:RegisterEffect(e1)
-	
 end
 
 function CUNGUI.filter(c)
@@ -57,7 +55,7 @@ function CUNGUI.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectMatchingCard(tp,CUNGUI.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,CUNGUI.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if not g or #g == 0 then return end
 	local c = g:GetFirst()
 	local code = Duel.AnnounceCard(tp,TYPE_MONSTER)

@@ -32,10 +32,10 @@ end
 function CUNGUI.RegisterMonsterSpecialEffects(c)
 	if CUNGUI.RegisteredMonsters:IsContains(c) then return end
 	CUNGUI.RegisteredMonsters:AddCard(c)
-	
+
     --ss
     local e4=Effect.CreateEffect(c)
-    e4:SetDescription(aux.Stringid(2648201,1))
+    e4:SetDescription(aux.Stringid(66666004,5))
     e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCountLimit(1,98765432)

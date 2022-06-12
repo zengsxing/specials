@@ -17,7 +17,7 @@ end
 CUNGUI.RegisteredMonsters = Group.CreateGroup()
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
-	local g = Duel.GetMatchingGroup(nil,0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_HAND,nil)
+	local g = Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
 end
 
@@ -31,6 +31,7 @@ function CUNGUI.RegisterMonsterSpecialEffects(c)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
     e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
     e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetDescription(66666004,5)
     e1:SetCondition(CUNGUI.spcon)
     c:RegisterEffect(e1)
 end

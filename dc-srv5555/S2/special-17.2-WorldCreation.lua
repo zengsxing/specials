@@ -3,9 +3,9 @@
 --这场决斗中这些卡不是表侧表示除外的场合，这张卡表侧表示除外。
 --这些卡得到以下效果。
 --这个效果的发动和效果不会被无效化。
---宣言1个卡名才能发动。
+--宣言1个【贤者之石-萨巴希尔】以外的卡名才能发动。
 --这张卡撕碎，那个卡名的卡从卡组外加入手卡·额外卡组。
---这场决斗中，双方因这个效果加入的卡造成的效果伤害变为0。
+--这场决斗中，因这个效果加入的卡造成的效果伤害变为0。
 --（即使发生过位置移动，也视为同一张卡）
 
 CUNGUI = {}
@@ -75,7 +75,6 @@ end
 function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 	local c=Duel.CreateToken(tp,e:GetLabel())
 	CUNGUI.RuleCard[tp]:RemoveCard(e:GetHandler())
-	Debug.Message(c)
 	CUNGUI.CreatedCard[c]=true
 	Duel.Exile(e:GetHandler(),REASON_RULE)
 	Duel.SendtoHand(c,nil,REASON_EFFECT)
@@ -84,6 +83,6 @@ end
 function CUNGUI.damval(e,re,val,r,rp,rc)
 	if not re then return val end
 	local c=re:GetHandler()
-	if bit.band(r,REASON_EFFECT)~=0 and c and CUNGUI.CreatedCard[c] then return 0
+	if (r & REASON_EFFECT)~=0 and c and CUNGUI.CreatedCard[c] then return 0
 	else return val end
 end

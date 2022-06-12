@@ -1,6 +1,5 @@
 --村规决斗：昨日方舟
 --所有怪兽得到以下效果：
---（仅通常怪兽）这张卡也当作效果怪兽使用。
 --这个类型的效果1回合能使用最多3次。
 --自己主要阶段才能发动。宣言1个种族，从自己卡组上面把5张卡翻开。
 --可以从那之中选1只那个种族的怪兽特殊召唤。
@@ -29,16 +28,6 @@ end
 function CUNGUI.RegisterMonsterSpecialEffects(c)
 	if CUNGUI.RegisteredMonsters:IsContains(c) then return end
 	CUNGUI.RegisteredMonsters:AddCard(c)
-	if c:IsType(TYPE_NORMAL) then
-		--Normal monster
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_ADD_TYPE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetValue(TYPE_EFFECT)
-		c:RegisterEffect(e1)
-	end
     --spsummon2
     local e2=Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(41546,1))
