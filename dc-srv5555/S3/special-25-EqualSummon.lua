@@ -85,7 +85,7 @@ function CUNGUI.AddOverlay(c)
 		local tc = Duel.CreateToken(c:GetControler(), 39526584)
 		g:AddCard(tc)
 	end
-	Duel.SendtoHand(g, c:GetControler(), REASON_RULE)~=2 
+	if Duel.SendtoHand(g, c:GetControler(), REASON_RULE)~=2 then return end
 	Duel.Overlay(c,g)
 end
 
