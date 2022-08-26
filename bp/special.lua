@@ -17,16 +17,37 @@ local program={
   },
   {
     player=0,
+    count=2,
+  },
+  {
+    player=1,
     count=1,
+  },
+  {
+    player=1,
+    count=-1,
+  },
+  {
+    player=0,
+    count=-1,
   },
 }
 
 local function init()
   for _,task in ipairs(program) do
-    Duel.Hint(HINT_SELECTMSG,task.player,HINTMSG_ATOHAND)
-    local g=Duel.SelectMatchingCard(task.player,Card.IsAbleToHand,task.player,LOCATION_DECK,0,task.count,task.count,nil)
-    Duel.SendtoHand(g,task.player,REASON_RULE)
-    Duel.ConfirmCards(1-task.player,g)
+    if task.count<0 then
+      local revCount=-task.count
+      local hg=Duel.SelectMatchingCard(task.player,Card.IsAbleToDeck,task.player,0,LOCATION_HAND,revCount,revCount,nil)
+      Duel.HintSelection(hg)
+      Duel.SendtoDeck(hg,nil,0,REASON_RULE)
+      Duel.ShuffleDeck(1-task.player)
+      Duel.Draw(1-task.player,revCount,REASON_RULE)
+    else
+      Duel.Hint(HINT_SELECTMSG,task.player,HINTMSG_ATOHAND)
+      local g=Duel.SelectMatchingCard(task.player,Card.IsAbleToHand,task.player,LOCATION_DECK,0,task.count,task.count,nil)
+      Duel.SendtoHand(g,task.player,REASON_RULE)
+      Duel.ConfirmCards(1-task.player,g)
+    end
   end
   Duel.ShuffleHand(0)
   Duel.ShuffleHand(1)
