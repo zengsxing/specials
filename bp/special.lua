@@ -34,6 +34,7 @@ local program={
 }
 
 local function init()
+  IS_PICKING=true
   for _,task in ipairs(program) do
     if task.count<0 then
       local revCount=-task.count
@@ -51,6 +52,7 @@ local function init()
   end
   Duel.ShuffleHand(0)
   Duel.ShuffleHand(1)
+  IS_PICKING=false
 end
 
 function Auxiliary.PreloadUds()
