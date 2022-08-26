@@ -22,7 +22,7 @@ local program={
 }
 
 local function init()
-  for task in ipairs(program) do
+  for _,task in ipairs(program) do
     Duel.Hint(HINT_SELECTMSG,task.player,HINTMSG_ATOHAND)
     local g=Duel.SelectMatchingCard(task.player,Card.IsAbleToHand,task.player,LOCATION_DECK,0,task.count,task.count,nil)
     Duel.SendtoHand(g,task.player,REASON_RULE)
