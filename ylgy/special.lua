@@ -57,7 +57,7 @@ function Auxiliary.PreloadUds()
         oc:RegisterEffect(e1,true)
       end
       if #codes>0 then
-        local e2=Effect.CreateEffect(oc)
+        local e2=Effect.GlobalEffect()
         e2:SetType(EFFECT_TYPE_FIELD)
         e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
         e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
