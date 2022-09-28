@@ -47,7 +47,7 @@ function Auxiliary.PreloadUds()
       end
     end
     Duel.DisableShuffleCheck()
-    local needShuffle=tg:Exists(Card.IsLocation,1,nil,LOCATION_DECK)
+    local needShuffle=tg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK)
     if Duel.SendtoGrave(tg,REASON_RULE)>0 then
       local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_GRAVE)
       for oc in aux.Next(og) do
