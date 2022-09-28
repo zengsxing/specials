@@ -46,6 +46,8 @@ function Auxiliary.PreloadUds()
         table.insert(codes,tc:GetCode())
       end
     end
+    Duel.DisableShuffleCheck()
+    local needShuffle=tg:Exists(Card.IsLocation,1,nil,LOCATION_DECK)
     if Duel.SendtoGrave(tg,REASON_RULE)>0 then
       local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_GRAVE)
       for oc in aux.Next(og) do
@@ -67,6 +69,9 @@ function Auxiliary.PreloadUds()
           return c:IsCode(table.unpack(codes))
         end)
         Duel.RegisterEffect(e2,tp)
+      end
+      if needShuffle then
+        Duel.ShuffleDeck(tp)
       end
       Duel.BreakEffect()
       Duel.Draw(tp,1,REASON_RULE)
