@@ -7,7 +7,7 @@ local OrigSetType = Effect.SetType
 function Auxiliary.PreloadUds()
     Effect.SetType = function(e,typ)
         if (typ & EFFECT_TYPE_IGNITION)+(typ & EFFECT_TYPE_QUICK_O)>0 then
-            e:SetProperty(e:GetProperty() | EFFECT_FLAG_BOTH_SIDE)
+            e:SetProperty((e:GetProperty() or 0) | EFFECT_FLAG_BOTH_SIDE)
         end
         OrigSetType(e,typ)
     end

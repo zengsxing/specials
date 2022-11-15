@@ -2,7 +2,7 @@
 --开局时，双方从卡组外将1张【娱乐法师 戏法小丑】表侧表示从游戏中除外。
 --这张【娱乐法师 戏法小丑】得到以下效果。
 --①自己准备阶段，这张卡不在场上的场合发动。
---投1个硬币。如果是正面，这张卡在自己场上特殊召唤，自己受到1000点伤害。
+--投1个硬币。如果是正面，这张卡在自己场上特殊召唤，自己受到(1~当前LP)点的随机伤害。
 --③这张卡离开场上的场合从游戏中除外，不在场上存在的场合（比如作为超量素材）从游戏中除外。
 
 CUNGUI = {}
@@ -21,6 +21,12 @@ function CUNGUI.AdjustOperation()
 		CUNGUI.INIT = true
 		CUNGUI.RegisterForbiddenRule(0)
 		CUNGUI.RegisterForbiddenRule(1)
+	end
+	if not CUNGUI.RandomSeedInit then
+		CUNGUI.RandomSeedInit = true
+		Duel.LoadScript("random.lua")
+		math.randomseed(_G.RANDOMSEED)
+		for i=1,10 do math.random(1000) end
 	end
 	if CUNGUI.RuleCard[0] and not CUNGUI.RuleCard[0]:IsLocation(LOCATION_REMOVED+LOCATION_ONFIELD) then
 		Duel.Remove(CUNGUI.RuleCard[0],POS_FACEUP,REASON_RULE)
@@ -69,16 +75,7 @@ function CUNGUI.damop(e,tp,eg,ep,ev,re,r,rp)
 	local dice=Duel.TossCoin(tp,1)
 	if dice==1 then
 		if Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 then
-			Duel.Damage(tp,1000,REASON_EFFECT)
+			Duel.Damage(tp,math.random(Duel.GetLP(tp)),REASON_EFFECT)
 		end
 	end
 end
-
-
-
-
-
-
-
-
-

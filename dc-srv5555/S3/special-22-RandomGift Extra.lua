@@ -9,7 +9,7 @@ CUNGUI.NoFunc = {}
 CUNGUI.Success=false
 
 function CUNGUI.TestEffect(te,e,tp,eg,ep,ev,re,r,rp)
-	local cod = e:GetCode()
+	local cod = te:GetCode()
 	local cond = te:GetCondition()
 	local cost = te:GetCost()
 	local targ = te:GetTarget()
