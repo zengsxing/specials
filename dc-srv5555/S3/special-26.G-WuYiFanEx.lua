@@ -24,6 +24,17 @@ function Auxiliary.PreloadUds()
 	e1:SetCountLimit(1)
 	e1:SetOperation(CUNGUI.AdjustOperation)
 	Duel.RegisterEffect(e1,0)
+	if not CUNGUI.init then
+		CUNGUI.init = true
+		--level
+		local e2=Effect.GlobalEffect()
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_CHANGE_LEVEL)
+		e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,LOCATION_HAND+LOCATION_MZONE)
+		e2:SetTarget(aux.TRUE)
+		e2:SetValue(4)
+		Duel.RegisterEffect(e2,0)
+	end
 end
 
 CUNGUI.RegisteredMonsters = Group.CreateGroup()
@@ -64,11 +75,8 @@ function CUNGUI.RegisterMonsterSpecialEffects(c)
 	e3:SetValue(4)
 	c:RegisterEffect(e3)
 end
-function CUNGUI.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x12) and not c:IsCode(56052205)
-end
 function CUNGUI.condition(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and Duel.GetAttackTarget()==nil and e:GetHandler():GetBaseAttack()>0
+	return ep~=tp and Duel.GetAttackTarget()==nil
 end
 function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp)
 	local lp = Duel.GetLP(1-tp) - e:GetHandler():GetBaseAttack() * 2
