@@ -1,5 +1,5 @@
 --村规决斗：你忍一下 EX
---所有怪兽得到以下效果：
+--所有怪兽得到以下效果，这些效果不会被无效化：
 --这张卡当作4星使用。
 --这张卡的攻击力变成原本的1/100（向上取整）。
 --直接攻击成功时，对方失去这张卡原本攻击力2倍的基本分。
@@ -30,7 +30,7 @@ function Auxiliary.PreloadUds()
 		local e2=Effect.GlobalEffect()
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_CHANGE_LEVEL)
-		e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,LOCATION_HAND+LOCATION_MZONE)
+		e2:SetTargetRange(0xaf,0xaf)
 		e2:SetTarget(aux.TRUE)
 		e2:SetValue(4)
 		Duel.RegisterEffect(e2,0)
@@ -65,7 +65,7 @@ function CUNGUI.RegisterMonsterSpecialEffects(c)
 	e2:SetDescription(aux.Stringid(56052205,0))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_BATTLE_DAMAGE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
 	e2:SetCondition(CUNGUI.condition)
 	e2:SetOperation(CUNGUI.operation)
 	c:RegisterEffect(e2)
