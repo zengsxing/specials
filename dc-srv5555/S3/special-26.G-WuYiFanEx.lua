@@ -4,11 +4,15 @@
 --这张卡的攻击力变成原本的1/100（向上取整）。
 --直接攻击成功时，对方失去这张卡原本攻击力2倍的基本分。
 CUNGUI = {}
-
-Card.GetLevel = function() return 4 end
-Card.IsLevelAbove = function(c,lv) return lv<=4 end
-Card.IsLevelBelow = function(c,lv) return lv>=4 end
+local cgl = Card.GetLevel
+Card.GetLevel = function(c) return (not c:IsLocation(LOCATION_HAND+LOCATION_MZONE)) and cgl(c) or 4 end
+local cila = Card.IsLevelAbove
+Card.IsLevelAbove = function(c,lv) return (not c:IsLocation(LOCATION_HAND+LOCATION_MZONE)) and cila(c) or lv<=4 end
+local cilb = Card.IsLevelBelow
+Card.IsLevelAbove = function(c,lv) return (not c:IsLocation(LOCATION_HAND+LOCATION_MZONE)) and cilb(c) or lv>=4 end
+local cil = Card.IsLevel
 Card.IsLevel = function(c,...)
+	if not c:IsLocation(LOCATION_HAND+LOCATION_MZONE) then return cil(c,...) end
 	for _,lv in ipairs{...} do
 		if lv==4 then return true end
 	end
@@ -30,7 +34,7 @@ function Auxiliary.PreloadUds()
 		local e2=Effect.GlobalEffect()
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_CHANGE_LEVEL)
-		e2:SetTargetRange(0xaf,0xaf)
+		e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,LOCATION_HAND+LOCATION_MZONE)
 		e2:SetTarget(aux.TRUE)
 		e2:SetValue(4)
 		Duel.RegisterEffect(e2,0)
