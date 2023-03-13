@@ -1,7 +1,8 @@
 --村规决斗：伟大领袖
---开局时，双方各自从卡组·额外卡组选1张卡。
---双方选好后互相确认，并洗切卡组。
+--开局时，由先手-后手顺序，各自从卡组·额外卡组选1张卡。
+--选好后互相确认，并洗切卡组。
 --各自的所有卡得到自己选的卡的所有效果和效果外文本。
+--不能选择【抒情歌鸲-独立夜莺】（76815942）【光之创造神 哈拉克提】（10000040）。
 
 --细则：
 --大部分情况下，效果会限定发动位置。
@@ -30,14 +31,19 @@ Card.RegisterEffect = function(c,e,forced)
 	return CRegisterEffect(c,e,forced)
 end
 
+function CUNGUI.filter(c)
+	return not c:IsCode(76815942,10000040)
+end
+
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	CUNGUI.Init = true
-	local tc=Duel.SelectMatchingCard(0,nil,0,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil):GetFirst()
-	local cc=Duel.SelectMatchingCard(1,nil,1,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(0,CUNGUI.filter,0,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil):GetFirst()
 	Duel.ConfirmCards(1,tc)
-	Duel.ConfirmCards(0,cc)
 	Duel.ShuffleDeck(0)
+	local cc=Duel.SelectMatchingCard(1,CUNGUI.filter,1,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil):GetFirst()
+	Duel.ConfirmCards(0,cc)
 	Duel.ShuffleDeck(1)
+
 	local tce=_G["c"..tc:GetOriginalCode()]
 	if tce and tce.initial_effect then
 		local g=Duel.GetMatchingGroup(nil,0,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,nil)
@@ -45,6 +51,7 @@ function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 			tce.initial_effect(c)
 		end
 	end
+
 	local cce=_G["c"..cc:GetOriginalCode()]
 	if cce and cce.initial_effect then
 		local g=Duel.GetMatchingGroup(nil,1,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,nil)
@@ -52,5 +59,6 @@ function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 			cce.initial_effect(c)
 		end
 	end
+	
 	e:Reset()
 end
