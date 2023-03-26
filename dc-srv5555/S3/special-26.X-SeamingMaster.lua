@@ -3,11 +3,11 @@
 --这场决斗中这张卡不是表侧表示除外的场合，这张卡表侧表示除外。
 --这张卡得到以下效果。
 --1回合1次，自己主要阶段才能处理这个效果。
---把手卡中任意数量的怪兽送去墓地，可以把额外卡组中最多1只怪兽送去墓地。
---把1只【三眼小男巫】从卡组外特殊召唤到场上（视为正规召唤）
+--把手卡中2张以上的怪兽送去墓地。可以把额外卡组中最多1只怪兽送去墓地。
+--把1只【三眼小男巫】从卡组外特殊召唤到场上（视为正规召唤）。
 --这个效果特殊召唤的【三眼小男巫】得到那些怪兽的全部效果；原本攻击力·防御力是那些怪兽攻防的平均值。
 --这些效果和攻防数值即使离场后也会持续。
---另外，额外选的卡是超量怪兽卡的场合，把那些卡作为超量素材叠放。
+--另外，额外选的卡是超量怪兽卡的场合，把那些素材作为超量素材叠放。
 
 CUNGUI = {}
 CUNGUI.RuleCardCode=24094653
@@ -107,6 +107,7 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_BASE_ATTACK)
+		e1:SetRange(LOCATION_MZONE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetValue(atk)
 		tc:RegisterEffect(e1)
@@ -121,6 +122,7 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetCode(EFFECT_ADD_TYPE)
+			e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
 			e1:SetValue(TYPE_XYZ)
 			tc:RegisterEffect(e1)
 			Duel.Overlay(tc,g)
