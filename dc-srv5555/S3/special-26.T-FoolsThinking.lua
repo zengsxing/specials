@@ -15,14 +15,17 @@
 --回合结束后复原为1/50。
 
 --动作列表：
---·把你的1~2张手卡返回卡组。重抽同样的数量。
---·把你的1~2张手卡送去墓地。从墓地选同样数量的随机卡回到手卡。
+--·帮你把1~2张手卡返回卡组洗切。重抽同样的数量。
+--·帮你把1~2张手卡送去墓地。从墓地+除外的卡中选同样数量的随机卡回到手卡。
 --·从你的卡组随机选5张卡除外。从墓地+除外的卡中选5张卡返回卡组。
 --·帮你盖伏手卡中的1~2张随机魔法·陷阱卡。
 --·帮你把场上1只怪兽返回手卡·额外卡组。从相同位置把1只怪兽攻击表示特殊召唤（如果是超量怪兽，还会从卡组最上方送你0~3张卡当素材）。
+--·帮你盖伏手卡中的1~2张随机魔法·陷阱卡，成功盖放则抽1张
 --·帮你在场上特殊召唤1~3只【扰乱衍生物】。
+--·帮你把（双方）场上1~2张魔法陷阱卡返回卡组。从各自的卡组盖伏同样数量的魔法·陷阱卡。
 --·帮你交换自己和对方场上各1只怪兽的控制权。某一方没有怪兽的场合，则单方面送出怪兽。
---·把场上5只怪兽解放，从卡组外把1只【原始生命态 尼比鲁】攻击表示放置到场上。
+--·帮你破坏1张场上的随机卡（不分敌我）。
+--·场上有5只以下怪兽时什么都不做；否则把场上5只随机怪兽解放，从卡组外把1只【原始生命态 尼比鲁】攻击表示放置到场上。
 
 CUNGUI = {}
 CUNGUI.RuleCardCode=90140980
@@ -52,8 +55,12 @@ end
 function CUNGUI.AdjustOperation()
 	if not CUNGUI.RandomSeedInit then
 		CUNGUI.RandomSeedInit = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
+		if os then
+			math.randomseed(os.time())
+		else
+			Duel.LoadScript("random.lua")
+			math.randomseed(_G.RANDOMSEED)
+		end
 		for i=1,10 do math.random(1000) end
 	end
 	if not CUNGUI.RuleCardInit then
@@ -116,7 +123,7 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 	CUNGUI.FENMU[tp]=CUNGUI.FENMU[tp]+10
 	local action=math.random(10)
 	if action==1 then
-		--·把你的1~2张手卡返回卡组，重抽同样的数量。
+		--·把你的1~2张手卡返回卡组洗切，重抽同样的数量。
 		local num=math.random(2)
 		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 		if #g>=num then
@@ -125,39 +132,44 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Draw(tp,num,REASON_RULE)
 		end
 	elseif action==2 then
-		--·把你的1~2张手卡送去墓地，随机从墓地选同样数量的卡回到手卡。
+		--·把你的1~2张手卡送去墓地，随机从墓地+除外的卡中选同样数量的卡回到手卡。
 		local num=math.random(2)
 		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 		if #g>=num then
 			local g2=g:RandomSelect(tp,num)
 			Duel.SendtoGrave(g2,REASON_RULE)
-			g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
+			g=Duel.GetFieldGroup(tp,LOCATION_GRAVE+LOCATION_REMOVED,0)
 			if #g>=num then
 				g2=g:RandomSelect(tp,num)
 				Duel.SendtoHand(g2,nil,REASON_RULE)
 			end
 		end
 	elseif action==3 then
-		--·从你的卡组随机选5张卡除外，从墓地+除外的卡中选5张卡返回卡组。
+		--·从你的卡组随机选1~3张卡除外，从墓地+除外的卡中选1~3张卡返回卡组。
 		local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-		if #g>=5 then
-			local g2=g:RandomSelect(tp,5)
+		local num=math.random(3)
+		if #g>=num then
+			local g2=g:RandomSelect(tp,num)
 			Duel.Remove(g2,POS_FACEUP,REASON_RULE)
+			num=math.random(3)
 			g=Duel.GetFieldGroup(tp,LOCATION_GRAVE+LOCATION_REMOVED,0)
-			if #g>=5 then
-				g2=g:RandomSelect(tp,5)
+			if #g>=num then
+				g2=g:RandomSelect(tp,num)
 				if #g2>0 then Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_RULE) end
 			end
 		end
 	elseif action==4 then
-		--·帮你盖伏手卡中的1~2张随机魔法·陷阱卡。
+		--·帮你盖伏手卡中的1~2张随机魔法·陷阱卡，成功盖放则抽1张
 		local num=math.random(2)
 		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,nil,TYPE_SPELL+TYPE_TRAP)
 		local g2=g:RandomSelect(tp,num)
-		if #g2>0 then Duel.SSet(tp,g2,tp,false) end
+		if #g2>0 and Duel.SSet(tp,g2,tp,false)>0 then
+			Duel.Draw(tp,1,REASON_RULE)
+		end
 	elseif action==5 then
 		--·帮你把场上1只怪兽返回手卡·额外卡组，从相同位置把1只怪兽攻击表示特殊召唤
-		--（如果是超量怪兽，还会把卡组最上方的0~3张卡当素材）。
+		--（如果是超量怪兽，还会把卡组最上方的0~3张卡当素材）
+		--（如果是衍生物，算作额外怪兽）
 		local num=math.random(4)-1
 		local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 		local tc=g:RandomSelect(tp,1):GetFirst()
