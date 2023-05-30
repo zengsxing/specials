@@ -11,7 +11,7 @@
 --……但是特殊召唤因引擎原因还是过不了虚无空间。
 
 --概率：
---初始进行动作的概率为1/50。你每做1个动作，分母-1；扰乱王每次出手，分母+10。
+--初始进行动作的概率为1/50。你每做1个动作，分母-2；扰乱王每次出手，分母+20。
 --回合结束后复原为1/50。
 
 --动作列表：
@@ -120,7 +120,7 @@ function CUNGUI.ruletg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_CARD,1-tp,e:GetHandler():GetCode())
 end
 function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
-	CUNGUI.FENMU[tp]=CUNGUI.FENMU[tp]+10
+	CUNGUI.FENMU[tp]=CUNGUI.FENMU[tp]+20
 	local action=math.random(10)
 	if action==1 then
 		--·把你的1~2张手卡返回卡组洗切，重抽同样的数量。
