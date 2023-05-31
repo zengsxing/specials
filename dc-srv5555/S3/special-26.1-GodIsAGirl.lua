@@ -22,12 +22,7 @@ end
 CUNGUI.RegisteredMonsters = Group.CreateGroup()
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
-	if not CUNGUI.RandomSeedInit then
-		CUNGUI.RandomSeedInit = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
-	end
+	math.random = Duel.GetRandomNumber or math.random
 	local g = Duel.GetMatchingGroup(aux.TRUE,0,0x7f,0x7f,nil)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
 	if not CUNGUI.DrawInit then

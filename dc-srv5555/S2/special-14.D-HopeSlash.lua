@@ -62,12 +62,7 @@ function CUNGUI.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function CUNGUI.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	local add=0
-	if not CUNGUI.RandomSeedInit then
-		CUNGUI.RandomSeedInit = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
-	end
+	math.random = Duel.GetRandomNumber or math.random
 	while add<2 do
 		local code=math.random(#CUNGUI.ZexalWeapons)
 		local tc=Duel.CreateToken(tp,CUNGUI.ZexalWeapons[code])

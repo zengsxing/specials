@@ -21,12 +21,7 @@ function Auxiliary.PreloadUds()
 	Duel.RegisterEffect(e1,0)
 end
 function CUNGUI.AdjustOperation()
-	if not CUNGUI.RandomSeedInit then
-		CUNGUI.RandomSeedInit = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
-	end
+	math.random = Duel.GetRandomNumber or math.random
 	if not CUNGUI.RuleCardInit then
 		CUNGUI.RuleCardInit = true
 		CUNGUI.RegisterCardRule(0)

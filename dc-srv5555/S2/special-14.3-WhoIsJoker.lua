@@ -22,12 +22,7 @@ function CUNGUI.AdjustOperation()
 		CUNGUI.RegisterForbiddenRule(0)
 		CUNGUI.RegisterForbiddenRule(1)
 	end
-	if not CUNGUI.RandomSeedInit then
-		CUNGUI.RandomSeedInit = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
-	end
+	math.random = Duel.GetRandomNumber or math.random
 	if CUNGUI.RuleCard[0] and not CUNGUI.RuleCard[0]:IsLocation(LOCATION_REMOVED+LOCATION_ONFIELD) then
 		Duel.Remove(CUNGUI.RuleCard[0],POS_FACEUP,REASON_RULE)
 	end
