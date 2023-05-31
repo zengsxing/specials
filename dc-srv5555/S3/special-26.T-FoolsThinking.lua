@@ -31,6 +31,8 @@
 CUNGUI = {}
 CUNGUI.RuleCardCode=90140980
 
+math.random = Duel.GetRandomNumber
+
 CUNGUI.forbidden={91869203,20663556,44910027,51858306,7563579,17330916,34945480,90411554,8903700,
 11384280,17412721,50588353,34124316,2563463,88071625,61665245,52653092,48905153,85115440,59537380,
 86148577,88581108,21377582,27381364,94677445,16923472,15341821,37818794,92731385,79875176,75732622,
@@ -63,16 +65,6 @@ function CUNGUI.AdjustOperation2()
 	CUNGUI.FENMU[1]=50
 end
 function CUNGUI.AdjustOperation()
-	if not CUNGUI.RandomSeedInit then
-		CUNGUI.RandomSeedInit = true
-		if os then
-			math.randomseed(os.time())
-		else
-			Duel.LoadScript("random.lua")
-			math.randomseed(_G.RANDOMSEED)
-		end
-		for i=1,10 do math.random(1000) end
-	end
 	if not CUNGUI.RuleCardInit then
 		CUNGUI.RuleCardInit = true
 		CUNGUI.RegisterCardRule(0)
