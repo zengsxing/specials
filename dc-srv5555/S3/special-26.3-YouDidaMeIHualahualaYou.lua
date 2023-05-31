@@ -27,9 +27,7 @@ CUNGUI.RegisteredMonsters = Group.CreateGroup()
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	if not CUNGUI.RandomSeedInit then
 		CUNGUI.RandomSeedInit = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
+		math.random = Duel.GetRandomNumber
 		CUNGUI.Used={}
 		CUNGUI.Used[0]=0
 		CUNGUI.Used[1]=0

@@ -1,6 +1,3 @@
---【请务必先pm start random.sh】
---【或者nohup random.sh也可以】
-
 --村规决斗：时空乱流EX
 --双方每个回合的回合时间都会随机变化，从30~300秒不等。
 --开局时，双方将1张【所罗门的律法书】（23471572）从卡组外除外。这张卡不在除外状态的场合立刻除外。
@@ -30,9 +27,7 @@ function Auxiliary.PreloadUds()
 
 	if not CUNGUI.InitRandomSeed then
 		CUNGUI.InitRandomSeed = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
+		math.random = Duel.GetRandomNumber
 	end
 	--adjust
 	local e2=Effect.GlobalEffect()

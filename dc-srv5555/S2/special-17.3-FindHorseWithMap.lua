@@ -23,9 +23,7 @@ function CUNGUI.AdjustOperation()
 		CUNGUI.INIT = true
 		CUNGUI.RegisterCardRule(0)
 		CUNGUI.RegisterCardRule(1)
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
+		math.random = Duel.GetRandomNumber
 	end
 	if CUNGUI.RuleCard[0] and (not CUNGUI.RuleCard[0]:IsLocation(LOCATION_REMOVED) or not CUNGUI.RuleCard[0]:IsFaceup()) then
 		Duel.Remove(CUNGUI.RuleCard[0],POS_FACEUP,REASON_RULE)

@@ -7,9 +7,7 @@ CUNGUI = {}
 function Auxiliary.PreloadUds()
 	if not CUNGUI.InitRandomSeed then
 		CUNGUI.InitRandomSeed = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
+		math.random = Duel.GetRandomNumber
 	end
 	--adjust
 	local e1=Effect.GlobalEffect()

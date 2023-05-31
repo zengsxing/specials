@@ -93,9 +93,7 @@ end
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	if not CUNGUI.INIT then
 		CUNGUI.INIT = true
-		Duel.LoadScript("random.lua")
-		math.randomseed(_G.RANDOMSEED)
-		for i=1,10 do math.random(1000) end
+		math.random = Duel.GetRandomNumber
 	end
 	local g = Duel.GetMatchingGroup(nil,0,0x7f,0x7f,nil)
 	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
