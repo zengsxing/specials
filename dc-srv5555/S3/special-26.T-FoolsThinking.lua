@@ -131,7 +131,7 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 		g=g:RandomSelect(tp,1)
 		Duel.Exile(g,REASON_RULE)
 		local add = nil
-		while add==nil or add:IsExtraDeckMonster(add) do
+		while add==nil or add:IsExtraDeckMonster() do
 			local codeIndex=math.random(#CUNGUI.forbidden)
 			add=Duel.CreateToken(tp,CUNGUI.forbidden[codeIndex])
 		end
