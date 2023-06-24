@@ -11,7 +11,7 @@
 --……但是特殊召唤因引擎原因还是过不了虚无空间。
 
 --概率：
---初始进行动作的概率为1/50。你每做1个动作，分母-2；扰乱王每次出手，分母+20。
+--初始进行动作的概率为1/50。你每做1个动作，分母-2；扰乱王每次出手，分母+25。
 --回合结束后复原为1/50。
 
 --动作列表：
@@ -115,19 +115,23 @@ end
 function CUNGUI.rulecond(e,tp,eg,ep,ev,re,r,rp)
 	local result = Duel.GetTurnPlayer()==tp and math.random(CUNGUI.FENMU[tp])==1
 	if CUNGUI.FENMU[tp] > 2 then CUNGUI.FENMU[tp]=CUNGUI.FENMU[tp]-2 end
-	return result
+	return result and not CUNGUI.Stop
 end
 function CUNGUI.ruletg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.Hint(HINT_CARD,1-tp,e:GetHandler():GetCode())
 end
 function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
-	CUNGUI.FENMU[tp]=CUNGUI.FENMU[tp]+20
+	CUNGUI.Stop = true
+	CUNGUI.FENMU[tp]=CUNGUI.FENMU[tp]+25
 	local action=math.random(10)
 	local extraAction = math.random(1000)
 	if extraAction == 233 then
 		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-		if #g==0 then return end
+		if #g==0 then
+			CUNGUI.Stop = false
+			return
+		end
 		g=g:RandomSelect(tp,1)
 		Duel.Exile(g,REASON_RULE)
 		local add = nil
@@ -136,6 +140,7 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 			add=Duel.CreateToken(tp,CUNGUI.forbidden[codeIndex])
 		end
 		Duel.SendtoHand(add,nil,REASON_RULE)
+		CUNGUI.Stop = false
 		return
 	end
 	if action==1 then
@@ -263,12 +268,16 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 		--·如果双方场上的怪兽在4只以下，什么都不做。
 		--否则，把5只随机怪兽解放。从卡组外把1只【原始生命态 尼比鲁】攻击表示放置到场上。
 		local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
-		if #g<5 then return end
+		if #g<5 then
+			CUNGUI.Stop = false
+			return
+		end
 		g=g:RandomSelect(tp,5)
 		Duel.Release(g,REASON_RULE)
 		local nc=Duel.CreateToken(tp,27204311)
 		Duel.SpecialSummon(nc,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
+	CUNGUI.Stop = false
 end
 
 function CUNGUI.damop(e,tp,eg,ep,ev,re,r,rp)
