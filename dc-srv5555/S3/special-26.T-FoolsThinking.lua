@@ -194,13 +194,19 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 		local num=math.random(4)-1
 		local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 		local tc=g:RandomSelect(tp,1):GetFirst()
-		if not tc then return end
+		if not tc then
+			CUNGUI.Stop = false
+			return
+		end
 		local loc=LOCATION_EXTRA
 		Duel.SendtoHand(tc,nil,REASON_RULE)
 		if tc:IsLocation(LOCATION_HAND) then loc=LOCATION_HAND end
 		if tc:IsLocation(LOCATION_MZONE) then Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_RULE) end
 		local g=Duel.GetMatchingGroup(Card.IsType,tp,loc,0,nil,TYPE_MONSTER)
-		if #g<1 then return end
+		if #g<1 then
+			CUNGUI.Stop = false
+			return
+		end
 		tc=g:RandomSelect(tp,1):GetFirst()
 		if Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)>0 then
 			tc:CompleteProcedure()
