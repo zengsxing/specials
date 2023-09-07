@@ -71,6 +71,7 @@ function CUNGUI.operation2(e,tp,eg,ep,ev,re,r,rp)
 	for _,v in pairs(CUNGUI.ForbiddenEffects[1-tp]) do
 		v:Reset()
 	end
+	CUNGUI.RuleCard[tp]=nil
 	Duel.Exile(e:GetHandler(),REASON_RULE)
 end
 
