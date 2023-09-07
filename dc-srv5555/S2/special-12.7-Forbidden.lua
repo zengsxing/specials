@@ -1,9 +1,9 @@
 --村规决斗：令行禁止
 --开局时，双方从卡组外将1张【禁止令】表侧表示从游戏中除外。
 --这张【禁止令】得到以下效果。
---①1回合1次，这张卡被除外的状态下才能发动。这个效果不会被无效化。
+--①此类效果1回合只能使用1次，这张卡被除外的状态下才能发动，发动和效果不会被无效化。
 --宣言1个【禁止令】以外的卡名，在这场决斗中，对方的那些卡受到禁止令效果影响。
---②1回合1次，这张卡被除外的状态下才能发动。这个效果不会被无效化。
+--②此类效果1回合只能使用1次，这张卡被除外的状态下才能发动，发动和效果不会被无效化。
 --这张卡撕碎（效果名：卡片破坏），解除自己目前受到的所有因此类①效果的禁止令效果。
 --③这张卡不是表侧表示除外状态的场合，这张卡表侧表示除外。这个效果不会被无效化，在卡组·手卡也会适用。
 
@@ -51,8 +51,8 @@ function CUNGUI.RegisterForbiddenRule(tp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29417188,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCountLimit(1)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCountLimit(1,34567890)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_REMOVED)
 	e1:SetOperation(CUNGUI.forbidop)
 	c:RegisterEffect(e1)
@@ -60,8 +60,8 @@ function CUNGUI.RegisterForbiddenRule(tp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(276357,0))
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCountLimit(1)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCountLimit(1,23456789)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_REMOVED)
 	e2:SetOperation(CUNGUI.operation2)
 	c:RegisterEffect(e2)
@@ -71,6 +71,7 @@ function CUNGUI.operation2(e,tp,eg,ep,ev,re,r,rp)
 	for _,v in pairs(CUNGUI.ForbiddenEffects[1-tp]) do
 		v:Reset()
 	end
+	CUNGUI.RuleCard[tp]=nil
 	Duel.Exile(e:GetHandler(),REASON_RULE)
 end
 
