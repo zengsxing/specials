@@ -68,7 +68,7 @@ function CUNGUI.RegisterForbiddenRule(tp)
 end
 
 function CUNGUI.operation2(e,tp,eg,ep,ev,re,r,rp)
-	for _,v in pairs(CUNGUI.ForbiddenEffects[1-tp]) do
+	for _,v in pairs(CUNGUI.ForbiddenEffects[tp]) do
 		v:Reset()
 	end
 	CUNGUI.RuleCard[tp]=nil
