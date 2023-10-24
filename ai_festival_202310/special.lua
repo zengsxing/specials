@@ -21,7 +21,7 @@ function Auxiliary.PreloadUds()
 	Duel.RegisterEffect(e1,0)
 end
 
-function CUNGUI.CheckAI()
+function CUNGUI.CheckAI(e)
     local a0 = Duel.GetFieldGroupCount(0, LOCATION_EXTRA, 0)
     local a1 = Duel.GetFieldGroupCount(1, LOCATION_EXTRA, 0)
     local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
