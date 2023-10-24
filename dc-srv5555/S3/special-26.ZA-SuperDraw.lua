@@ -1,7 +1,5 @@
---AI祭-231024-世界BOSS 发牌姬
---发牌姬会有16张额外，第16张额外为龙魔导（37818794）
---这张卡开局时会被撕掉（标记为AI）
-
+--超级抽卡
+--当一个玩家抽卡时：
 --对方怪兽卡>3 -> 多抽张雷击
 --对方后场>3 -> 多抽张羽毛扫
 --对方LP<=1000 -> 多抽2张火球
@@ -9,6 +7,9 @@
 --（以上可叠加）
 --自己LP<=1000 -> 抽卡固定为5
 --以上条件全部不满足 ->多抽1张
+
+--以上叠加后，若自己会把自己抽死：
+--抽卡固定为5，且抽到5老艾
 
 local CUNGUI={}
 function Auxiliary.PreloadUds()
@@ -30,13 +31,13 @@ function CUNGUI.CheckAI(e)
     local ex1 = a1 == 2 and c1 == 2
     a0 = a0 == 16 or a0 == 1
     a1 = a1 == 16 or a1 == 1
-    if a0 and #c0>0 then
-        Duel.Exile(c0:GetFirst(),REASON_RULE)
-        CUNGUI.StartAI(0,ex0)
+    if true then
+    --if a0 and #c0>0 then
+        CUNGUI.StartAI(0,false)
     end
-    if a1 and #c1>0 then
-        Duel.Exile(c1:GetFirst(),REASON_RULE)
-        CUNGUI.StartAI(1,ex1)
+    if true then
+    --if a0 and #c0>0 then
+        CUNGUI.StartAI(1,false)
     end
     e:Reset()
 end
@@ -74,15 +75,6 @@ function CUNGUI.BeforeDraw(e,tp)
         e:GetLabelObject():SetLabel(1)
         return
     end
-    if e:GetLabel()==1 then
-        CUNGUI.CreateCard(tp,8124921)
-        CUNGUI.CreateCard(tp,44519536)
-        CUNGUI.CreateCard(tp,70903634)
-        CUNGUI.CreateCard(tp,7902349)
-        CUNGUI.CreateCard(tp,33396948)
-        e:GetLabelObject():SetLabel(5)
-        return
-    end
     local draw=Duel.GetDrawCount(tp)
     if Duel.GetFieldGroupCount(tp, 0, LOCATION_MZONE)>3 then
         CUNGUI.CreateCard(tp,12580477)
@@ -103,9 +95,17 @@ function CUNGUI.BeforeDraw(e,tp)
     end
     if Duel.GetLP(tp)<=1000 then
         draw=5
-    end
-    if draw == Duel.GetDrawCount(tp) then
+    elseif draw == Duel.GetDrawCount(tp) then
         draw = draw + 1
+    end
+    if draw>Duel.GetFieldGroupCount(tp,LOCATION_DECK,0) then
+        CUNGUI.CreateCard(tp,8124921)
+        CUNGUI.CreateCard(tp,44519536)
+        CUNGUI.CreateCard(tp,70903634)
+        CUNGUI.CreateCard(tp,7902349)
+        CUNGUI.CreateCard(tp,33396948)
+        e:GetLabelObject():SetLabel(5)
+        return
     end
     e:GetLabelObject():SetLabel(draw)
 end
