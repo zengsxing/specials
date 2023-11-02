@@ -96,9 +96,11 @@ function CUNGUI.RegisterCardRule(tp)
 	local c=Duel.CreateToken(tp,60391791)
 	Duel.Remove(c,POS_FACEUP,REASON_RULE)
 	CUNGUI.RuleCard[tp]=c
+
+
 	--show cards
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(34694160,0))
+	e1:SetDescription(aux.Stringid(34694160,0)) --确认卡组
 	e1:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
@@ -106,6 +108,39 @@ function CUNGUI.RegisterCardRule(tp)
 	e1:SetRange(LOCATION_REMOVED)
 	e1:SetCondition(CUNGUI.rulecond)
 	e1:SetOperation(CUNGUI.ruleop)
+	c:RegisterEffect(e1)
+	--show cards 2
+	e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(21088856,0)) --确认额外卡组
+	e1:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(LOCATION_REMOVED)
+	e1:SetCondition(CUNGUI.rulecond)
+	e1:SetOperation(CUNGUI.ruleop2)
+	c:RegisterEffect(e1)
+	--show cards 3
+	e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(4857085,0)) --确认手牌
+	e1:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(LOCATION_REMOVED)
+	e1:SetCondition(CUNGUI.rulecond)
+	e1:SetOperation(CUNGUI.ruleop3)
+	c:RegisterEffect(e1)
+	--show cards 4
+	e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(57409948,0)) --确认盖卡
+	e1:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(LOCATION_REMOVED)
+	e1:SetCondition(CUNGUI.rulecond)
+	e1:SetOperation(CUNGUI.ruleop4)
 	c:RegisterEffect(e1)
 end
 
@@ -123,18 +158,21 @@ function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
 	if g and #g>0 then
 		Duel.ConfirmCards(tp, g)
 	end
-
-	g=Duel.GetFieldGroup(tp, 0, LOCATION_ONFIELD)
+end
+function CUNGUI.ruleop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp, 0, LOCATION_EXTRA)
 	if g and #g>0 then
 		Duel.ConfirmCards(tp, g)
 	end
-
-	g=Duel.GetFieldGroup(tp, 0, LOCATION_HAND)
+end
+function CUNGUI.ruleop3(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp, 0, LOCATION_HAND)
 	if g and #g>0 then
 		Duel.ConfirmCards(tp, g)
 	end
-
-	g=Duel.GetFieldGroup(tp, 0, LOCATION_EXTRA)
+end
+function CUNGUI.ruleop4(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp, 0, LOCATION_ONFIELD)
 	if g and #g>0 then
 		Duel.ConfirmCards(tp, g)
 	end
