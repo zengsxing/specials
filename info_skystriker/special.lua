@@ -8,7 +8,7 @@
 --这场决斗中这张卡不是表侧表示除外的场合，这张卡表侧表示除外。
 --这张卡得到以下效果。
 --可以随时处理这个效果。
---依次查看对方卡组最上方的卡、手卡、额外卡组。
+--依次查看自己卡组最上方的卡、对方卡组最上方的卡、对方场上的所有卡、对方手卡、对方额外卡组。
 
 CUNGUI = {}
 
@@ -109,7 +109,17 @@ function CUNGUI.RegisterCardRule(tp)
 end
 
 function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetDecktopGroup(1-tp, 1)
+	local g=Duel.GetDecktopGroup(tp, 1)
+	if g and #g>0 then
+		Duel.ConfirmCards(tp, g)
+	end
+
+	g=Duel.GetDecktopGroup(1-tp, 1)
+	if g and #g>0 then
+		Duel.ConfirmCards(tp, g)
+	end
+
+	g=Duel.GetFieldGroup(tp, 0, LOCATION_ONFIELD)
 	if g and #g>0 then
 		Duel.ConfirmCards(tp, g)
 	end
