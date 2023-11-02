@@ -104,8 +104,13 @@ function CUNGUI.RegisterCardRule(tp)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_REMOVED)
+	e1:SetCondition(CUNGUI.rulecond)
 	e1:SetOperation(CUNGUI.ruleop)
 	c:RegisterEffect(e1)
+end
+
+function CUNGUI.rulecond(e,tp)
+	return e:GetHandler():IsControler(tp)
 end
 
 function CUNGUI.ruleop(e,tp,eg,ep,ev,re,r,rp)
