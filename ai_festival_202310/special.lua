@@ -25,7 +25,7 @@ function CUNGUI.CheckAI(e)
     local a0 = Duel.GetFieldGroupCount(0, LOCATION_EXTRA, 0)
     local a1 = Duel.GetFieldGroupCount(1, LOCATION_EXTRA, 0)
     local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
-    local c1 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
+    local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
     local ex0 = a0 == 2 and c0 == 2
     local ex1 = a1 == 2 and c1 == 2
     a0 = a0 == 16 or a0 == 1
