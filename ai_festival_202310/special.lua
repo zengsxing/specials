@@ -2,8 +2,8 @@
 --发牌姬会有16张额外，第16张额外为龙魔导（37818794）
 --这张卡开局时会被撕掉（标记为AI）
 
---对方怪兽卡>3 -> 多抽张雷击
---对方后场>3 -> 多抽张羽毛扫
+--对方怪兽卡>=3 -> 多抽张雷击
+--对方后场>=3 -> 多抽张羽毛扫
 --对方LP<=1000 -> 多抽2张火球
 --对方手卡>=5 -> 多抽张强引的番兵
 --（以上可叠加）
@@ -84,11 +84,11 @@ function CUNGUI.BeforeDraw(e,tp)
         return
     end
     local draw=Duel.GetDrawCount(tp)
-    if Duel.GetFieldGroupCount(tp, 0, LOCATION_MZONE)>3 then
+    if Duel.GetFieldGroupCount(tp, 0, LOCATION_MZONE)>=3 then
         CUNGUI.CreateCard(tp,12580477)
         draw=draw + 1
     end
-    if Duel.GetFieldGroupCount(tp, 0, LOCATION_SZONE)>3 then
+    if Duel.GetFieldGroupCount(tp, 0, LOCATION_SZONE)>=3 then
         CUNGUI.CreateCard(tp,18144506)
         draw=draw + 1
     end
