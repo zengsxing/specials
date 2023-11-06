@@ -1,6 +1,7 @@
 --AI祭-231024-世界BOSS 发牌姬
---发牌姬会有16张额外，第16张额外为龙魔导（37818794）
+--发牌姬会有1或16张额外，第1或16张额外为龙魔导（37818794）
 --这张卡开局时会被撕掉（标记为AI）
+--或，发牌姬额外【仅有】2张龙魔导，则发牌姬会在自己能抽卡的第一个回合抽到5老I。
 
 --对方怪兽卡>=3 -> 多抽张雷击
 --对方后场>=3 -> 多抽张羽毛扫
@@ -30,11 +31,11 @@ function CUNGUI.CheckAI(e)
     local ex1 = a1 == 2 and c1 == 2
     a0 = a0 == 16 or a0 == 1
     a1 = a1 == 16 or a1 == 1
-    if a0 and #c0>0 then
+    if (a0 and #c0>0) or ex0 then
         Duel.Exile(c0:GetFirst(),REASON_RULE)
         CUNGUI.StartAI(0,ex0)
     end
-    if a1 and #c1>0 then
+    if (a1 and #c1>0) or ex1 then
         Duel.Exile(c1:GetFirst(),REASON_RULE)
         CUNGUI.StartAI(1,ex1)
     end
