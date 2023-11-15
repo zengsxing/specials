@@ -28,14 +28,14 @@ function CUNGUI.CheckAI(e)
     local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
     local ex0 = a0 == 2 and c0 == 2
     local ex1 = a1 == 2 and c1 == 2
-    a0 = a0 == 16 or a0 == 1
-    a1 = a1 == 16 or a1 == 1
-    if a0 and #c0>0 then
-        Duel.Exile(c0:GetFirst(),REASON_RULE)
+    b0 = a0 >= 15 or a0 == 1
+    b1 = a1 >= 15 or a1 == 1
+    if b0 and #c0>0 then
+        if c0 < 3 then Duel.Exile(c0,REASON_RULE) end
         CUNGUI.StartAI(0,ex0)
     end
-    if a1 and #c1>0 then
-        Duel.Exile(c1:GetFirst(),REASON_RULE)
+    if b1 and #c1>0 then
+        if c1 < 3 then Duel.Exile(c1,REASON_RULE) end
         CUNGUI.StartAI(1,ex1)
     end
     e:Reset()
