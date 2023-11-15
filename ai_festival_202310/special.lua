@@ -1,9 +1,10 @@
 --AI祭-231024-世界BOSS 发牌姬
---发牌姬会有16张额外，第16张额外为龙魔导（37818794）
+--发牌姬会有1或16张额外，第1或16张额外为龙魔导（37818794）
 --这张卡开局时会被撕掉（标记为AI）
+--或，发牌姬额外【仅有】2张龙魔导，则发牌姬会在自己能抽卡的第一个回合抽到5老I。
 
---对方怪兽卡>3 -> 多抽张雷击
---对方后场>3 -> 多抽张羽毛扫
+--对方怪兽卡>=3 -> 多抽张雷击
+--对方后场>=3 -> 多抽张羽毛扫
 --对方LP<=1000 -> 多抽2张火球
 --对方手卡>=5 -> 多抽张强引的番兵
 --（以上可叠加）
@@ -26,16 +27,16 @@ function CUNGUI.CheckAI(e)
     local a1 = Duel.GetFieldGroupCount(1, LOCATION_EXTRA, 0)
     local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
     local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
-    local ex0 = a0 == 2 and c0 == 2
-    local ex1 = a1 == 2 and c1 == 2
-    b0 = a0 >= 15 or a0 == 1
-    b1 = a1 >= 15 or a1 == 1
-    if b0 and #c0>0 then
-        if c0 < 3 then Duel.Exile(c0,REASON_RULE) end
+    local ex0 = a0 == 2 and #c0 == 2
+    local ex1 = a1 == 2 and #c1 == 2
+    local b0 = a0 >= 15 or a0 == 1
+    local b1 = a1 >= 15 or a1 == 1
+    if b0 and #c0>0 or ex0 then
+        if #c0 < 3 then Duel.Exile(c0,REASON_RULE) end
         CUNGUI.StartAI(0,ex0)
     end
-    if b1 and #c1>0 then
-        if c1 < 3 then Duel.Exile(c1,REASON_RULE) end
+    if b1 and #c1>0 or ex1 then
+        if #c1 < 3 then Duel.Exile(c1,REASON_RULE) end
         CUNGUI.StartAI(1,ex1)
     end
     e:Reset()
@@ -84,11 +85,11 @@ function CUNGUI.BeforeDraw(e,tp)
         return
     end
     local draw=Duel.GetDrawCount(tp)
-    if Duel.GetFieldGroupCount(tp, 0, LOCATION_MZONE)>3 then
+    if Duel.GetFieldGroupCount(tp, 0, LOCATION_MZONE)>=3 then
         CUNGUI.CreateCard(tp,12580477)
         draw=draw + 1
     end
-    if Duel.GetFieldGroupCount(tp, 0, LOCATION_SZONE)>3 then
+    if Duel.GetFieldGroupCount(tp, 0, LOCATION_SZONE)>=3 then
         CUNGUI.CreateCard(tp,18144506)
         draw=draw + 1
     end
