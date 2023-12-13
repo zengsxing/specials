@@ -14,7 +14,7 @@
 --AI开局多抽1张卡。
 
 --人类手卡+场上的卡+4<=AI手卡+场上的卡的场合，决斗中只有1次：
---将以下怪兽中的1只特殊召唤到玩家场上
+--将以下怪兽中的1只表侧攻击表示特殊召唤到玩家场上
 --90673288 #水刀
 --37818794 #龙魔导
 --60461804 #凤凰人
@@ -44,14 +44,14 @@
 --62279055 #魔法筒
 
 --在第10/第11回合，人类自己的抽卡阶段：
---AI从特殊召唤列表中尽可能多地将怪兽特殊召唤到AI的场上。
+--AI从特殊召唤列表中尽可能多地将怪兽表侧攻击特殊召唤到AI的场上。
 --从卡组外把以下卡加入人类手卡。
 --54693926 #冥王结界波
 --15693423 #颉颃胜负
 --04392470 #狮子男巫
 
 --AI的准备阶段：
---AI从特殊召唤列表中将1只怪兽特殊召唤到自己场上。
+--AI从特殊召唤列表中将1只怪兽表侧攻击特殊召唤到自己场上。
 --这之后，如果AI场上只有1只怪兽，再重复1次特殊召唤。
 
 --特殊召唤列表：
@@ -115,16 +115,8 @@
 --75286621 #梅尔卡巴
 --58481572 #暗爪
 
---在第1回合的抽卡阶段，有50%几率从以下配置中随机初始场面：
--- AI场上特殊召唤 除暗外的5结界像。玩家场上特殊召唤 闪刀姬零衣
--- AI场上特殊召唤 3物质龙+RR 。玩家场上特殊召唤 超魔导龙骑兵
--- AI场上特殊召唤 物质主义+无神论+拿码+莉莉丝 。玩家场上特殊召唤 智天之神星龙
--- AI场上特殊召唤 6000攻电子界到临者  。玩家场上特殊召唤 水仙女人鱼+鲁莎卡人鱼
--- AI场上特殊召唤 三幻神 。玩家场上特殊召唤 狼+独角兽+哈特
--- AI场上特殊召唤 星尘龙+希望皇+异色眼+防火龙 。玩家场上特殊召唤 超雷龙
--- AI场上特殊召唤 巨人斗士+核成龙+鲜花女男爵+绝对零度侠  。玩家场上特殊召唤 勇者token装备骑龙
--- AI场上特殊召唤 5只五神龙 。玩家场上特殊召唤 玻璃女巫+服装女巫
---否则，AI从特殊召唤列表中特殊召唤1只怪兽到AI场上。
+--在第1回合的抽卡阶段，有50%几率从固定配置中随机初始场面。
+--没能配置的场合，AI从特殊召唤列表中特殊召唤1只怪兽到AI场上。
 
 
 local CUNGUI={}
@@ -177,9 +169,8 @@ CUNGUI.SPList = {27279764,40061558,99267150,62873545,72989439,98630720,31833038,
 67508932,87460579,60465049,23288411,91588074,25451652,22073844,47556396,51522296,
 68199168,6150044,37663536,75286621,58481572}
 
-
 function CUNGUI.InitSpecial1(ga,gb)
-	local c=b:GetFirst()
+	local c=gb:GetFirst()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -187,6 +178,14 @@ function CUNGUI.InitSpecial1(ga,gb)
 	e1:SetValue(6000)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
+end
+
+function CUNGUI.InitSpecial2(ga,gb)
+	local c=gb:GetFirst()
+    if gb:GetCode()~=3285552 then c=gb:GetNext() end
+    local tp=c:GetControler()
+    local tc=Duel.CreateToken(tp,38745520)
+    Duel.Equip(tp,tc,c)
 end
 
 CUNGUI.InitList = {{{26077387},{10963799,47961808,73356503,19740112,46145256},false},
@@ -246,6 +245,15 @@ function CUNGUI.StartHuman(tp)
 
 end
 
+function CUNGUI.RandomSummon(tp)
+	local id=CUNGUI.SPList[math.random(#CUNGUI.SPList)]
+	if Duel.IsPlayerCanSpecialSummonMonster(tp,id) then
+		local c=Duel.CreateToken(tp,id)
+		return Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
+	end
+	return false
+end
+
 function CUNGUI.InitField(e,tp)
 	if math.random(2)==1 then
 		local tbl = CUNGUI.InitList[math.random(#CUNGUI.InitList)]
@@ -260,11 +268,13 @@ function CUNGUI.InitField(e,tp)
 			local c=Duel.CreateToken(1-tp,code)
 			Duel.SpecialSummon(c,0,1-tp,1-tp,true,true,POS_FACEUP_ATTACK)
 		end
-		ga=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
-		gb=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-		if func then func(ga,gb) end
-		e:Reset()
+		if func then
+            func(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD))
+        end
+    else
+        CUNGUI.RandomSummon(1-tp)
 	end
+    e:Reset()
 end
 
 CUNGUI.LockEvent2 = false
@@ -305,15 +315,6 @@ function CUNGUI.Event4(e,tp)
 		CUNGUI.CreateCardToHand(tp,id)
 		e:Reset()
 	end
-end
-
-function CUNGUI.RandomSummon(tp)
-	local id=CUNGUI.SPList[math.random(#CUNGUI.SPList)]
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,id) then
-		local c=Duel.CreateToken(tp,id)
-		return Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
-	end
-	return false
 end
 
 function CUNGUI.Event5(e,tp)
