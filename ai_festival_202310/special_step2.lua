@@ -247,8 +247,8 @@ end
 
 function CUNGUI.RandomSummon(tp)
 	local id=CUNGUI.SPList[math.random(#CUNGUI.SPList)]
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,id) then
-		local c=Duel.CreateToken(tp,id)
+	local c=Duel.CreateToken(tp,id)
+	if Duel.IsPlayerCanSpecialSummonMonster(tp,id,nil,c:GetType(),c:GetTextAttack(),c:GetTextDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute()) then
 		return Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
 	end
 	return false
@@ -286,8 +286,8 @@ function CUNGUI.Event2(e,tp)
 		or (Duel.GetCurrentPhase()==PHASE_STANDBY and Duel.GetTurnPlayer()==tp
 		and Duel.GetLP(tp) <= 2000)) then
 		local id = CUNGUI.Event2List[math.random(#CUNGUI.Event2List)]
-		if Duel.IsPlayerCanSpecialSummonMonster(tp,id) then
-			local c=Duel.CreateToken(tp,id)
+		local c=Duel.CreateToken(tp,id)
+		if Duel.IsPlayerCanSpecialSummonMonster(tp,id,nil,c:GetType(),c:GetTextAttack(),c:GetTextDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute()) then
 			if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)>0 then
 				e:Reset()
 			end
