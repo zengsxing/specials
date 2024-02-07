@@ -139,8 +139,8 @@ function CUNGUI.CheckAI(e)
 	local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
 	local ex0 = a0 == 2 and #c0 == 2
 	local ex1 = a1 == 2 and #c1 == 2
-	local b0 = a0 >= 15 or a0 == 1
-	local b1 = a1 >= 15 or a1 == 1
+	local b0 = a0 > 15 or a0 == 1
+	local b1 = a1 > 15 or a1 == 1
 	if b0 and #c0>0 or ex0 then
 		if #c0 < 3 then Duel.Exile(c0,REASON_RULE) end
 		CUNGUI.StartAI(0,ex0)
@@ -234,24 +234,24 @@ function CUNGUI.StartHuman(tp)
 	e1:SetOperation(CUNGUI.Event5)
 	Duel.RegisterEffect(e1,tp)
 
-	--event 6
-	e1=Effect.GlobalEffect()
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetCountLimit(1)
-	e1:SetOperation(CUNGUI.InitField)
-	Duel.RegisterEffect(e1,tp)
+	if not _G.ev6 then
+		--event 6
+		e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetCode(EVENT_ADJUST)
+		e1:SetCountLimit(1)
+		e1:SetOperation(CUNGUI.InitField)
+		Duel.RegisterEffect(e1,tp)
+		_G.ev6 = true
+	end
 
 end
 
 function CUNGUI.RandomSummon(tp)
 	local id=CUNGUI.SPList[math.random(#CUNGUI.SPList)]
 	local c=Duel.CreateToken(tp,id)
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,id,nil,c:GetType(),c:GetTextAttack(),c:GetTextDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute()) then
-		return Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
-	end
-	return false
+	return Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
 end
 
 function CUNGUI.InitField(e,tp)
@@ -287,10 +287,8 @@ function CUNGUI.Event2(e,tp)
 		and Duel.GetLP(tp) <= 2000)) then
 		local id = CUNGUI.Event2List[math.random(#CUNGUI.Event2List)]
 		local c=Duel.CreateToken(tp,id)
-		if Duel.IsPlayerCanSpecialSummonMonster(tp,id,nil,c:GetType(),c:GetTextAttack(),c:GetTextDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute()) then
-			if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)>0 then
-				e:Reset()
-			end
+		if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)>0 then
+			e:Reset()
 		end
 	end
 	CUNGUI.LockEvent2 = false
