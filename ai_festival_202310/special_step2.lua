@@ -149,11 +149,11 @@ function CUNGUI.CheckAI(e)
 	--local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
 	--local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
 	if a0 == 16 then
-		Duel.Draw(tp,0,REASON_RULE)
+		Duel.Draw(0,0,REASON_RULE)
 		CUNGUI.StartAI(0,false)
 		CUNGUI.StartHuman(1)
 	elseif a1 == 16 then
-		Duel.Draw(tp,1,REASON_RULE)
+		Duel.Draw(1,1,REASON_RULE)
 		CUNGUI.StartAI(1,false)
 		CUNGUI.StartHuman(0)
 	end
@@ -382,8 +382,7 @@ function CUNGUI.StartAI(tp,ex)
 	local e3=Effect.GlobalEffect()
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e3:SetCountLimit(1)
+	e3:SetCode(EVENT_ADJUST)
 	e3:SetOperation(CUNGUI.StandbySPSummon)
 	Duel.RegisterEffect(e3,tp)
 end
@@ -439,7 +438,9 @@ function CUNGUI.DrawCount(e)
 end
 
 function CUNGUI.StandbySPSummon(e,tp)
-	if not Duel.GetTurnPlayer()==tp then return end
+	if Duel.GetTurnCount()<3 or Duel.GetTurnPlayer()~=tp
+		or Duel.GetCurrentPhase()~=PHASE_STANDBY or e:GetLabel()==Duel.GetTurnCount() then return end
+	e:SetLabel(Duel.GetTurnCount())
 	CUNGUI.RandomSummon(tp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1 then
 		CUNGUI.RandomSummon(tp)
