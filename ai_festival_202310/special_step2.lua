@@ -13,6 +13,7 @@
 
 --AI开局多抽1张卡。
 
+--event 2:
 --人类手卡+场上的卡+4<=AI手卡+场上的卡的场合，决斗中只有1次：
 --将以下怪兽中的1只表侧攻击表示特殊召唤到玩家场上
 --90673288 #水刀
@@ -25,6 +26,7 @@
 --84330567 #水仙女人鱼
 --21522601 #玻璃女巫
 
+--event 3:
 --人类在自己的抽卡阶段手卡<=2的场合，决斗中只有1次：
 --从卡组外把以下卡中的随机1张加入手卡。
 --55144522 #强欲之壶
@@ -35,6 +37,7 @@
 --31305911 #棉花糖
 --72589042 #辉煌的逆转之女神
 
+--event 4:
 --在第6/第7回合，人类自己的抽卡阶段：
 --从卡组外把以下卡中的随机1张加入手卡。
 --12580477 #雷击
@@ -43,6 +46,7 @@
 --44095762 #圣防
 --62279055 #魔法筒
 
+--event 5:
 --在第10/第11回合，人类自己的抽卡阶段：
 --AI从特殊召唤列表中尽可能多地将怪兽表侧攻击特殊召唤到AI的场上。
 --从卡组外把以下卡加入人类手卡。
@@ -50,6 +54,7 @@
 --15693423 #颉颃胜负
 --04392470 #狮子男巫
 
+--event 6:
 --AI的准备阶段：
 --AI从特殊召唤列表中将1只怪兽表侧攻击特殊召唤到自己场上。
 --这之后，如果AI场上只有1只怪兽，再重复1次特殊召唤。
@@ -139,21 +144,17 @@ function CUNGUI.CheckAI(e)
 	local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
 	local ex0 = a0 == 2 and #c0 == 2
 	local ex1 = a1 == 2 and #c1 == 2
-	local b0 = a0 > 15 or a0 == 1
-	local b1 = a1 > 15 or a1 == 1
-	if b0 and #c0>0 or ex0 then
+	if a0 == 16 and #c0 == 1 or ex0 then
 		if #c0 < 3 then Duel.Exile(c0,REASON_RULE) end
 		CUNGUI.StartAI(0,ex0)
 		Duel.Draw(tp,0,REASON_RULE)
-	else
-		CUNGUI.StartHuman(0)
+		CUNGUI.StartHuman(1)
 	end
-	if b1 and #c1>0 or ex1 then
+	if a1 == 16 and #c1 == 1 or ex1 then
 		if #c1 < 3 then Duel.Exile(c1,REASON_RULE) end
 		CUNGUI.StartAI(1,ex1)
 		Duel.Draw(tp,1,REASON_RULE)
-	else
-		CUNGUI.StartHuman(1)
+		CUNGUI.StartHuman(0)
 	end
 	e:Reset()
 end
