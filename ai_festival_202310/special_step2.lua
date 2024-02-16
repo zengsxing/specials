@@ -1,8 +1,8 @@
---AI祭-231024-世界BOSS 发牌姬
---发牌姬会有1或16张额外，第1或16张额外为龙魔导（37818794）
---这张卡开局时会被撕掉（标记为AI）
---或，发牌姬额外【仅有】2张龙魔导，则发牌姬会在自己能抽卡的第一个回合抽到5老I。
+--AI祭-240216-世界BOSS 发牌姬 Step2
+--发牌姬会有16张额外，开局多抽1张卡。
 
+--event 1
+--AI的抽卡阶段：
 --对方怪兽卡>=3 -> 多抽张雷击
 --对方后场>=3 -> 多抽张羽毛扫
 --对方LP<=1000 -> 多抽2张火球
@@ -11,7 +11,6 @@
 --自己LP<=1000 -> 抽卡固定为5
 --以上条件全部不满足 ->多抽1张
 
---AI开局多抽1张卡。
 
 --event 2:
 --人类手卡+场上的卡+4<=AI手卡+场上的卡的场合，决斗中只有1次：
@@ -126,6 +125,13 @@
 
 local CUNGUI={}
 math.random = Duel.GetRandomNumber or math.random
+local orig_ist = Card.IsSummonType
+function Card.IsSummonType(c,sumtype)
+	if c:GetFlagEffect(87654321)>0 then
+		return (sumtype & SUMMON_TYPE_ADVANCE)>0
+	end
+	return orig_ist(c,sumtype)
+end
 
 function Auxiliary.PreloadUds()
 	--adjust
@@ -140,20 +146,15 @@ end
 function CUNGUI.CheckAI(e)
 	local a0 = Duel.GetFieldGroupCount(0, LOCATION_EXTRA, 0)
 	local a1 = Duel.GetFieldGroupCount(1, LOCATION_EXTRA, 0)
-	local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
-	local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
-	local ex0 = a0 == 2 and #c0 == 2
-	local ex1 = a1 == 2 and #c1 == 2
-	if a0 == 16 and #c0 == 1 or ex0 then
-		if #c0 < 3 then Duel.Exile(c0,REASON_RULE) end
-		CUNGUI.StartAI(0,ex0)
+	--local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
+	--local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
+	if a0 == 16 then
 		Duel.Draw(tp,0,REASON_RULE)
+		CUNGUI.StartAI(0,false)
 		CUNGUI.StartHuman(1)
-	end
-	if a1 == 16 and #c1 == 1 or ex1 then
-		if #c1 < 3 then Duel.Exile(c1,REASON_RULE) end
-		CUNGUI.StartAI(1,ex1)
+	elseif a1 == 16 then
 		Duel.Draw(tp,1,REASON_RULE)
+		CUNGUI.StartAI(1,false)
 		CUNGUI.StartHuman(0)
 	end
 	e:Reset()
@@ -179,25 +180,46 @@ function CUNGUI.InitSpecial1(ga,gb)
 	e1:SetValue(6000)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
+	local tp = c:GetControler()
+	CUNGUI.CreateCard(tp,98127546)
 end
 
 function CUNGUI.InitSpecial2(ga,gb)
 	local c=gb:GetFirst()
-    if gb:GetCode()~=3285552 then c=gb:GetNext() end
-    local tp=c:GetControler()
-    local tc=Duel.CreateToken(tp,38745520)
-    Duel.Equip(tp,tc,c)
+	if gb:GetCode()~=3285552 then c=gb:GetNext() end
+	local tp=c:GetControler()
+	local tc=Duel.CreateToken(tp,38745520)
+	Duel.Equip(tp,tc,c)
+end
+
+function CUNGUI.InitSpecial3(ga,gb)
+	for c in aux.Next(gb) do
+		c:RegisterFlagEffect(87654321,RESET_EVENT+RESETS_STANDARD,0,1)
+	end
+end
+
+function CUNGUI.InitSpecial4(ga,gb)
+	local c=ga:GetFirst()
+	c:RegisterFlagEffect(37818795,RESET_EVENT+RESETS_STANDARD,0,1,2)
+end
+
+function CUNGUI.InitSpecial5(ga,gb)
+	local tp=gb:GetFirst():GetControler()
+	for _=1,3 do
+		local c=Duel.CreateToken(tp,28566710)
+		Duel.SendtoGrave(c,REASON_RULE)
+	end
 end
 
 CUNGUI.InitList = {{{26077387},{10963799,47961808,73356503,19740112,46145256},false},
-{{37818794},{12298909,12298909,12298909,86221741},false},
+{{37818794},{12298909,12298909,12298909,86221741},CUNGUI.InitSpecial4}, --龙骑兵可发动2次效果
 {{29432356},{27279764,40061558,14799437,23440231},false},
-{{92731385,84330567},{11738489},CUNGUI.InitSpecial1}, --11738489要加6000攻
-{{32909498,68304193,31149212},{10000000,10000010,10000020},false},
+{{92731385,84330567},{11738489},CUNGUI.InitSpecial1}, --11738489要加6000攻，再给玩家印一张冥神98127546
+{{32909498,68304193,31149212},{10000000,10000010,10000020},CUNGUI.InitSpecial3}, --三幻神设为非特召
+{{32909498,68304193,31149212},{69890967,6007213,32491822},CUNGUI.InitSpecial5}, --墓地扔3张最终一战
 {{15291624},{44508094,84013237,16178681,5043010},false},
 {{3285552,2563463},{23693634,84815190,40854197,34408491},CUNGUI.InitSpecial2}, --3285552要装备38745520
 {{21522601,84523092},{99267150,99267150,99267150,99267150,99267150},false},}
-
 
 function CUNGUI.StartHuman(tp)
 	--event 2
@@ -253,7 +275,11 @@ end
 function CUNGUI.RandomSummon(tp)
 	local id=CUNGUI.SPList[math.random(#CUNGUI.SPList)]
 	local c=Duel.CreateToken(tp,id)
-	return Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
+	if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)>0 then
+		c:CompleteProcedure()
+		return true
+	end
+	return false
 end
 
 function CUNGUI.InitField(e,tp)
@@ -265,18 +291,20 @@ function CUNGUI.InitField(e,tp)
 		for _,code in pairs(ga) do
 			local c=Duel.CreateToken(tp,code)
 			Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
+			c:CompleteProcedure()
 		end
 		for _,code in pairs(gb) do
 			local c=Duel.CreateToken(1-tp,code)
 			Duel.SpecialSummon(c,0,1-tp,1-tp,true,true,POS_FACEUP_ATTACK)
+			c:CompleteProcedure()
 		end
 		if func then
-            func(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD))
-        end
-    else
-        CUNGUI.RandomSummon(1-tp)
+			func(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD))
+		end
+	else
+		CUNGUI.RandomSummon(1-tp)
 	end
-    e:Reset()
+	e:Reset()
 end
 
 CUNGUI.LockEvent2 = false
@@ -290,6 +318,7 @@ function CUNGUI.Event2(e,tp)
 		local id = CUNGUI.Event2List[math.random(#CUNGUI.Event2List)]
 		local c=Duel.CreateToken(tp,id)
 		if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)>0 then
+			c:CompleteProcedure()
 			e:Reset()
 		end
 	end
@@ -349,7 +378,7 @@ function CUNGUI.StartAI(tp,ex)
 	e2:SetValue(CUNGUI.DrawCount)
 	e1:SetLabelObject(e2)
 	Duel.RegisterEffect(e2,tp)
-	--adjust
+	--event 5.5
 	local e3=Effect.GlobalEffect()
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -409,7 +438,8 @@ function CUNGUI.DrawCount(e)
 	return e:GetLabel() or 1
 end
 
-function StandbySPSummon(e,tp)
+function CUNGUI.StandbySPSummon(e,tp)
+	if not Duel.GetTurnPlayer()==tp then return end
 	CUNGUI.RandomSummon(tp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1 then
 		CUNGUI.RandomSummon(tp)
