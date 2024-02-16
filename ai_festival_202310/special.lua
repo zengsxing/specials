@@ -27,17 +27,13 @@ function CUNGUI.CheckAI(e)
     local a1 = Duel.GetFieldGroupCount(1, LOCATION_EXTRA, 0)
     local c0 = Duel.GetMatchingGroup(Card.IsCode, 0, LOCATION_EXTRA, 0, nil, 37818794)
     local c1 = Duel.GetMatchingGroup(Card.IsCode, 1, LOCATION_EXTRA, 0, nil, 37818794)
-    local ex0 = a0 == 2 and #c0 == 2
-    local ex1 = a1 == 2 and #c1 == 2
-    local b0 = a0 > 15
-    local b1 = a1 > 15
-    if b0 and #c0>0 or ex0 then
+    if a0 > 15 and #c0>0 then
         if #c0 < 3 then Duel.Exile(c0,REASON_RULE) end
-        CUNGUI.StartAI(0,ex0)
+        CUNGUI.StartAI(0,#c0 == 2)
     end
-    if b1 and #c1>0 or ex1 then
+    if a1 > 15 and #c1>0 or ex1 then
         if #c1 < 3 then Duel.Exile(c1,REASON_RULE) end
-        CUNGUI.StartAI(1,ex1)
+        CUNGUI.StartAI(1,#c1 == 2)
     end
     e:Reset()
 end
