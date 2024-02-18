@@ -130,6 +130,9 @@ function Card.IsSummonType(c,sumtype)
 	if c:GetFlagEffect(87654321)>0 then
 		return (sumtype & SUMMON_TYPE_ADVANCE)>0
 	end
+	if c:GetFlagEffect(87654322)>0 then
+		return (sumtype & SUMMON_TYPE_FUSION)>0
+	end
 	return orig_ist(c,sumtype)
 end
 
@@ -171,7 +174,7 @@ CUNGUI.SPList = {27279764,40061558,99267150,62873545,72989439,98630720,31833038,
 67508932,87460579,60465049,23288411,91588074,25451652,22073844,47556396,51522296,
 68199168,6150044,37663536,75286621,58481572}
 
-function CUNGUI.InitSpecial1(ga,gb)
+function CUNGUI.InitSpecial1(ga,gb,tp)
 	local c=gb:GetFirst()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -180,42 +183,43 @@ function CUNGUI.InitSpecial1(ga,gb)
 	e1:SetValue(6000)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
-	local tp = c:GetControler()
+	c=ga:GetFirst()
+	if c:IsCode(92731385) then c=ga:GetNext() end
+	c:RegisterFlagEffect(87654322,RESET_EVENT+RESETS_STANDARD-RESET_TEMP_REMOVE-RESET_TURN_SET,0,2)
 	c=Duel.CreateToken(tp,98127546)
 	Duel.SendtoDeck(c,nil,2,REASON_RULE)
 end
 
-function CUNGUI.InitSpecial2(ga,gb)
+function CUNGUI.InitSpecial2(ga,gb,tp)
 	local c=gb:GetFirst()
 	if not c:IsCode(3285552) then c=gb:GetNext() end
-	local tp=c:GetControler()
+	tp=1-tp
 	local tc=Duel.CreateToken(tp,38745520)
 	Duel.Equip(tp,tc,c)
 end
 
-function CUNGUI.InitSpecial3(ga,gb)
+function CUNGUI.InitSpecial3(ga,gb,tp)
 	for c in aux.Next(gb) do
 		c:RegisterFlagEffect(87654321,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
-	if Duel.GetTurnPlayer()==ga:GetFirst():GetControler() then
-		local cc=Duel.CreateToken(gb:GetFirst():GetControler(),10000040)
-		Duel.SendtoHand(tc,nil,REASON_RULE)
+	if Duel.GetTurnPlayer()==tp then
+		local cc=Duel.CreateToken(1-tp,10000040)
+		Duel.SendtoHand(cc,nil,REASON_RULE)
 	end
-	local tc=Duel.CreateToken(gb:GetFirst():GetControler(),10000020)
+	local tc=Duel.CreateToken(1-tp,10000020)
 	Duel.SendtoDeck(tc,nil,2,REASON_RULE)
-	tc=Duel.CreateToken(gb:GetFirst():GetControler(),10000080)
+	tc=Duel.CreateToken(1-tp,10000080)
 	Duel.SendtoDeck(tc,nil,2,REASON_RULE)
 end
 
-function CUNGUI.InitSpecial4(ga,gb)
+function CUNGUI.InitSpecial4(ga,gb,_)
 	local c=ga:GetFirst()
 	c:RegisterFlagEffect(37818795,RESET_EVENT+RESETS_STANDARD,0,1,2)
 end
 
-function CUNGUI.InitSpecial5(ga,gb)
-	local tp=gb:GetFirst():GetControler()
+function CUNGUI.InitSpecial5(ga,gb,tp)
 	for _=1,3 do
-		local c=Duel.CreateToken(tp,28566710)
+		local c=Duel.CreateToken(1-tp,28566710)
 		Duel.SendtoGrave(c,REASON_RULE)
 	end
 end
@@ -228,7 +232,9 @@ CUNGUI.InitList = {{{26077387},{10963799,47961808,73356503,19740112,46145256},fa
 {{32909498,68304193,31149212},{69890967,6007213,32491822},CUNGUI.InitSpecial5}, --墓地扔3张最终一战
 {{15291624},{44508094,84013237,16178681,5043010},false},
 {{3285552,2563463},{23693634,84815190,40854197,34408491},CUNGUI.InitSpecial2}, --3285552要装备38745520
-{{21522601,84523092},{99267150,99267150,99267150,99267150,99267150},false},}
+{{21522601,84523092},{99267150,99267150,99267150,99267150,99267150},false},
+{{62420419},{21208154,21208154,21208154},false},
+}
 
 function CUNGUI.StartHuman(tp)
 	--event 2
@@ -309,7 +315,7 @@ function CUNGUI.InitField(e,tp)
 		end
 		Duel.SpecialSummonComplete()
 		if func then
-			func(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD))
+			func(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD),tp)
 		end
 	else
 		CUNGUI.RandomSummon(1-tp)
