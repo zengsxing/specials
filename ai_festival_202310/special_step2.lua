@@ -181,12 +181,13 @@ function CUNGUI.InitSpecial1(ga,gb)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	local tp = c:GetControler()
-	CUNGUI.CreateCard(tp,98127546)
+	c=Duel.CreateToken(tp,98127546)
+	Duel.SendtoDeck(c,nil,2,REASON_RULE)
 end
 
 function CUNGUI.InitSpecial2(ga,gb)
 	local c=gb:GetFirst()
-	if gb:GetCode()~=3285552 then c=gb:GetNext() end
+	if not c:IsCode(3285552) then c=gb:GetNext() end
 	local tp=c:GetControler()
 	local tc=Duel.CreateToken(tp,38745520)
 	Duel.Equip(tp,tc,c)
@@ -196,6 +197,14 @@ function CUNGUI.InitSpecial3(ga,gb)
 	for c in aux.Next(gb) do
 		c:RegisterFlagEffect(87654321,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
+	if Duel.GetTurnPlayer()==ga:GetFirst():GetControler() then
+		local cc=Duel.CreateToken(gb:GetFirst():GetControler(),10000040)
+		Duel.SendtoHand(tc,nil,REASON_RULE)
+	end
+	local tc=Duel.CreateToken(gb:GetFirst():GetControler(),10000020)
+	Duel.SendtoDeck(tc,nil,2,REASON_RULE)
+	tc=Duel.CreateToken(gb:GetFirst():GetControler(),10000080)
+	Duel.SendtoDeck(tc,nil,2,REASON_RULE)
 end
 
 function CUNGUI.InitSpecial4(ga,gb)
@@ -215,7 +224,7 @@ CUNGUI.InitList = {{{26077387},{10963799,47961808,73356503,19740112,46145256},fa
 {{37818794},{12298909,12298909,12298909,86221741},CUNGUI.InitSpecial4}, --龙骑兵可发动2次效果
 {{29432356},{27279764,40061558,14799437,23440231},false},
 {{92731385,84330567},{11738489},CUNGUI.InitSpecial1}, --11738489要加6000攻，再给玩家印一张冥神98127546
-{{32909498,68304193,31149212},{10000000,10000010,10000020},CUNGUI.InitSpecial3}, --三幻神设为非特召
+{{32909498,68304193,31149212},{10000000,10000090,10000020},CUNGUI.InitSpecial3}, --三幻神设为非特召，卡组印一张球和一张原版鸟。若为玩家回合，手卡印一张创世神
 {{32909498,68304193,31149212},{69890967,6007213,32491822},CUNGUI.InitSpecial5}, --墓地扔3张最终一战
 {{15291624},{44508094,84013237,16178681,5043010},false},
 {{3285552,2563463},{23693634,84815190,40854197,34408491},CUNGUI.InitSpecial2}, --3285552要装备38745520
@@ -290,14 +299,15 @@ function CUNGUI.InitField(e,tp)
 		local func=tbl[3] --Special function
 		for _,code in pairs(ga) do
 			local c=Duel.CreateToken(tp,code)
-			Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
+			Duel.SpecialSummonStep(c,0,tp,tp,true,true,POS_FACEUP_ATTACK)
 			c:CompleteProcedure()
 		end
 		for _,code in pairs(gb) do
 			local c=Duel.CreateToken(1-tp,code)
-			Duel.SpecialSummon(c,0,1-tp,1-tp,true,true,POS_FACEUP_ATTACK)
+			Duel.SpecialSummonStep(c,0,1-tp,1-tp,true,true,POS_FACEUP_ATTACK)
 			c:CompleteProcedure()
 		end
+		Duel.SpecialSummonComplete()
 		if func then
 			func(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD))
 		end
@@ -389,7 +399,7 @@ end
 
 function CUNGUI.CreateCard(tp,code)
 	local c=Duel.CreateToken(tp, code)
-	Duel.SendtoDeck(c,tp,SEQ_DECKTOP,REASON_RULE)
+	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_RULE)
 end
 function CUNGUI.BeforeDraw(e,tp)
 	if Duel.GetTurnCount()==1 then return end
