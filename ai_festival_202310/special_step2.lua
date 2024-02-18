@@ -191,9 +191,8 @@ function CUNGUI.InitSpecial1(ga,gb,tp)
 end
 
 function CUNGUI.InitSpecial2(ga,gb,tp)
-	local c=gb:GetFirst()
-	if not c:IsCode(3285552) then c=gb:GetNext() end
-	tp=1-tp
+	local c=ga:GetFirst()
+	if not c:IsCode(3285552) then c=ga:GetNext() end
 	local tc=Duel.CreateToken(tp,38745520)
 	Duel.Equip(tp,tc,c)
 end
@@ -224,6 +223,11 @@ function CUNGUI.InitSpecial5(ga,gb,tp)
 	end
 end
 
+function CUNGUI.InitSpecial6(ga,gb,tp)
+	local c=Duel.CreateToken(1-tp,72883039)
+	Duel.MoveToField(c,1-tp,1-tp,LOCATION_SZONE,POS_FACEUP,true)
+end
+
 CUNGUI.InitList = {{{26077387},{10963799,47961808,73356503,19740112,46145256},false},
 {{37818794},{12298909,12298909,12298909,86221741},CUNGUI.InitSpecial4}, --龙骑兵可发动2次效果
 {{29432356},{27279764,40061558,14799437,23440231},false},
@@ -234,6 +238,7 @@ CUNGUI.InitList = {{{26077387},{10963799,47961808,73356503,19740112,46145256},fa
 {{3285552,2563463},{23693634,84815190,40854197,34408491},CUNGUI.InitSpecial2}, --3285552要装备38745520
 {{21522601,84523092},{99267150,99267150,99267150,99267150,99267150},false},
 {{62420419},{21208154,21208154,21208154},false},
+{{35952884,24696097},{8967776,7733560,33015627,28929131,91712985},CUNGUI.InitSpecial6}, --后场给一张72883039
 }
 
 function CUNGUI.StartHuman(tp)
