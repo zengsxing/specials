@@ -58,6 +58,10 @@
 --AI从特殊召唤列表中将1只怪兽表侧攻击特殊召唤到自己场上。
 --这之后，如果AI场上只有1只怪兽，再重复1次特殊召唤。
 
+--event 7:
+--AI的抽卡前：
+--AI的基本分恢复（上个回合的基本分-本回合的基本分）/2，最小为0
+
 --特殊召唤列表：
 --27279764 #物质主义
 --40061558 #无神论
@@ -422,6 +426,25 @@ function CUNGUI.StartAI(tp,ex)
 	e3:SetCode(EVENT_ADJUST)
 	e3:SetOperation(CUNGUI.StandbySPSummon)
 	Duel.RegisterEffect(e3,tp)
+	--event 7
+	e3=Effect.GlobalEffect()
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetCode(EVENT_ADJUST)
+	e3:SetOperation(CUNGUI.AIRecover)
+	e3:SetCountLimit(1)
+	Duel.RegisterEffect(e3,tp)
+end
+
+CUNGUI.LastLife = 8000
+function CUNGUI.AIRecover(e,tp)
+	if Duel.GetTurnPlayer()==tp then
+		local lp = Duel.GetLP(tp)
+		if lp < CUNGUI.LastLife then
+			Duel.SetLP(tp,lp + (CUNGUI.LastLife - lp) / 2)
+		end
+		CUNGUI.LastLife = Duel.GetLP(tp)
+	end
 end
 
 function CUNGUI.CreateCard(tp,code)
