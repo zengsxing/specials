@@ -498,7 +498,7 @@ function CUNGUI.DrawCount(e)
 end
 
 function CUNGUI.StandbySPSummon(e,tp)
-	if Duel.GetTurnCount()<3 or Duel.GetTurnPlayer()~=tp
+	if Duel.GetTurnCount()<2 or Duel.GetTurnPlayer()~=tp
 		or Duel.GetCurrentPhase()~=PHASE_STANDBY or e:GetLabel()==Duel.GetTurnCount() then return end
 	e:SetLabel(Duel.GetTurnCount())
 	CUNGUI.RandomSummon(tp)
