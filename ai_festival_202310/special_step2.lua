@@ -124,7 +124,7 @@
 --58481572 #暗爪
 
 --在第1回合的抽卡阶段，有50%几率从固定配置中随机初始场面。
---没能配置的场合，AI从特殊召唤列表中特殊召唤1只怪兽到AI场上。
+--没能配置的场合，AI从特殊召唤列表中特殊召唤1只怪兽到AI场上。如果为先攻，再特召1张。
 
 
 local CUNGUI={}
@@ -344,6 +344,9 @@ function CUNGUI.InitField(e,tp)
 		end
 	else
 		CUNGUI.RandomSummon(1-tp)
+		if Duel.GetTurnPlayer()==1-tp then
+			CUNGUI.RandomSummon(1-tp)
+		end
 	end
 	e:Reset()
 end
