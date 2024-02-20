@@ -62,7 +62,7 @@ function Auxiliary._init(e)
     if c==nil then return true end
     local tp=c:GetControler()
     local count=getTributeCount(e,c)
-    return Duel.CheckLPCost(tp,count*1000)
+    return Duel.CheckLPCost(tp,count*1000) and not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,nil)
   end)
   te:SetOperation(function(e,tp,eg,ep,ev,re,r,rp,c)
     if chk==0 then return true end
