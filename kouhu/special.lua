@@ -41,6 +41,18 @@ function Auxiliary._init(e)
   end)
   Duel.RegisterEffect(e1,0)
 
+  local function getTributeCount(e,c)
+    local count=0
+    if (e:GetCode()&(EFFECT_LIMIT_SUMMON_PROC|EFFECT_LIMIT_SET_PROC))>0 then
+      count=3
+    elseif c:IsLevelAbove(7) then
+      count=2
+    else
+      count=1
+    end
+    return count
+  end
+
   local te=Effect.CreateEffect(c1)
   te:SetDescription(11)
   te:SetType(EFFECT_TYPE_SINGLE)
@@ -49,13 +61,12 @@ function Auxiliary._init(e)
   te:SetCondition(function(e,c,minc)
     if c==nil then return true end
     local tp=c:GetControler()
-    local count=(e:GetCode()&(EFFECT_LIMIT_SUMMON_PROC|EFFECT_LIMIT_SET_PROC))>0 and 3 or minc
-    e:SetLabel(count)
-    return minc>0 and Duel.CheckLPCost(tp,count*1000)
+    local count=getTributeCount(e,c)
+    return Duel.CheckLPCost(tp,count*1000)
   end)
   te:SetOperation(function(e,tp,eg,ep,ev,re,r,rp,c)
     if chk==0 then return true end
-    local count=e:GetLabel()
+    local count=getTributeCount(e,c)
     Duel.PayLPCost(tp,count*1000)
     c:SetMaterial(nil)
   end)
