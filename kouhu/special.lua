@@ -1,10 +1,22 @@
 local extraTypes=TYPE_FUSION|TYPE_SYNCHRO|TYPE_XYZ|TYPE_LINK
+local bannedCards={
+  35316708,
+  4440873,
+  55773067,
+  3078576,
+}
 
 
 local function announceCard(tp,extra)
   local opCodes={extraTypes,OPCODE_ISTYPE}
   if not extra then
     table.insert(opCodes,OPCODE_NOT)
+  end
+  for _,bannedCard in ipairs(bannedCards) do
+    table.insert(opCodes,bannedCard)
+    table.insert(opCodes,OPCODE_ISCODE)
+    table.insert(opCodes,OPCODE_NOT)
+    table.insert(opCodes,OPCODE_AND)
   end
   local code=Duel.AnnounceCard(tp,table.unpack(opCodes))
   local c=Duel.CreateToken(tp,code)
