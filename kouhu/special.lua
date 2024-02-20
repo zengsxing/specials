@@ -41,19 +41,7 @@ function Auxiliary._init(e)
   end)
   Duel.RegisterEffect(e1,0)
 
-  e:Reset()
-end
-
-function Auxiliary.PreloadUds()
-	--adjust
-	local e1=Effect.GlobalEffect()
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetOperation(Auxiliary._init)
-	Duel.RegisterEffect(e1,0)
-
-  local te=Effect.GlobalEffect()
+  local te=Effect.CreateEffect(c1)
   te:SetDescription(11)
   te:SetType(EFFECT_TYPE_SINGLE)
   te:SetCode(EFFECT_SUMMON_PROC)
@@ -102,4 +90,16 @@ function Auxiliary.PreloadUds()
   makeGrant(EFFECT_LIMIT_SET_PROC, function(c)
     return c:IsHasEffect(EFFECT_LIMIT_SET_PROC)
   end)
+
+  e:Reset()
+end
+
+function Auxiliary.PreloadUds()
+	--adjust
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetOperation(Auxiliary._init)
+	Duel.RegisterEffect(e1,0)
 end
