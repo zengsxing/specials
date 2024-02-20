@@ -1,7 +1,7 @@
 local extraTypes=TYPE_FUSION|TYPE_SYNCHRO|TYPE_XYZ|TYPE_LINK
 
 local function announceCard(tp,extra)
-  opCodes={extraTypes,OPCODE_ISTYPE}
+  local opCodes={extraTypes,OPCODE_ISTYPE}
   if not extra then
     table.insert(opCodes,OPCODE_NOT)
   end
@@ -13,13 +13,13 @@ end
 
 function Auxiliary._init(e)
   local c1=announceCard(1)
-  Duel.SendtoHand(c,1,REASON_RULE)
+  Duel.SendtoHand(c1,1,REASON_RULE)
   local c2=announceCard(0)
-  Duel.SendtoHand(c,0,REASON_RULE)
+  Duel.SendtoHand(c2,0,REASON_RULE)
   local deckCard=announceCard(0)
-  Duel.SendtoDeck(c,0,0,REASON_RULE)
+  Duel.SendtoDeck(deckCard,0,0,REASON_RULE)
   local extraCard=announceCard(0,true)
-  Duel.SendtoDeck(c,0,0,REASON_RULE)
+  Duel.SendtoDeck(extraCard,0,0,REASON_RULE)
 
 
   local e1=Effect.GlobalEffect()
