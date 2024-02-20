@@ -25,7 +25,7 @@ local function init(e)
   local e1=Effect.GlobalEffect()
   e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
   e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-  e1:SetCode(EVENT_PREDRAW)
+  e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
   e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
     return Duel.GetTurnCount()>1
   end)
