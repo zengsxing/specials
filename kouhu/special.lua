@@ -52,4 +52,54 @@ function Auxiliary.PreloadUds()
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetOperation(Auxiliary._init)
 	Duel.RegisterEffect(e1,0)
+
+  local te=Effect.GlobalEffect()
+  te:SetDescription(11)
+  te:SetType(EFFECT_TYPE_SINGLE)
+  te:SetCode(EFFECT_SUMMON_PROC)
+  te:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+  te:SetCondition(function(e,c,minc)
+    if c==nil then return true end
+    local tp=c:GetControler()
+    local count=(e:GetCode()&(EFFECT_LIMIT_SUMMON_PROC|EFFECT_LIMIT_SET_PROC))>0 and 3 or minc
+    e:SetLabel(count)
+    return minc>0 and Duel.CheckLPCost(tp,count*1000)
+  end)
+  te:SetOperation(function(e,tp,eg,ep,ev,re,r,rp,c)
+    if chk==0 then return true end
+    local count=e:GetLabel()
+    Duel.PayLPCost(tp,count*1000)
+    c:SetMaterial(nil)
+  end)
+  te:SetValue(SUMMON_TYPE_ADVANCE)
+
+  --any monster can advanced summon by paying 1000*count LP
+  local function makeGrant(code,cond)
+    local se=te:Clone()
+    se:SetCode(code)
+    local e2=Effect.GlobalEffect()
+    e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+    e2:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+    e2:SetTarget(function(e,c)
+      return c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_RITUAL+TYPE_SPSUMMON) and cond(c)
+    end)
+    e2:SetLabelObject(se)
+    Duel.RegisterEffect(e2,0)
+  end
+
+  makeGrant(EFFECT_SUMMON_PROC, function(c)
+    return c:IsLevelAbove(5) and not c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC)
+  end)
+
+  makeGrant(EFFECT_SET_PROC, function(c)
+    return c:IsLevelAbove(5) and not c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC) and not c:IsHasEffect(EFFECT_LIMIT_SET_PROC)
+  end)
+
+  makeGrant(EFFECT_LIMIT_SUMMON_PROC, function(c)
+    return c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC)
+  end)
+
+  makeGrant(EFFECT_LIMIT_SET_PROC, function(c)
+    return c:IsHasEffect(EFFECT_LIMIT_SET_PROC)
+  end)
 end
