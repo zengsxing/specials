@@ -43,7 +43,7 @@ function Auxiliary._init(e)
 
   local function getTributeCount(e,c)
     local count=0
-    if (e:GetCode()&(EFFECT_LIMIT_SUMMON_PROC|EFFECT_LIMIT_SET_PROC))>0 then
+    if e:GetCode()==EFFECT_LIMIT_SUMMON_PROC or e:GetCode()==EFFECT_LIMIT_SET_PROC then
       count=3
     elseif c:IsLevelAbove(7) then
       count=2
