@@ -1,5 +1,6 @@
 local extraTypes=TYPE_FUSION|TYPE_SYNCHRO|TYPE_XYZ|TYPE_LINK
 
+
 local function announceCard(tp,extra)
   local opCodes={extraTypes,OPCODE_ISTYPE}
   if not extra then
@@ -106,6 +107,7 @@ function Auxiliary._init(e)
 end
 
 function Auxiliary.PreloadUds()
+  Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
 	--adjust
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -113,4 +115,34 @@ function Auxiliary.PreloadUds()
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetOperation(Auxiliary._init)
 	Duel.RegisterEffect(e1,0)
+
+	local e1=Effect.GlobalEffect()
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_REVERSE_DECK)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,1)
+	Duel.RegisterEffect(e2,0)
+
+  -- cannot draw when deck empty
+  for p=0,1 do
+    local e2=Effect.GlobalEffect()
+    e2:SetType(EFFECT_TYPE_FIELD)
+    e2:SetCode(EFFECT_CANNOT_DRAW)
+    e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e2:SetTargetRange(1,0)
+    e2:SetCondition(function(e)
+      return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_DECK,0)==0
+    end)
+    Duel.RegisterEffect(e2,p)
+  end
+
+
+  local old_duel_draw=Duel.Draw
+  Duel.Draw=function(p,count,reason)
+    local deckCount = Duel.GetFieldGroupCount(p,LOCATION_DECK,0)
+    if deckCount<count then
+      count=deckCount
+    end
+    return old_duel_draw(p,count,reason)
+  end
 end
