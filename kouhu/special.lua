@@ -11,7 +11,7 @@ local function announceCard(tp,extra)
 end
 
 
-local function init(e)
+function Auxiliary._init(e)
   local c1=announceCard(1)
   Duel.SendtoHand(c,1,REASON_RULE)
   local c2=announceCard(0)
@@ -50,6 +50,6 @@ function Auxiliary.PreloadUds()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
-	e1:SetOperation(init)
+	e1:SetOperation(Auxiliary._init)
 	Duel.RegisterEffect(e1,0)
 end
