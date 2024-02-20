@@ -116,7 +116,7 @@ function Auxiliary.PreloadUds()
 	e1:SetOperation(Auxiliary._init)
 	Duel.RegisterEffect(e1,0)
 
-	local e1=Effect.GlobalEffect()
+	local e2=Effect.GlobalEffect()
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_REVERSE_DECK)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
