@@ -36,7 +36,7 @@ function Auxiliary.PreloadUds()
 	Duel.RegisterEffect(e2,0)
 	-- AOJ thing
 	local e3=Effect.GlobalEffect()
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_FLAG_TRIGGER_O)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_BATTLE_START)
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE)
