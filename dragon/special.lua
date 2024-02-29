@@ -3,6 +3,10 @@ local function __isOriginalRace(c,r)
 	return t&r~=0
 end
 
+local function cond(c)
+	return __isOriginalRace(c,RACE_DRAGON) and not c:IsCode(65326118,39931513,91810826)
+end
+
 function Auxiliary.PreloadUds()
 	-- battle
 	local e1=Effect.GlobalEffect()
@@ -14,7 +18,7 @@ function Auxiliary.PreloadUds()
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e1:SetTarget(function(e,c)
-		return __isOriginalRace(c,RACE_DRAGON)
+		return cond(c)
 	end)
 	Duel.RegisterEffect(e1,0)
 	-- effect
@@ -27,7 +31,7 @@ function Auxiliary.PreloadUds()
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetTarget(function(e,c)
-		return __isOriginalRace(c,RACE_DRAGON) and c:IsFaceup()
+		return cond(c) and c:IsFaceup()
 	end)
 	Duel.RegisterEffect(e2,0)
 	-- AOJ thing
@@ -55,7 +59,7 @@ function Auxiliary.PreloadUds()
 	ge3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	ge3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	ge3:SetTarget(function(e,c)
-		return __isOriginalRace(c,RACE_DRAGON) and c:IsFaceup()
+		return cond(c) and c:IsFaceup()
 	end)
 	ge3:SetLabelObject(e3)
 	Duel.RegisterEffect(ge3,0)
