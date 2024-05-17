@@ -80,7 +80,7 @@ local function endPhaseSkill(code, op, con, both)
 end
 
 standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Draw(tp,2,REASON_RULE)
+  Duel.Draw(tp,5,REASON_RULE)
 end)
 
 phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
@@ -99,13 +99,13 @@ phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
 end,nil,true)
 
 standbyPhaseSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
-  if g:GetCount()>0 then
-	Duel.SendtoHand(g,nil,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,g)
-  end
-end, function(e,tp,eg,ep,ev,re,r,rp)
-  return Duel.IsExistingMatchingCard(Card.IsAbleToHand, tp, LOCATION_DECK, 0, 1, nil)
+  local ac=Duel.AnnounceCard(tp,TYPE_TOKEN,OPCODE_ISTYPE,OPCODE_NOT)
+  local c=Duel.CreateToken(tp,ac)
+	Duel.Remove(c,POS_FACEUP,REASON_RULE)
+	Duel.SendtoHand(c,nil,REASON_RULE)
+	if c:IsLocation(LOCATION_HAND) then
+		Duel.ConfirmCards(1-tp,c)
+	end
 end)
 
 standbyPhaseSkill(84257639, function(e,tp,eg,ep,ev,re,r,rp)
@@ -537,7 +537,7 @@ function c37313786_op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 
---[[
+
 wrapDeckSkill(72283691, function(e4)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAINING)
@@ -554,7 +554,7 @@ function c72283691_chainop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	destroyGold(tc)
 end
-]]
+
 
 local function initialize()
   local skillSelections={}
