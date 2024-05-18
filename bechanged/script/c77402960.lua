@@ -1,7 +1,6 @@
 --ヌメロン・ダイレクト
 function c77402960.initial_effect(c)
 	aux.AddCodeList(c,41418852)
-	Duel.EnableGlobalFlag(GLOBALFLAG_SPSUMMON_COUNT)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
