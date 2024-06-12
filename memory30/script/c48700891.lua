@@ -61,7 +61,7 @@ end
 function c48700891.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
   local bc=c:GetBattleTarget()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and bc:IsRelateToBattle() then
+	if c:IsRelateToEffect(e) and c:IsFaceup() and bc and bc:IsRelateToBattle() then
     local atk = bc:GetAttack()
     if atk <= 0 then return end
 		local e1=Effect.CreateEffect(c)
