@@ -80,7 +80,7 @@ local function endPhaseSkill(code, op, con, both)
 end
 
 standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Draw(tp,2,REASON_RULE)
+  Duel.Draw(tp,5,REASON_RULE)
 end)
 
 phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
@@ -99,22 +99,77 @@ phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
 end,nil,true)
 
 standbyPhaseSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
-  if g:GetCount()>0 then
-	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	local g=Group.CreateGroup()
+	for i = 1, 2, 1 do
+		local ac=Duel.AnnounceCard(tp,TYPE_TOKEN,OPCODE_ISTYPE,OPCODE_NOT)
+		local c=Duel.CreateToken(tp,ac)
+		g:AddCard(c)
+	end
+	Duel.SendtoHand(g,nil,REASON_RULE)
 	Duel.ConfirmCards(1-tp,g)
-  end
-end, function(e,tp,eg,ep,ev,re,r,rp)
-  return Duel.IsExistingMatchingCard(Card.IsAbleToHand, tp, LOCATION_DECK, 0, 1, nil)
 end)
 
+--治疗之神
 standbyPhaseSkill(84257639, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Recover(tp,8000,REASON_EFFECT)
+  Duel.Recover(tp,100000,REASON_EFFECT)
 end)
 
-endPhaseSkill(19523799, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Damage(1-tp,3200,REASON_EFFECT)
+addSkill(84257639, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	  e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	  e1:SetTargetRange(1,0)
+	  e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	  e1:SetValue(function (e,re,val,r,rp,rc)
+		return val/2
+	end)
 end)
+
+addSkill(84257639, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	  e1:SetCode(EFFECT_HAND_LIMIT)
+	  e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	  e1:SetTargetRange(1,0)
+	  e1:SetValue(3)
+end)
+
+--大火事
+endPhaseSkill(19523799, function(e,tp,eg,ep,ev,re,r,rp)
+  Duel.Damage(1-tp,800,REASON_EFFECT)
+end)
+
+addSkill(19523799, function(e1)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_ATTACK_COST)
+    e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetTargetRange(0,1)
+    e1:SetCost(c19523799_cost)
+    e1:SetOperation(c19523799_op)
+end)
+
+addSkill(19523799, function(e1)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_ACTIVATE_COST)
+    e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetTargetRange(0,1)
+    e1:SetCost(c19523799_cost)
+    e1:SetOperation(c19523799_op)
+end)
+
+addSkill(19523799, function(e1)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_SPSUMMON_COST)
+    e1:SetTargetRange(0,0x7f)
+    e1:SetCost(c19523799_cost)
+    e1:SetOperation(c19523799_op)
+end)
+
+function c19523799_cost(e,c,tp)
+    return Duel.CheckLPCost(tp,400)
+end
+
+function c19523799_op(e,tp,eg,ep,ev,re,r,rp)
+    Duel.PayLPCost(tp,400)
+end
 
 for _,event in ipairs({EVENT_SUMMON_SUCCESS,EVENT_FLIP_SUMMON_SUCCESS,EVENT_SPSUMMON_SUCCESS}) do
   wrapDeckSkill(23434538, function(e1)
@@ -177,9 +232,10 @@ end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.IsExistingMatchingCard(c69015963_filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 end)
 
+--闪电风暴
 standbyPhaseSkill(14532163, function(e,tp,eg,ep,ev,re,r,rp)
   local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	Duel.Remove(sg,POS_FACEUP,REASON_RULE)
 end, function(e,tp)
   return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 end)
@@ -203,9 +259,10 @@ addSkill(9952083, function(e1)
 end)
 
 local function destroyReplaceFilter(c,tp)
-  return c:IsControler(tp) and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_BATTLE))
+  return c:IsControler(tp) and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_BATTLE)) and c:GetReasonPlayer()==1-tp
 end
 
+--雾状躯体
 addSkill(47529357, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_IGNORE_IMMUNE)
@@ -220,6 +277,15 @@ addSkill(47529357, function(e1)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,47529357)
   end)
+end)
+addSkill(47529357, function(e1)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_CANNOT_REMOVE)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetTargetRange(0,1)
+	e1:SetTarget(function (e,c,p)
+		return c:IsControler(e:GetHandlerPlayer())
+	end)
 end)
 
 standbyPhaseSkill(73915051, function(e,tp,eg,ep,ev,re,r,rp)
@@ -336,34 +402,34 @@ function c18940556_tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 local function initializeLion(e,tp)
-  Duel.Hint(HINT_CARD,0,4392470)
-  local cc=Duel.CreateToken(tp,4392470)
-  Duel.MoveToField(cc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
-  local e4=Effect.CreateEffect(cc)
+	Duel.Hint(HINT_CARD,0,4392470)
+	local cc=Duel.CreateToken(tp,4392470)
+	Duel.MoveToField(cc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
+	local e4=Effect.CreateEffect(cc)
 	e4:SetType(EFFECT_TYPE_FIELD)
-  e4:SetCode(4392470)
-  e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-  e4:SetRange(LOCATION_MZONE)
-  e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-  e4:SetTargetRange(1,0)
-  cc:RegisterEffect(e4,true)
-  local e1=Effect.CreateEffect(cc)
-  e1:SetType(EFFECT_TYPE_SINGLE)
-  e1:SetCode(EFFECT_ADD_TYPE)
-  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CLIENT_HINT)
-  e1:SetDescription(1016)
-  e1:SetValue(TYPE_EFFECT)
-  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-  cc:RegisterEffect(e1,true)
-  local e4=Effect.CreateEffect(cc)
+	e4:SetCode(4392470)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e4:SetTargetRange(1,0)
+	cc:RegisterEffect(e4,true)
+	local e1=Effect.CreateEffect(cc)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_ADD_TYPE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetDescription(1016)
+	e1:SetValue(TYPE_EFFECT)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	cc:RegisterEffect(e1,true)
+	local e4=Effect.CreateEffect(cc)
 	e4:SetDescription(aux.Stringid(18940556,1))
 	e4:SetCategory(CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_BATTLE_CONFIRM)
 	e4:SetTarget(c18940556_tgtg)
 	e4:SetOperation(c18940556_tgop)
-  e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-  cc:RegisterEffect(e4,true)
+ 	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+  	cc:RegisterEffect(e4,true)
 end
 
 wrapDeckSkill(4392470, function(e1)
@@ -375,20 +441,22 @@ wrapDeckSkill(4392470, function(e1)
   e1:SetOperation(initializeLion)
 end)
 
+--釜底抽薪(强引的番兵)
 standbyPhaseSkill(42829885, function(e,tp,eg,ep,ev,re,r,rp)
   local p=tp
-	local g=Duel.GetFieldGroup(p,0,LOCATION_HAND)
-	if g:GetCount()>0 then
+	local g=Duel.GetFieldGroup(p,0,LOCATION_DECK)
+	if g:GetCount()>=8 then
 		Duel.ConfirmCards(p,g)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-		local sg=g:Select(p,1,1,nil)
-		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		Duel.ShuffleHand(1-p)
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+		local sg=g:Select(p,8,8,nil)
+		Duel.SendtoHand(sg,p,REASON_RULE)
+		Duel.ConfirmCards(1-p,g)
 	end
 end, function(e,tp,eg,ep,ev,re,r,rp)
-  return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.GetTurnPlayer()==1-tp
+  return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>=8 and Duel.GetTurnPlayer()==1-tp
 end, true)
 
+--奇门遁甲(永火恶魔)
 addSkill(99177923, function(e1)
   e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_LOSE_KOISHI)
@@ -398,9 +466,9 @@ addSkill(99177923, function(e1)
 end)
 
 endPhaseSkill(99177923, function(e,tp,eg,ep,ev,re,r,rp)
-  local g=Duel.GetDecktopGroup(tp,8)
+  	local g=Duel.GetDecktopGroup(tp,8)
 	Duel.DisableShuffleCheck()
-  Duel.Exile(g,REASON_EFFECT)
+  	Duel.SendtoGrave(g,REASON_RULE)
 end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.GetLP(tp)<=0
 end)
@@ -430,7 +498,341 @@ function c72283691_atkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker()
 	destroyGold(tc)
 end
---[[
+
+--桃李代僵（和睦的使者）
+addSkill(12607053, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	  e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	  e1:SetTargetRange(1,0)
+	  e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	  e1:SetValue(0)
+	  e1:SetCondition(function (e)
+		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_DECK,0)>=25
+	  end)
+end)
+
+oneTimeSkill(12607053, function(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_DECK,0)==35 then
+		local tc=Duel.CreateToken(tp,95308449)
+		Duel.SendtoHand(tc,tp,REASON_RULE)
+		Duel.ConfirmCards(1-tp,tc)
+	end
+end)
+
+--兵临城下（六武之门）
+oneTimeSkill(27970830, function(e,tp,eg,ep,ev,re,r,rp)
+	for i=1,3 do
+		local tc=Duel.CreateToken(tp,27970830)
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetRange(LOCATION_SZONE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e1:SetValue(1)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(tc)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e2:SetCode(EFFECT_CANNOT_REMOVE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetRange(LOCATION_SZONE)
+		tc:RegisterEffect(e2)
+		tc:CompleteProcedure()
+		tc:AddCounter(0x3,99)
+	end
+end)
+
+--草船借箭（敌人操纵器）
+endPhaseSkill(98045062, function(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,nil)
+	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if g:GetCount()>ct then
+		g=g:Select(tp,ct,ct,nil)
+	end
+	for tc in aux.Next(g) do
+		Duel.GetControl(tc,tp)
+	end
+	local sg=Duel.GetMatchingGroup(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,nil)
+	for tc in aux.Next(sg) do
+		Duel.SendtoGrave(tc,REASON_RULE)
+	end
+end, function(e,tp)
+	return Duel.GetTurnPlayer()==1-tp
+end, true)
+
+--4个2（赌博）
+wrapDeckSkill(37313786, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e1:SetOperation(c37313786_op)
+end)
+
+endPhaseSkill(37313786, function (e,tp,eg,ep,ev,re,r,rp)
+	c37313786_op(e,tp,eg,ep,ev,re,r,rp)
+end, nil, true)
+
+function c37313786_op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=0
+	local dice=0
+	for i=1,4 do
+		local dc=Duel.TossDice(tp,1)
+		if dc==2 then ct=ct+1 end
+		dice=dice+dc
+	end
+	if ct>0 then
+		if Duel.GetAttacker() then
+			Duel.NegateAttack()
+		end
+        if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>=2*ct then
+			local g=Duel.GetDecktopGroup(1-tp,2*ct)
+            Duel.DisableShuffleCheck()
+            Duel.Remove(g,POS_FACEUP,REASON_RULE)
+        end
+		if ct==4 then
+			local lp=Duel.GetLP(1-tp)-20220222
+			if lp<0 then lp=0 end
+			Duel.SetLP(1-tp,lp)
+		end
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(dice*100)
+	Duel.RegisterEffect(e1,tp)
+end
+
+--五行旗阵（背水之阵）
+addSkill(32603633, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	  e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	  e1:SetTargetRange(1,0)
+	  e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	  e1:SetCondition(function (e)
+		return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+	  end)
+end)
+
+oneTimeSkill(32603633, function(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.FromCards(Duel.CreateToken(tp,69025477),Duel.CreateToken(tp,95519486),Duel.CreateToken(tp,31904181),Duel.CreateToken(tp,90397998),Duel.CreateToken(tp,64398890))
+	for tc in aux.Next(g) do
+		Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
+		c32603633_createeffect(tp,tc)
+	end
+end)
+
+function c32603633_createeffect(tp,tc)
+	local e1=Effect.CreateEffect(tc)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetValue(1500)
+	tc:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(tc)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e2:SetValue(1)
+	tc:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	tc:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	tc:RegisterEffect(e4)
+	local e5=e2:Clone()
+	e5:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	tc:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(tc)
+	e6:SetCategory(CATEGORY_DESTROY)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_LEAVE_FIELD)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCondition(c32603633_con)
+	e6:SetOperation(c32603633_op)
+	Duel.RegisterEffect(e6,tp)
+	tc:CompleteProcedure()
+end
+
+function c32603633_con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return eg:IsContains(c) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
+end
+
+function c32603633_op(e,tp,eg,ep,ev,re,r,rp)
+	local code=e:GetHandler():GetOriginalCode()
+	Duel.Hint(HINT_CARD,0,code)
+	local cc=Duel.CreateToken(tp,code)
+	Duel.MoveToField(cc,tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
+	c32603633_createeffect(tp,cc)
+	local lp=Duel.GetLP(1-tp)-1500
+	if lp<0 then lp=0 end
+	Duel.SetLP(1-tp,lp)
+	local g=Duel.GetDecktopGroup(1-tp,8)
+	Duel.DisableShuffleCheck()
+	Duel.SendtoGrave(g,REASON_RULE)
+end
+
+--四象之阵
+oneTimeSkill(13513663, function(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.FromCards(Duel.CreateToken(tp,26400609),Duel.CreateToken(tp,53804307),Duel.CreateToken(tp,89399912),Duel.CreateToken(tp,90411554))
+	Duel.SendtoGrave(g,REASON_RULE)
+	for tc in aux.Next(g) do
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+		e1:SetCode(EFFECT_SPSUMMON_PROC)
+		e1:SetRange(LOCATION_GRAVE)
+		e1:SetCondition(c13513663_con)
+		e1:SetOperation(function ()
+			Duel.RegisterFlagEffect(tp,100000000+tc:GetOriginalCode(),RESET_PHASE+PHASE_END+EFFECT_FLAG_OATH,0,1)
+		end)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(tc)
+		e2:SetDescription(2)
+		e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+		e2:SetProperty(EFFECT_FLAG_DELAY)
+		e2:SetCode(EVENT_REMOVE)
+		e2:SetTarget(c13513663_tg)
+		e2:SetOperation(c13513663_op)
+		tc:RegisterEffect(e2)
+	end
+end)
+
+function c13513663_con(e,c)
+    if c==nil then return true end
+    if c:IsHasEffect(EFFECT_NECRO_VALLEY) and c:IsLocation(LOCATION_GRAVE) then return false end
+    local tp=c:GetControler()
+    return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,100000000+c:GetOriginalCode())==0
+end
+
+function c13513663_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+    local c=e:GetHandler()
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,100000000+c:GetOriginalCode())==0
+        and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.RegisterFlagEffect(tp,100000000+c:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+
+function c13513663_op(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    if c:IsRelateToEffect(e) then
+        Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+    end
+end
+
+standbyPhaseSkill(13513663,function (e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(function (tc)
+		return tc:IsCanBeSpecialSummoned(e,0,tp,true,true) and tc:IsType(TYPE_MONSTER)
+		and (tc:IsAttribute(ATTRIBUTE_FIRE) or tc:IsAttribute(ATTRIBUTE_EARTH) or tc:IsAttribute(ATTRIBUTE_WATER) or tc:IsAttribute(ATTRIBUTE_WIND))
+	end,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=g:SelectSubGroup(tp,aux.dabcheck,true,0,4)
+	Duel.SpecialSummon(sg,0,tp,tp,true,true,POS_FACEUP)
+end, nil, true)
+
+--突破极限(流天)
+oneTimeSkill(35952884, function(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.FromCards(Duel.CreateToken(tp,90953320),Duel.CreateToken(tp,90953320),Duel.CreateToken(tp,90953320))
+	Duel.SendtoDeck(g,nil,0,REASON_RULE)
+	local tc=Duel.CreateToken(tp,53855409)
+	Duel.SendtoGrave(tc,REASON_RULE)
+end)
+
+addSkill(35952884, function(e1)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+    e1:SetTargetRange(0,1)
+    e1:SetValue(function (e,re)
+		return re:GetHandler():IsCode(94145021,27204311,91800273)
+	end)
+end)
+
+addSkill(35952884, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetCode(EFFECT_CANNOT_REMOVE)
+    e1:SetTargetRange(0,1)
+	e1:SetTarget(function (e,c,rp,r,re)
+		local tp=e:GetHandlerPlayer()
+		return c:IsFaceupEx() and c:IsControler(tp) and rp==1-tp and c:IsType(TYPE_SYNCHRO)
+	end)
+end)
+
+addSkill(35952884, function(e1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_CHANGE_CONTROL)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(function (e,c)
+		return c:IsType(TYPE_SYNCHRO) and c:GetControler()==e:GetHandlerPlayer()
+	end)
+end)
+
+--远交近攻(强制转移) 
+endPhaseSkill(31036355, function (e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToChangeControler,tp,LOCATION_MZONE,0,0,5,nil)
+	for tc in aux.Next(g) do
+		Duel.GetControl(tc,1-tp)
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetCode(EFFECT_IGNORE_BATTLE_TARGET)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetReset(RESET_PHASE+RESETS_STANDARD)
+		e1:SetValue(1)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(tc)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetValue(1)
+		tc:RegisterEffect(e2)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+		tc:RegisterEffect(e3)
+		local e4=e2:Clone()
+		e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		tc:RegisterEffect(e4)
+		local e5=e2:Clone()
+		e5:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+		tc:RegisterEffect(e5)
+		local e6=Effect.CreateEffect(tc)
+		e6:SetType(EFFECT_TYPE_SINGLE)
+		e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e6:SetRange(LOCATION_MZONE)
+		e6:SetCode(EFFECT_UNRELEASABLE_SUM)
+		e6:SetValue(1)
+		e6:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e6)
+		local e7=e6:Clone()
+		e7:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+		tc:RegisterEffect(e7)
+		local e8=Effect.CreateEffect(tc)
+		e8:SetType(EFFECT_TYPE_SINGLE)
+		e8:SetCode(EFFECT_CANNOT_ATTACK)
+		e8:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e8)
+	end
+end, nil, true)
+
+addSkill(31036355,function (e1)
+    e1:SetDescription(aux.Stringid(37991342,0))
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_SUMMON_PROC)
+	e1:SetTargetRange(LOCATION_HAND,0)
+    e1:SetTarget(function (e,c,minc)
+		if c==nil then return true end
+		return c:IsLevelAbove(5) and c:IsLevelBelow(6) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+	end)
+end)
+
 wrapDeckSkill(72283691, function(e4)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAINING)
@@ -447,21 +849,29 @@ function c72283691_chainop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	destroyGold(tc)
 end
-]]
+
 
 local function initialize()
   local skillSelections={}
   local skillCodes=getAllSkillCodes()
-  for tp=0,1 do
-	local g=Group.CreateGroup()
+  local res=Duel.TossCoin(0,1)
+  for tp=1-res, res, 2*res-1 do
+    local codes={}
 	for _,code in ipairs(skillCodes) do
-	  local c=Duel.CreateToken(tp,code)
-	  Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
-	  g:AddCard(c)
+		table.insert(codes,code)
 	end
-	local tc=g:Select(tp,1,1,nil):GetFirst()
-	skillSelections[tp]=tc:GetOriginalCode()
-	Duel.Exile(g,REASON_RULE)
+    table.sort(codes)
+    local afilter={codes[1],OPCODE_ISCODE}
+    if #codes>1 then
+        for i=2,#codes do
+            table.insert(afilter,codes[i])
+            table.insert(afilter,OPCODE_ISCODE)
+            table.insert(afilter,OPCODE_OR)
+        end
+    end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+    local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
+	skillSelections[tp]=ac
   end
   for tp=0,1 do
 	registerSkillForPlayer(tp,skillSelections[tp])
