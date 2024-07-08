@@ -2,7 +2,7 @@
 --Boss会有1或16张额外，第1或16张额外为龙魔导（37818794）
 --这张卡开局时会被撕掉（标记为AI）
 
---AI的回合开始时：
+--回合开始时，回合玩家抽1张赌博卡。
 --AI手卡在2以下，则额外抽到【圣杯A】
 --AI基本分在700以下，则额外抽到【大逆转谜题】【风魔手里剑】
 --玩家基本分在2000以下，则额外抽到【命运的分岔道】【火焰飞镖】
@@ -72,10 +72,14 @@ function CUNGUI.CheckAI(e)
     if a0 > 15 and #c0>0 then
 		Duel.Exile(c0:GetFirst(),REASON_RULE)
 		CUNGUI.StartAI(0)
+	else
+		CUNGUI.StartHuman(0)
     end
     if a1 > 15 and #c1>0 then
 		Duel.Exile(c1:GetFirst(),REASON_RULE)
 		CUNGUI.StartAI(1)
+	else
+		CUNGUI.StartHuman(1)
     end
 	if SP_RULE then
 		if SP_RULE.Card then
@@ -103,6 +107,25 @@ function CUNGUI.CheckAI(e)
 		end
 	end
 	e:Reset()
+end
+
+function CUNGUI.StartHuman(tp)
+	--adjust
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetCountLimit(1,34567890)
+	e1:SetOperation(CUNGUI.HumanDraw)
+	Duel.RegisterEffect(e1,tp)
+end
+
+function CUNGUI.HumanDraw(e,tp)
+	if Duel.GetTurnPlayer()~=tp then return end
+	local id=CUNGUI.GambleCards[math.random(#CUNGUI.GambleCards)]
+	local c=Duel.CreateToken(tp,id)
+    Duel.SendtoDeck(c,tp,SEQ_DECKTOP,REASON_RULE)
+	Duel.Draw(tp,1,REASON_RULE)
 end
 
 function RuleCardMove(e,tp)
@@ -187,7 +210,13 @@ function SpecialRuleAdjust(e,tp)
 end
 
 function CUNGUI.AICheckDraw(e,tp)
-	CUNGUI.AIDrawCountEffect:SetLabel(Duel.GetDrawCount(e:GetOwner()))
+	if Duel.GetTurnPlayer()~=tp then return end
+	CUNGUI.AIDrawCountEffect:SetLabel(Duel.GetDrawCount(tp))
+
+	--额外抽1张赌博卡
+	local code = CUNGUI.GambleCards[math.random(#CUNGUI.GambleCards)]
+	CUNGUI.CreateCardForAIDraw(tp,code)
+
 	--AI手卡在2以下，则额外抽到【圣杯A】37812118
 	if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<3 then
         CUNGUI.CreateCardForAIDraw(tp,37812118)
@@ -221,10 +250,19 @@ function CUNGUI.AICheckDraw(e,tp)
         CUNGUI.CreateCardForAIDraw(tp,43422537)
 	end
 
-	--玩家后场5张，抽卡阶段直接发动【同花顺25173686】
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_SZONE)>=5 then
-        CUNGUI.CreateCardForAIDraw(tp,25173686)
+	local royal = true
+	for i=0,4 do
+		if Duel.GetFieldCard(1-tp,LOCATION_SZONE,i)==nil then royal = false end
 	end
+	--玩家后场5张，抽卡阶段直接使用1次【同花顺25173686】效果
+	if royal then
+		local sg=Duel.GetMatchingGroup(CUNGUI.royalfilter,tp,0,LOCATION_SZONE,nil)
+		Duel.Destroy(sg,REASON_EFFECT)
+	end
+end
+
+function CUNGUI.royalfilter(c)
+	return c:GetSequence()<5
 end
 
 function CUNGUI.CreateCardForAIDraw(tp,code)
