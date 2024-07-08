@@ -22,14 +22,11 @@ function SP_RULE.InitRuleCard(c)
 	e2:SetRange(LOCATION_REMOVED)
     e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetCountLimit(1,98765432)
+	e2:SetTarget(SP_RULE.target)
 	e2:SetOperation(SP_RULE.operation)
 	c:RegisterEffect(e2)
 end
-function c58577036.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
-end
-function SP_RULE.operation(e,tp,eg,ep,ev,re,r,rp)
+function SP_RULE.target(e,tp,eg,ep,ev,re,r,rp)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummon(tp) and not Duel.IsPlayerAffectedByEffect(tp,63060238) and not Duel.IsPlayerAffectedByEffect(tp,97148796)
 		and Duel.IsExistingMatchingCard(Card.IsSummonableCard,tp,LOCATION_DECK,0,1,nil) and Duel.IsPlayerCanDiscardDeck(tp,1) end

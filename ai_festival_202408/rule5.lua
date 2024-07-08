@@ -13,7 +13,7 @@ SP_RULE.Message=["所有怪兽得到以下效果外文本。",
 
 --第一个抽卡阶段执行，tp是AI
 function SP_RULE.InitAdjust(tp)
-    local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_EXTRA,LOCATION_DECK+LOCATION_EXTRA)
+    local g=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA+LOCATION_HAND)
     for tc in aux.Next(g) do
         if tc:IsType(TYPE_MONSTER) then
             --Atk update

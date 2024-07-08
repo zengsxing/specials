@@ -18,7 +18,7 @@ function SP_RULE.InitAdjust(e,tp)
         g:Merge(g2)
         Duel.Remove(g,POS_FACEDOWN,REASON_RULE)
         for c in aux.Next(g) do
-            c:RegisterFlagEffect(98765432,RESET_EVENT+RESETS_STANDARD)
+            c:RegisterFlagEffect(98765432,RESET_EVENT+RESETS_STANDARD,0,1)
         end
         SP_RULE.Init = true
     end

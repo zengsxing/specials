@@ -37,7 +37,7 @@ function Auxiliary.PreloadUds()
 	Duel.RegisterEffect(e1,0)
 
 	--要执行的特殊规则
-	--本次活动中，一阶段=8，二阶段=15
+	--本次活动中，一阶段=8，二阶段=13
 	local RULE_MAX_INDEX = 8
 	Duel.LoadScript("rule" .. tostring(math.random(RULE_MAX_INDEX)) .. ".lua")
 	if SP_RULE and SP_RULE.Init then
@@ -50,18 +50,118 @@ function Auxiliary.PreloadUds()
 ]]--
 end
 
+CUNGUI.ChestCheck=10
+
 function InitRefreshChest()
 	--adjust
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_ADJUST)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetOperation(CUNGUI.RefreshChestCheck)
 	Duel.RegisterEffect(e1,0)
 end
 
-function CUNGUI.RefreshChestCheck(e)
+function CUNGUI.RefreshChestCheck(e,tp,eg,ep,ev,re,r,rp)
+	if re:GetHandler():IsCode(table.unpack(CUNGUI.GambleCards)) then
+		if math.random(CUNGUI.ChestCheck) == 1 then
+			if CUNGUI.CreateChest(math.random(2)-1) then
+				CUNGUI.ChestCheck = CUNGUI.ChestCheck + 2
+			end
+		end
+		CUNGUI.ChestCheck = math.max(1, CUNGUI.ChestCheck - 1)
+	end
+end
 
+function CUNGUI.CreateChest(tp)
+	CUNGUI.CreateChestStep(tp)
+	Duel.SpecialSummonComplete()
+end
+
+CUNGUI.Chests={}
+CUNGUI.Chests[0]=Group.CreateGroup()
+CUNGUI.Chests[1]=Group.CreateGroup()
+function CUNGUI.CreateChestStep(tp)
+	local c=Duel.CreateToken(tp,1102515)
+	if not Duel.SpecialSummonStep(c,0,tp,tp,true,true,POS_FACEUP_ATTACK) then return nil end
+	
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCode(EVENT_BATTLE_DESTROYED)
+	e1:SetReset(RESET_EVENT+RESET_TOFIELD+RESET_MSCHANGE+RESET_TEMP_REMOVE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCondition(CUNGUI.chestcond)
+	e1:SetTarget(CUNGUI.chesttg)
+	e1:SetOperation(CUNGUI.chestop)
+	c:RegisterEffect(e1)
+
+	e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BATTLED)
+	e2:SetReset(RESET_EVENT+RESET_TOFIELD+RESET_MSCHANGE+RESET_TEMP_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetOperation(CUNGUI.chestreg)
+	e2:SetLabelObject(e1)
+	c:RegisterEffect(e2)
+
+	CUNGUI.Chests[tp]:AddCard(c)
+	return c
+end
+
+function CUNGUI.chestreg(e,tp)
+	local i=0
+	if Duel.GetAttacker()==e:GetHandler() then
+		i=1
+	end
+	e2:GetLabelObject():SetLabel(i)
+end
+
+function CUNGUI.chestcond(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLocation(LOCATION_GRAVE)
+end
+
+CUNGUI.ChestEffectIndex=10 --待调整
+
+function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
+	if chk==0 then return true end
+	if e:GetLabel()==1 then rp = tp end
+	local i=math.random(CUNGUI.ChestEffectIndex)
+	e:SetLabelObject(i)
+	Duel.LoadScript("chest" .. tostring(i) .. ".lua")
+
+	if CHEST then
+		local name = "你"
+		if CUNGUI.AI == rp then
+			name = "你的对手"
+		end
+		Debug.Message(name .. "狩猎了一个宝箱怪！")
+		if CHEST.Name then
+			Debug.Message(name .. "打开了宝箱，发现里面的宝物是" .. CHEST.Name .. "！")
+		elseif CHEST.Message then
+			Debug.Message(name .. "打开了宝箱，" .. CHEST.Message)
+		elseif CHEST.MessageAbsolute then
+			Debug.Message(CHEST.MessageAbsolute(rp))
+		end
+	end
+end
+
+function CUNGUI.chestop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetLabel()==1 then rp = tp end
+	--对撞会同时触发2个，在这里要重新载入一次
+	Duel.LoadScript("chest" .. tostring(e:GetLabelObject()) .. ".lua")
+	if CHEST and CHEST.BattleDestroyedEffect then
+		if CHEST.EffectMessage then
+			local name = "你"
+			if CUNGUI.AI == rp then
+				name = "你的对手"
+			end
+			Debug.Message(name .. CHEST.EffectMessage)
+		elseif CHEST.EffectMessageAbsolute then
+			Debug.Message(CHEST.EffectMessageAbsolute(rp))
+		end
+		CHEST.BattleDestroyedEffect(e,rp)
+	end
+	e:Reset()
 end
 
 function CUNGUI.CheckAI(e)
