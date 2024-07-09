@@ -7,9 +7,9 @@ CHEST={}
 CHEST.Name = "绝望"
 
 --效果名称。同样二选一，EffectMessage优先级更高。
-function CHEST.EffectMessageAbsolute(rp)
-    local name="你"
-    if rp == CUNGUI.AI then name = "你的对手" end
+function CHEST.EffectMessageAbsolute(e,rp)
+    local name=CUNGUI.GetPlayerName()
+    if rp == CUNGUI.AI then name = CUNGUI.GetAIName() end
     local g=Duel.GetFieldGroup(rp,0,LOCATION_MZONE)
     if #g>0 then
         return name .. "顿时觉得眼前的敌人高不可攀……"
@@ -19,7 +19,7 @@ end
 
 --战斗破坏时发动的效果。
 function CHEST.BattleDestroyedEffect(e,rp)
-    local g=Duel.GetFieldGroup(rp,LOCATION_MZONE,0)
+    local g=Duel.GetFieldGroup(rp,0,LOCATION_MZONE)
     for c in aux.Next(g) do
         local e1=Effect.CreateEffect(c)
         e1:SetType(EFFECT_TYPE_SINGLE)

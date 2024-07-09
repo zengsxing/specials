@@ -130,9 +130,9 @@ function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
 	Duel.LoadScript("chest" .. tostring(i) .. ".lua")
 
 	if CHEST then
-		local name = "你"
+		local name = CUNGUI.GetPlayerName()
 		if CUNGUI.AI == rp then
-			name = "你的对手"
+			name = CUNGUI.GetAIName()
 		end
 		Debug.Message(name .. "狩猎了一个宝箱怪！")
 		if CHEST.Name then
@@ -145,19 +145,27 @@ function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+function CUNGUI.GetAIName()
+	return "你的对手"
+end
+
+function CUNGUI.GetPlayerName()
+	return "你"
+end
+
 function CUNGUI.chestop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==1 then rp = tp end
 	--对撞会同时触发2个，在这里要重新载入一次
 	Duel.LoadScript("chest" .. tostring(e:GetLabelObject()) .. ".lua")
 	if CHEST and CHEST.BattleDestroyedEffect then
 		if CHEST.EffectMessage then
-			local name = "你"
+			local name = CUNGUI.GetPlayerName()
 			if CUNGUI.AI == rp then
-				name = "你的对手"
+				name = CUNGUI.GetAIName()
 			end
 			Debug.Message(name .. CHEST.EffectMessage)
 		elseif CHEST.EffectMessageAbsolute then
-			Debug.Message(CHEST.EffectMessageAbsolute(rp))
+			Debug.Message(CHEST.EffectMessageAbsolute(e,rp))
 		end
 		CHEST.BattleDestroyedEffect(e,rp)
 	end
