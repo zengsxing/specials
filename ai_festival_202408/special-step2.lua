@@ -38,16 +38,14 @@ function Auxiliary.PreloadUds()
 
 	--要执行的特殊规则
 	--本次活动中，一阶段=8，二阶段=13
-	local RULE_MAX_INDEX = 8
+	local RULE_MAX_INDEX = 13
 	Duel.LoadScript("rule" .. tostring(math.random(RULE_MAX_INDEX)) .. ".lua")
 	if SP_RULE and SP_RULE.Init then
 		SP_RULE.Init()
 	end
---[[第一阶段的宝箱怪被抠辣.jpg
     if math.random(2)==1 then
         InitRefreshChest()
     end
-]]--
 end
 
 CUNGUI.ChestCheck=10
