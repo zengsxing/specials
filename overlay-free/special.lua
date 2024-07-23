@@ -7,9 +7,9 @@ function aux.PreloadUds()
 	e1:SetRange(LOCATION_EXTRA)
   local function alterf(c,e,tp,xyzc)
     if xyzc:IsSetCard(0x1048) then
-      return c:IsSetCard(0x48) and aux.GetXyzNumber(c)==aux.GetXyzNumber(xyzc) and c:IsRank(xyzc:GetRank()-1)
+      return c:IsSetCard(0x48) and aux.GetXyzNumber(c)==aux.GetXyzNumber(xyzc) and c:IsRank(xyzc:GetRank()-1) and not c:IsSetCard(0x1048)
     else
-      return c:IsRank(xyzc:GetRank()-1) and c:IsRace(xyzc:GetRace())
+      return c:IsRank(xyzc:GetRank()-1) and c:IsRace(xyzc:GetRace()) and not c:IsSetCard(0x1073) and not c:IsSetCard(0x48)
     end
   end
   local params={aux.FALSE,13,2,2,alterf,aux.Stringid(58600555,2),nil}
