@@ -1,4 +1,5 @@
 local skillLists={}
+local skillSelections={}
 
 local function addSkill(code, skill)
   if not skillLists[code] then
@@ -234,6 +235,7 @@ end)
 
 --闪电风暴
 standbyPhaseSkill(14532163, function(e,tp,eg,ep,ev,re,r,rp)
+	if skillSelections[1-tp]==47529357 then return end
   local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Remove(sg,POS_FACEUP,REASON_RULE)
 end, function(e,tp)
@@ -852,7 +854,6 @@ end
 
 
 local function initialize()
-  local skillSelections={}
   local skillCodes=getAllSkillCodes()
   local res=Duel.TossCoin(0,1)
   for tp=1-res, res, 2*res-1 do
