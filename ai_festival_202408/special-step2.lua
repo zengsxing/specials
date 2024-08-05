@@ -45,6 +45,7 @@ function Auxiliary.PreloadUds()
 	end
     if math.random(2)==1 then
         InitRefreshChest()
+		Debug.Message("宝箱怪们在蠢蠢欲动……")
     end
 end
 
@@ -72,8 +73,9 @@ function CUNGUI.RefreshChestCheck(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function CUNGUI.CreateChest(tp)
-	CUNGUI.CreateChestStep(tp)
+	local c = CUNGUI.CreateChestStep(tp)
 	Duel.SpecialSummonComplete()
+	return c
 end
 
 CUNGUI.Chests={}

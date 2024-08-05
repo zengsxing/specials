@@ -360,6 +360,7 @@ function CUNGUI.AICheckDraw(e,tp)
         CUNGUI.CreateCardForAIDraw(tp,43422537)
 	end
 
+	--[[
 	local royal = true
 	for i=0,4 do
 		if Duel.GetFieldCard(1-tp,LOCATION_SZONE,i)==nil then royal = false end
@@ -369,6 +370,7 @@ function CUNGUI.AICheckDraw(e,tp)
 		local sg=Duel.GetMatchingGroup(CUNGUI.royalfilter,tp,0,LOCATION_SZONE,nil)
 		Duel.Destroy(sg,REASON_EFFECT)
 	end
+	]]--
 end
 
 function CUNGUI.royalfilter(c)
