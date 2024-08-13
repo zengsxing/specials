@@ -307,7 +307,7 @@ function CUNGUI.SpecialRuleAdjustCond(e,tp)
 	return (not SP_RULE.Card) or (SP_RULE.CardGroup and SP_RULE.CardGroup[tp])
 end
 
-function SpecialRuleAdjust(e,tp)
+function CUNGUI.SpecialRuleAdjust(e,tp)
 	if e:GetLabel()==1 then return end
 	e:SetLabel(1)
 	SP_RULE.InitAdjust(e,tp)
