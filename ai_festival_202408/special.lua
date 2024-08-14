@@ -191,7 +191,7 @@ function CUNGUI.CheckAI(e)
     end
 	if SP_RULE then
 		if SP_RULE.Card then
-			SP_RULE.CardGroup={}
+			CUNGUI.RuleCardGroup={}
 			--创造并固定规则卡
 			local e1=Effect.GlobalEffect()
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -244,7 +244,7 @@ function RuleCardMove(e,tp)
 			SP_RULE.InitRuleCard(c)
 		end
 		e:SetLabelObject(c)
-		SP_RULE.CardGroup[tp]=c
+		CUNGUI.RuleCardGroup[tp]=c
 	end
 	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then
 		Duel.SendtoGrave(c,REASON_RULE)
@@ -304,10 +304,10 @@ function CUNGUI.StartAI(tp)
 end
 
 function CUNGUI.SpecialRuleAdjustCond(e,tp)
-	return (not SP_RULE.Card) or (SP_RULE.CardGroup and SP_RULE.CardGroup[tp])
+	return (not SP_RULE.Card) or not (CUNGUI.RuleCardGroup and CUNGUI.RuleCardGroup[tp])
 end
 
-function SpecialRuleAdjust(e,tp)
+function CUNGUI.SpecialRuleAdjust(e,tp)
 	if e:GetLabel()==1 then return end
 	e:SetLabel(1)
 	SP_RULE.InitAdjust(e,tp)
