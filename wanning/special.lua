@@ -1115,7 +1115,7 @@ addSkill(51684157, function(e1)
 	e1:SetTargetRange(LOCATION_HAND,0)
     e1:SetCondition(function (e,c,minc)
 		if c==nil then return true end
-		return minc==0 and (tc:IsRace(RACE_WYRM) or tc:IsSetCard(0x1a2)) and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		return minc==0 and (c:IsRace(RACE_WYRM) or c:IsSetCard(0x1a2)) and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 	end)
 end)
 
