@@ -1113,7 +1113,7 @@ addSkill(51684157, function(e1)
 	e1:SetDescription(aux.Stringid(37991342,0))
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SUMMON_PROC)
-	e1:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+	e1:SetTargetRange(LOCATION_HAND,0)
     e1:SetCondition(function (e,c,minc)
 		if c==nil then return true end
 		return minc==0 and (c:IsRace(RACE_WYRM) or c:IsSetCard(0x1a2)) and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
