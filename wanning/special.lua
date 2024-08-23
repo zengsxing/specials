@@ -1113,7 +1113,7 @@ addSkill(51684157, function(e1)
 	e1:SetDescription(aux.Stringid(37991342,0))
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_SUMMON_PROC)
-	e1:SetTargetRange(LOCATION_HAND,0)
+		e1:SetTargetRange(LOCATION_HAND,0)
     e1:SetCondition(function (e,c,minc)
 		if c==nil then return true end
 		return minc==0 and (c:IsRace(RACE_WYRM) or c:IsSetCard(0x1a2)) and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
@@ -1154,7 +1154,7 @@ standbyPhaseSkill(51684157, function (e,tp,eg,ep,ev,re,r,rp)
 		return tc:IsRace(RACE_WYRM) or tc:IsSetCard(0x1a2)
 	end,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,10,nil)
 	if g:GetCount()>0 then
-		local mg=mg:Filter(function(c) return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end,nil)
+		local mg=g:Filter(function(c) return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end,nil)
 		local ft=math.min((Duel.GetMZoneCount(tp)), 5)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=mg:Select(tp,0,ft,nil)
