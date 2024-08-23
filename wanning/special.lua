@@ -1157,8 +1157,10 @@ standbyPhaseSkill(51684157, function (e,tp,eg,ep,ev,re,r,rp)
 		local mg=mg:Filter(function(c) return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end,nil)
 		local ft=math.min((Duel.GetMZoneCount(tp)), 5)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=mg:Select(tp,1,ft,nil)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		local sg=mg:Select(tp,0,ft,nil)
+		if #sg>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end
 		local ag=g-sg
 		if ag:GetCount()>0 then
 			Duel.SendtoHand(ag,tp,REASON_RULE)
