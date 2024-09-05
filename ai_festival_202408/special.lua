@@ -120,7 +120,7 @@ function CUNGUI.chestcond(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
 
-CUNGUI.ChestEffectIndex=10 --待调整
+CUNGUI.ChestEffectIndex=2 --待调整
 
 function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
 	if chk==0 then return true end
@@ -239,7 +239,7 @@ function CUNGUI.HumanDraw(e,tp)
 	Duel.Draw(tp,1,REASON_RULE)
 end
 
-function RuleCardMove(e,tp)
+function CUNGUI.RuleCardMove(e,tp)
 	local c=e:GetLabelObject()
 	if not c then
 		c=Duel.CreateToken(tp,e:GetLabel())
