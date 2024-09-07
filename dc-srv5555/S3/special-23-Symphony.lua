@@ -28,7 +28,9 @@ CUNGUI.RegisteredMonsters = Group.CreateGroup()
 
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	local g = Duel.GetMatchingGroup(nil,0,0x7f,0x7f,nil)
-	g:ForEach(CUNGUI.RegisterMonsterSpecialEffects)
+	for c in aux.Next(g) do
+		CUNGUI.RegisterMonsterSpecialEffects(c)
+	end
 	if not CUNGUI.DrawInit then
 		CUNGUI.DrawInit = true
 		Duel.Draw(1,2,REASON_RULE)
