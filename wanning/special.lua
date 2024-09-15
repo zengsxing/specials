@@ -370,6 +370,7 @@ addSkill(13171876, function(e1)
     e1:SetTargetRange(1,0)
 	e1:SetCondition(function (e)
 		local tp=e:GetHandlerPlayer()
+		if not tp then return false end
 		local lp_tp=Duel.GetLP(tp)
 		local lp_op=Duel.GetLP(1-tp)
 		return lp_tp>lp_op and lp_tp-lp_op>=1000
