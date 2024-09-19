@@ -661,18 +661,20 @@ end, nil, true)
 function c37313786_op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=0
+	local ct2=0
 	local dice=0
 	for i=1,4 do
 		local dc=Duel.TossDice(tp,1)
 		if dc==2 then ct=ct+1 end
+		if dc==2 or dc==6 then ct2=ct2+1 end
 		dice=dice+dc
 	end
 	if ct>0 then
 		if Duel.GetAttacker() then
 			Duel.NegateAttack()
 		end
-        if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>=2*ct then
-			local g=Duel.GetDecktopGroup(1-tp,2*ct)
+        if ct2>0 then
+			local g=Duel.GetDecktopGroup(1-tp,2*ct2)
             Duel.DisableShuffleCheck()
             Duel.Remove(g,POS_FACEUP,REASON_RULE)
         end
@@ -1068,7 +1070,7 @@ addSkill(94820406, function(e1)
 	end)
 end)
 
-addSkill(94820406, function(e1)
+wrapDeckSkill(94820406, function(e1)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
@@ -1097,7 +1099,7 @@ addSkill(94820406, function(e1)
 	end)
 end)
 
-addSkill(51684157, function(e1)
+wrapDeckSkill(51684157, function(e1)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
@@ -1172,7 +1174,7 @@ standbyPhaseSkill(51684157, function (e,tp,eg,ep,ev,re,r,rp)
 	end
 end)
 
-addSkill(92714517, function(e1)
+wrapDeckSkill(92714517, function(e1)
     e1:SetType(EFFECT_TYPE_FIELD)
     e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_ONFIELD,0)
