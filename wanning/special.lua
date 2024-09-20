@@ -80,10 +80,6 @@ local function endPhaseSkill(code, op, con, both)
   phaseSkill(code, PHASE_END, op, con, both)
 end
 
-standbyPhaseSkill(48356796, function(e,tp,eg,ep,ev,re,r,rp)
-  Duel.Draw(tp,5,REASON_RULE)
-end)
-
 phaseSkill(22959079, PHASE_BATTLE_START, function(e,tp,eg,ep,ev,re,r,rp)
   local a1,a2,a3=Duel.TossCoin(tp,3)
   local result=(a1+a2+a3)*2
@@ -803,6 +799,7 @@ function c13513663_tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterFlagEffect(tp,100000000+c:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
+
 
 function c13513663_op(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
