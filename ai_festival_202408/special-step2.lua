@@ -38,16 +38,15 @@ function CUNGUI.PreloadUds()
 
 	--要执行的特殊规则
 	--本次活动中，一阶段=8，二阶段=13
-	local RULE_MAX_INDEX = 8
+	local RULE_MAX_INDEX = 13
 	Duel.LoadScript("rule" .. tostring(math.random(RULE_MAX_INDEX)) .. ".lua")
 	if SP_RULE and SP_RULE.Init then
 		SP_RULE.Init()
 	end
---[[第一阶段的宝箱怪被抠辣.jpg
     if math.random(2)==1 then
         InitRefreshChest()
+		Debug.Message("宝箱怪们在蠢蠢欲动……")
     end
-]]--
 end
 
 CUNGUI.ChestCheck=10
@@ -121,7 +120,7 @@ function CUNGUI.chestcond(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
 
-CUNGUI.ChestEffectIndex=10 --待调整
+CUNGUI.ChestEffectIndex=2 --待调整
 
 function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
 	if chk==0 then return true end
@@ -308,7 +307,7 @@ function CUNGUI.StartAI(tp)
 end
 
 function CUNGUI.SpecialRuleAdjustCond(e,tp)
-	return (not SP_RULE.Card) or (CUNGUI.RuleCardGroup and CUNGUI.RuleCardGroup[tp])
+	return (not SP_RULE.Card) or not (CUNGUI.RuleCardGroup and CUNGUI.RuleCardGroup[tp])
 end
 
 function CUNGUI.SpecialRuleAdjust(e,tp)
@@ -364,7 +363,6 @@ function CUNGUI.AICheckDraw(e,tp)
         CUNGUI.CreateCardForAIDraw(tp,43422537)
 	end
 
-	--[[
 	local royal = true
 	for i=0,4 do
 		if Duel.GetFieldCard(1-tp,LOCATION_SZONE,i)==nil then royal = false end
@@ -374,7 +372,6 @@ function CUNGUI.AICheckDraw(e,tp)
 		local sg=Duel.GetMatchingGroup(CUNGUI.royalfilter,tp,0,LOCATION_SZONE,nil)
 		Duel.Destroy(sg,REASON_EFFECT)
 	end
-	]]--
 end
 
 function CUNGUI.royalfilter(c)
