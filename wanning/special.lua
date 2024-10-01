@@ -227,7 +227,7 @@ standbyPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.IsExistingMatchingCard(c69015963_filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-end)
+end,true)
 
 --闪电风暴
 standbyPhaseSkill(14532163, function(e,tp,eg,ep,ev,re,r,rp)
@@ -1329,6 +1329,12 @@ addSkill(48356796, function (e1)
 	end)
 end)
 
+oneTimeSkill(48356796, function (e,tp,eg,ep,ev,re,r,rp)
+	if (tp == 0) then
+		Duel.Draw(tp,5,REASON_RULE)
+	end
+end)
+
 addSkill(48356796, function (e2)
 	e2:SetType(EFFECT_TYPE_FIELD)
     e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -1337,7 +1343,7 @@ addSkill(48356796, function (e2)
     e2:SetValue(function (e)
 		local tp=e:GetHandlerPlayer()
 		local val=6
-		if Duel.GetFlagEffect(tp,19403423)>0 then val=7 end
+		if Duel.GetFlagEffect(tp,19403423)>0 then val=val+1 end
 		return val
 	end)
 end)
