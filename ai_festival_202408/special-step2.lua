@@ -207,16 +207,7 @@ function CUNGUI.CheckAI(e)
 			e1=e1:Clone()
 			Duel.RegisterEffect(e1,1)
 		end
-		if SP_RULE.RuleName then
-			Debug.Message("已启动规则：【" .. SP_RULE.RuleName .. "】，以下为规则详情。")
-		end
-		if SP_RULE.Message then
-			for _,v in pairs(SP_RULE.Message) do
-				Debug.Message(v)
-			end
-		else
-			Debug.Message("（详情不明）")
-		end
+		CUNGUI.HintRule()
 	end
 	e:Reset()
 end
@@ -238,6 +229,22 @@ function CUNGUI.HumanDraw(e,tp)
 	local c=Duel.CreateToken(tp,id)
     Duel.SendtoDeck(c,tp,SEQ_DECKTOP,REASON_RULE)
 	Duel.Draw(tp,1,REASON_RULE)
+	if tp ~= 0 or Duel.GetTurnCount(tp) > 1 then
+		CUNGUI.HintRule()
+	end
+end
+
+function CUNGUI.HintRule()
+	if SP_RULE.RuleName then
+		Debug.Message("已启动规则：【" .. SP_RULE.RuleName .. "】，以下为规则详情。")
+	end
+	if SP_RULE.Message then
+		for _,v in pairs(SP_RULE.Message) do
+			Debug.Message(v)
+		end
+	else
+		Debug.Message("（详情不明）")
+	end
 end
 
 function CUNGUI.RuleCardMove(e,tp)
