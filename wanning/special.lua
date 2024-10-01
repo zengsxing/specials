@@ -227,7 +227,7 @@ standbyPhaseSkill(69015963, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end, function(e,tp,eg,ep,ev,re,r,rp)
   return Duel.IsExistingMatchingCard(c69015963_filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-end)
+end,true)
 
 --闪电风暴
 standbyPhaseSkill(14532163, function(e,tp,eg,ep,ev,re,r,rp)
