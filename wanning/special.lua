@@ -1470,8 +1470,7 @@ end)
 
 local function initialize()
   local skillCodes=getAllSkillCodes()
-  local res=Duel.TossCoin(0,1)
-  for tp=1-res, res, 2*res-1 do
+  for tp=0,1 do
     local codes={}
 	for _,code in ipairs(skillCodes) do
 		table.insert(codes,code)
