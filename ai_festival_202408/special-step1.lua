@@ -123,7 +123,7 @@ end
 
 CUNGUI.ChestEffectIndex=70 --待调整
 
-function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
+function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local ct=e:GetLabel()
 	if aux.GetValueType(ct)~="number" then ct=0 end
