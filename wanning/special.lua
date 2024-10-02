@@ -1486,7 +1486,7 @@ local function initialize()
         end
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-    local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
+    local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
 	skillSelections[tp]=ac
   end
   for tp=0,1 do
