@@ -96,25 +96,8 @@ function CUNGUI.CreateChestStep(tp)
 	e1:SetOperation(CUNGUI.chestop)
 	c:RegisterEffect(e1)
 
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_BATTLED)
-	e2:SetReset(RESET_EVENT+RESET_TOFIELD+RESET_MSCHANGE+RESET_TEMP_REMOVE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetOperation(CUNGUI.chestreg)
-	e2:SetLabelObject(e1)
-	c:RegisterEffect(e2)
-
 	table.insert(CUNGUI.Chests[tp],c)
 	return c
-end
-
-function CUNGUI.chestreg(e,tp)
-	local i=0
-	if Duel.GetAttacker()==e:GetHandler() then
-		i=1
-	end
-	e:GetLabelObject():SetLabel(i)
 end
 
 function CUNGUI.chestcond(e,tp,eg,ep,ev,re,r,rp)
@@ -125,16 +108,14 @@ CUNGUI.ChestEffectIndex=70 --待调整
 
 function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local ct=e:GetLabel()
-	if aux.GetValueType(ct)~="number" then ct=0 end
-	if ct==1 then rp = tp end
 	local i=math.random(CUNGUI.ChestEffectIndex)
-	e:SetLabel(ct,i)
+	e:SetLabel(i)
+	local p = Duel.GetAttacker():GetControler()
 	Duel.LoadScript("chest" .. tostring(i) .. ".lua")
 
 	if CHEST then
 		local name = CUNGUI.GetPlayerName()
-		if CUNGUI.AI == rp then
+		if CUNGUI.AI == p then
 			name = CUNGUI.GetAIName()
 		end
 		Debug.Message(name .. "狩猎了一个宝箱怪！")
@@ -143,7 +124,7 @@ function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp,chk)
 		elseif CHEST.Message then
 			Debug.Message(name .. "打开了宝箱，" .. CHEST.Message)
 		elseif CHEST.MessageAbsolute then
-			Debug.Message(CHEST.MessageAbsolute(rp))
+			Debug.Message(CHEST.MessageAbsolute(p))
 		end
 	end
 end
@@ -157,21 +138,21 @@ function CUNGUI.GetPlayerName()
 end
 
 function CUNGUI.chestop(e,tp,eg,ep,ev,re,r,rp)
-	local ct,i=e:GetLabel()
-	if ct==1 then rp = tp end
+	local i = e:GetLabel()
+	local p = Duel.GetAttacker():GetControler()
 	--对撞会同时触发2个，在这里要重新载入一次
 	Duel.LoadScript("chest" .. tostring(i) .. ".lua")
 	if CHEST and CHEST.BattleDestroyedEffect then
 		if CHEST.EffectMessage then
 			local name = CUNGUI.GetPlayerName()
-			if CUNGUI.AI == rp then
+			if CUNGUI.AI == p then
 				name = CUNGUI.GetAIName()
 			end
 			Debug.Message(name .. CHEST.EffectMessage)
 		elseif CHEST.EffectMessageAbsolute then
-			Debug.Message(CHEST.EffectMessageAbsolute(e,rp))
+			Debug.Message(CHEST.EffectMessageAbsolute(e,p))
 		end
-		CHEST.BattleDestroyedEffect(e,rp)
+		CHEST.BattleDestroyedEffect(e,p)
 	end
 	e:Reset()
 end

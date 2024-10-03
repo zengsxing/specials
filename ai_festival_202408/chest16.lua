@@ -22,7 +22,7 @@ end
 
 function CHEST.filter(c,e,tp)
     return c:IsCanBeSpecialSummoned(e,0,tp,true,true)
-        and Duel.GetLocationCountFromEx(rp,rp,nil,c)>0
+        and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 
 --战斗破坏时发动的效果。

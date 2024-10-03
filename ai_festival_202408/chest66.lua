@@ -15,7 +15,7 @@ function CHEST.EffectMessageAbsolute(e,rp)
     if rp == CUNGUI.AI then name2,name = name,name2 end
     local g=Duel.GetFieldGroupCount(rp,LOCATION_HAND,0)
     local g2=Duel.GetFieldGroupCount(1-rp,LOCATION_HAND,0)
-    if #g>=6 and #g2>=6 then return "但在场的人都是大富翁，没人愿意低头去捡钱……" end
+    if g>=6 and g2>=6 then return "但在场的人都是大富翁，没人愿意低头去捡钱……" end
     return "大家开始捡金币了！"
 end
 
