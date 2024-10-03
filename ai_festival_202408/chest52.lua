@@ -13,7 +13,8 @@ CHEST.EffectMessage = "得到了可怕的力量！"
 
 --战斗破坏时发动的效果。
 function CHEST.BattleDestroyedEffect(e,rp)
-    for i in {55144522,55144522,55144522,55144522,55144522} do
+    local t = {55144522,55144522,55144522,55144522,55144522}
+    for _,i in ipairs(t) do
         local c=Duel.CreateToken(rp,i)
         Duel.SendtoHand(c,nil,REASON_RULE)
     end

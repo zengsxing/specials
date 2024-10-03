@@ -13,7 +13,7 @@ function CHEST.EffectMessageAbsolute(e,rp)
     local name=CUNGUI.GetPlayerName()
     local name2=CUNGUI.GetAIName()
     if rp == CUNGUI.AI then name2,name = name,name2 end
-    if Duel.GetFieldGroupCount(rp,LOCATION_MZONE)<1 then
+    if Duel.GetFieldGroupCount(rp,LOCATION_MZONE,0)<1 then
         return "但" .. name .. "不喜欢打打杀杀的……"
     end
     return name .. "给自己场上的怪兽装备了最强之剑！"

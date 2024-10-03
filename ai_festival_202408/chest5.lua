@@ -19,5 +19,5 @@ end
 
 --战斗破坏时发动的效果。
 function CHEST.BattleDestroyedEffect(e,rp)
-    Duel.Recover(1-rp,5000)
+    Duel.Recover(1-rp,5000,REASON_RULE)
 end

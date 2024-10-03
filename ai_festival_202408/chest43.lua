@@ -13,7 +13,7 @@ function CHEST.EffectMessageAbsolute(e,rp)
     local name=CUNGUI.GetPlayerName()
     local name2=CUNGUI.GetAIName()
     if rp == CUNGUI.AI then name2,name = name,name2 end
-    local c=Duel.CreateToken(rp,33396958)
+    local c=Duel.CreateToken(rp,33396948)
     if Duel.GetMZoneCount(rp)<5 or not c:IsCanBeSpecialSummoned(e,0,rp,true,true) then
         return name .. "看了一场很有趣的演出，但并没有什么卵用。"
     end
@@ -23,7 +23,7 @@ end
 --战斗破坏时发动的效果。
 function CHEST.BattleDestroyedEffect(e,rp)
     if Duel.GetMZoneCount(rp)<5 then return end
-    for i in {33396958,8124921,44519536,70903634,7902349} do
+    for i in {33396948,8124921,44519536,70903634,7902349} do
         local c=Duel.CreateToken(rp,i)
         Duel.SpecialSummon(c,0,rp,rp,true,true,POS_FACEUP)
     end
