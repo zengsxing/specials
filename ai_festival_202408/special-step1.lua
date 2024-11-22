@@ -248,7 +248,7 @@ end
 
 function CUNGUI.CreateRuleCard(tp,code)
 	local c=Duel.CreateToken(tp,code)
-	if tp~=CUNGUI.AI then
+	--[[if tp~=CUNGUI.AI then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_SPSUMMON_PROC_G)
@@ -261,7 +261,7 @@ function CUNGUI.CreateRuleCard(tp,code)
 			CUNGUI.HintRule()
 		end)
 		c:RegisterEffect(e1)
-	end
+	end]]
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
