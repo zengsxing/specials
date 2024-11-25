@@ -315,7 +315,7 @@ function CUNGUI.StartAI(tp)
 	end
 	
     Duel.Draw(tp,1,REASON_RULE)
-    Duel.Recover(tp,4000,REASON_RULE)
+    Duel.Recover(tp,500,REASON_RULE)
 	--adjust
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
