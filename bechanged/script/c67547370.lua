@@ -7,30 +7,6 @@ function c67547370.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	c:RegisterEffect(e1)
-	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c67547370.spcon1)
-	e2:SetTarget(c67547370.sptg1)
-	e2:SetOperation(c67547370.spop1)
-	c:RegisterEffect(e2)
-	--counter
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(67547370,0))
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetCategory(CATEGORY_COUNTER)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCountLimit(1)
-	e3:SetCost(c67547370.countcost)
-	e3:SetTarget(c67547370.counttg)
-	e3:SetOperation(c67547370.countop)
-	c:RegisterEffect(e3)
 	--immune
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
@@ -48,6 +24,18 @@ function c67547370.initial_effect(c)
 	e5:SetCondition(c67547370.atkcon)
 	e5:SetOperation(c67547370.atkop)
 	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(67547370,2))
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_FREE_CHAIN)
+	e6:SetCountLimit(1)
+	e6:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e6:SetRange(LOCATION_HAND)
+	e6:SetCondition(c67547370.spcon)
+	e6:SetTarget(c67547370.sptg)
+	e6:SetOperation(c67547370.spop)
+	c:RegisterEffect(e6)
 	if not c67547370.global_check then
 		c67547370.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -67,41 +55,26 @@ function c67547370.checkop(e,tp,eg,ep,ev,re,r,rp)
 		tc=eg:GetNext()
 	end
 end
-function c67547370.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetFlagEffect(1-tp,67547370)>=10
+function c67547370.spcon(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,EFFECT_KAISER_COLOSSEUM) then
+		local t1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
+		local t2=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
+		local c1=Duel.GetMatchingGroupCount(c67547370.relfilter,tp,LOCATION_MZONE,0,nil)
+		local c2=Duel.GetMatchingGroupCount(c67547370.relfilter,tp,0,LOCATION_MZONE,nil)
+		if t1-c1 >= t2-c2 then return false end
+	end
+	return Duel.GetFlagEffect(1-tp,67547370)>=10 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
-function c67547370.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function c67547370.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c67547370.spop1(e,tp,eg,ep,ev,re,r,rp)
+function c67547370.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
-	c:CompleteProcedure()
-end
-function c67547370.cfilter(c,tp)
-	return c:IsFaceup() and c:GetCounter(0x1039)==10
-		and Duel.GetMZoneCount(tp,c)>0
-end
-function c67547370.spcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.CheckReleaseGroupEx(tp,c67547370.cfilter,1,REASON_SPSUMMON,false,nil,tp)
-end
-function c67547370.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(c67547370.cfilter,nil,tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
-	if tc then
-		e:SetLabelObject(tc)
-		return true
-	else return false end
-end
-function c67547370.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
-	Duel.Release(g,REASON_SPSUMMON)
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
+	end
 end
 function c67547370.countcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end

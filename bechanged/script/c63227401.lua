@@ -1,4 +1,5 @@
 --スキル・プリズナー
+---@param c Card
 function c63227401.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -24,8 +25,10 @@ function c63227401.initial_effect(c)
 	e2:SetOperation(c63227401.activate)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(63227401,0))
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e3:SetCondition(c63227401.handcon)
 	c:RegisterEffect(e3)
 end
 function c63227401.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -58,4 +61,7 @@ function c63227401.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c63227401.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
+end
+function c63227401.handcon(e)
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_ONFIELD+LOCATION_GRAVE)~=0
 end

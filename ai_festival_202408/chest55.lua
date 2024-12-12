@@ -22,7 +22,7 @@ end
 function CHEST.BattleDestroyedEffect(e,rp)
     local g=Duel.GetFieldGroup(1-rp,LOCATION_ONFIELD,0)
     for tc in aux.Next(g) do
-		Duel.NegateRelatedChain(tc)
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)

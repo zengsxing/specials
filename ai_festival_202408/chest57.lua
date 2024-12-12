@@ -27,7 +27,7 @@ end
 --战斗破坏时发动的效果。
 function CHEST.BattleDestroyedEffect(e,rp)
 	Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(rp,c83764718.filter,rp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,rp)
+	local g=Duel.SelectMatchingCard(rp,Card.IsCanBeSpecialSummoned,rp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,0,rp,false,false)
     local tc=g:GetFirst()
     if aux.NecroValleyFilter()(tc) then
         Duel.SpecialSummon(tc,SUMMON_VALUE_MONSTER_REBORN,rp,rp,false,false,POS_FACEUP)

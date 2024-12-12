@@ -1,4 +1,5 @@
 --幻魔の肖像
+---@param c Card
 function c1759808.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -8,17 +9,15 @@ function c1759808.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,1759808+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(function (e)
-		local tp=e:GetHandlerPlayer()
-		return (Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)==0 and e:GetHandler():IsLocation(LOCATION_HAND)) or not e:GetHandler():IsLocation(LOCATION_HAND)
-	end)
 	e1:SetTarget(c1759808.target)
 	e1:SetOperation(c1759808.activate)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(1759808,0))
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e3:SetCondition(c1759808.handcon)
+	c:RegisterEffect(e3)
 end
 function c1759808.cfilter(c,e,tp)
 	return c:IsFaceup() and Duel.IsExistingMatchingCard(c1759808.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
@@ -78,4 +77,7 @@ function c1759808.tdop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c1759808.splimit(e,c)
 	return c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA)
+end
+function c1759808.handcon(e)
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
 end

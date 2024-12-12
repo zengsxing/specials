@@ -1,4 +1,5 @@
 --アポクリフォート・キラー
+---@param c Card
 function c27279764.initial_effect(c)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -93,6 +94,33 @@ function c27279764.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(1-tp,1,1,nil)
 		Duel.HintSelection(sg)
-		Duel.SendtoGrave(sg,REASON_RULE,1-tp)
+		local tc=sg:GetFirst()
+		if Duel.SendtoGrave(tc,REASON_RULE,1-tp)>0 and tc:IsLocation(LOCATION_GRAVE) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_SUMMON)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(0,1)
+			e1:SetTarget(c27279764.sumlimit)
+			e1:SetLabel(tc:GetCode())
+			e1:SetReset(RESET_PHASE+PHASE_END,2)
+			Duel.RegisterEffect(e1,tp)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+			Duel.RegisterEffect(e2,tp)
+			local e3=e1:Clone()
+			e3:SetCode(EFFECT_CANNOT_MSET)
+			Duel.RegisterEffect(e3,tp)
+			local e4=e1:Clone()
+			e4:SetCode(EFFECT_CANNOT_ACTIVATE)
+			e4:SetValue(c27279764.aclimit)
+			Duel.RegisterEffect(e4,tp)
+		end
 	end
+end
+function c27279764.sumlimit(e,c)
+	return c:IsCode(e:GetLabel())
+end
+function c27279764.aclimit(e,re,tp)
+	return re:GetHandler():IsCode(e:GetLabel())
 end

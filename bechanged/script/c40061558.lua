@@ -1,4 +1,5 @@
 --アポクリフォート・カーネル
+---@param c Card
 function c40061558.initial_effect(c)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -44,6 +45,39 @@ function c40061558.initial_effect(c)
 	e6:SetTarget(c40061558.cttg)
 	e6:SetOperation(c40061558.ctop)
 	c:RegisterEffect(e6)
+	--activate
+	local e7=Effect.CreateEffect(c)
+	e7:SetCategory(CATEGORY_DESTROY)
+	e7:SetType(EFFECT_TYPE_IGNITION)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTarget(c40061558.target)
+	e7:SetOperation(c40061558.activate)
+	c:RegisterEffect(e7)
+end
+function c40061558.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_PZONE,LOCATION_PZONE)>0 end
+	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,LOCATION_PZONE)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+end
+function c40061558.pzfilter(c,cd)
+	return c:IsSetCard(0xaa) and not c:IsForbidden() and c:GetLeftScale()==cd
+end
+function c40061558.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,LOCATION_PZONE)
+	if Duel.Destroy(g,REASON_EFFECT)>0 then
+		local g1=Duel.GetMatchingGroup(c40061558.pzfilter,tp,LOCATION_DECK,0,nil,1)
+		local g2=Duel.GetMatchingGroup(c40061558.pzfilter,tp,LOCATION_DECK,0,nil,9)
+		if #g1<1 or #g2<1 then return end
+		local b1=Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1)
+		local b2=Duel.CheckLocation(1-tp,LOCATION_PZONE,1) and Duel.CheckLocation(1-tp,LOCATION_PZONE,1)
+		local toplayer=aux.SelectFromOptions(tp,{b1,aux.Stringid(40061558,3),tp},{b2,aux.Stringid(40061558,4),1-tp})
+		if toplayer~=nil then
+			local tc1=g1:Select(tp,1,1,nil):GetFirst()
+			local tc2=g2:Select(tp,1,1,nil):GetFirst()
+			Duel.MoveToField(tc1,tp,toplayer,LOCATION_PZONE,POS_FACEUP,true)
+			Duel.MoveToField(tc2,tp,toplayer,LOCATION_PZONE,POS_FACEUP,true)
+		end
+	end
 end
 function c40061558.tlimit(e,c)
 	return not c:IsSetCard(0xaa)

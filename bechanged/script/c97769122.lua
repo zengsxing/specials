@@ -1,11 +1,18 @@
 --バリアンズ・カオス・ドロー
 function c97769122.initial_effect(c)
+	--activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_DRAW)
+	e1:SetCondition(c97769122.regcon)
+	e1:SetOperation(c97769122.regop)
+	c:RegisterEffect(e1)
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(97769122,1))
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
-	e2:SetCode(EVENT_DRAW)
-	e2:SetCondition(c97769122.con)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCondition(c97769122.condition)
 	e2:SetCost(c97769122.cpcost)
 	e2:SetTarget(c97769122.cptg)
 	e2:SetOperation(c97769122.cpop)
@@ -15,18 +22,15 @@ function c97769122.initial_effect(c)
 	e3:SetDescription(aux.Stringid(97769122,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_ACTIVATE)
-	e3:SetCode(EVENT_DRAW)
-	e3:SetCondition(c97769122.con)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(c97769122.condition)
 	e3:SetTarget(c97769122.xyztg)
 	e3:SetOperation(c97769122.xyzop)
 	c:RegisterEffect(e3)
 end
-function c97769122.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsContains(e:GetHandler())
-end
 function c97769122.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  Duel.GetCurrentPhase()==PHASE_DRAW and c:IsReason(REASON_RULE)
+	return Duel.GetFlagEffect(tp,97769122)==0
 end
 function c97769122.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

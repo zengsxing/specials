@@ -27,7 +27,7 @@ CUNGUI.GambleCards = {3280747,37812118,50470982,43061293,37313786,3493058,382992
 						21598948,39537362,36378044,38143903,96012004,62784717,84290642,3549275,41139112,36708764,74137509,126218,
 						93078761,76895648,22802010,83241722,84397023,31863912,39454112,59905358,5990062,9373534,58577036}
 
-function Auxiliary.PreloadUds()
+function CUNGUI.PreloadUds()
 	--adjust
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -74,13 +74,14 @@ function CUNGUI.RefreshChestCheck(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function CUNGUI.CreateChest(tp)
-	CUNGUI.CreateChestStep(tp)
+	local c = CUNGUI.CreateChestStep(tp)
 	Duel.SpecialSummonComplete()
+	return c
 end
 
 CUNGUI.Chests={}
-CUNGUI.Chests[0]=Group.CreateGroup()
-CUNGUI.Chests[1]=Group.CreateGroup()
+CUNGUI.Chests[0]={}
+CUNGUI.Chests[1]={}
 function CUNGUI.CreateChestStep(tp)
 	local c=Duel.CreateToken(tp,1102515)
 	if not Duel.SpecialSummonStep(c,0,tp,tp,true,true,POS_FACEUP_ATTACK) then return nil end
@@ -94,44 +95,28 @@ function CUNGUI.CreateChestStep(tp)
 	e1:SetTarget(CUNGUI.chesttg)
 	e1:SetOperation(CUNGUI.chestop)
 	c:RegisterEffect(e1)
+	c:RegisterFlagEffect(1102515,RESET_EVENT+RESET_TOFIELD+RESET_MSCHANGE+RESET_TEMP_REMOVE,0,1)
 
-	e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_BATTLED)
-	e2:SetReset(RESET_EVENT+RESET_TOFIELD+RESET_MSCHANGE+RESET_TEMP_REMOVE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetOperation(CUNGUI.chestreg)
-	e2:SetLabelObject(e1)
-	c:RegisterEffect(e2)
-
-	CUNGUI.Chests[tp]:AddCard(c)
+	table.insert(CUNGUI.Chests[tp],c)
 	return c
-end
-
-function CUNGUI.chestreg(e,tp)
-	local i=0
-	if Duel.GetAttacker()==e:GetHandler() then
-		i=1
-	end
-	e2:GetLabelObject():SetLabel(i)
 end
 
 function CUNGUI.chestcond(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
 
-CUNGUI.ChestEffectIndex=10 --待调整
+CUNGUI.ChestEffectIndex=70 --待调整
 
-function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
+function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if e:GetLabel()==1 then rp = tp end
 	local i=math.random(CUNGUI.ChestEffectIndex)
-	e:SetLabelObject(i)
+	e:SetLabel(i)
+	local p = Duel.GetAttacker():GetControler()
 	Duel.LoadScript("chest" .. tostring(i) .. ".lua")
 
 	if CHEST then
 		local name = CUNGUI.GetPlayerName()
-		if CUNGUI.AI == rp then
+		if CUNGUI.AI == p then
 			name = CUNGUI.GetAIName()
 		end
 		Debug.Message(name .. "狩猎了一个宝箱怪！")
@@ -140,7 +125,7 @@ function CUNGUI.chesttg(e,tp,eg,ep,ev,re,r,rp)
 		elseif CHEST.Message then
 			Debug.Message(name .. "打开了宝箱，" .. CHEST.Message)
 		elseif CHEST.MessageAbsolute then
-			Debug.Message(CHEST.MessageAbsolute(rp))
+			Debug.Message(CHEST.MessageAbsolute(p))
 		end
 	end
 end
@@ -154,22 +139,25 @@ function CUNGUI.GetPlayerName()
 end
 
 function CUNGUI.chestop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabel()==1 then rp = tp end
+	local i = e:GetLabel()
+	local p = Duel.GetAttacker():GetControler()
 	--对撞会同时触发2个，在这里要重新载入一次
-	Duel.LoadScript("chest" .. tostring(e:GetLabelObject()) .. ".lua")
+	Duel.LoadScript("chest" .. tostring(i) .. ".lua")
 	if CHEST and CHEST.BattleDestroyedEffect then
 		if CHEST.EffectMessage then
 			local name = CUNGUI.GetPlayerName()
-			if CUNGUI.AI == rp then
+			if CUNGUI.AI == p then
 				name = CUNGUI.GetAIName()
 			end
 			Debug.Message(name .. CHEST.EffectMessage)
 		elseif CHEST.EffectMessageAbsolute then
-			Debug.Message(CHEST.EffectMessageAbsolute(e,rp))
+			Debug.Message(CHEST.EffectMessageAbsolute(e,p))
 		end
-		CHEST.BattleDestroyedEffect(e,rp)
+		CHEST.BattleDestroyedEffect(e,p)
 	end
+	Duel.Draw(e:GetHandler():GetControler(),1,REASON_EFFECT)
 	e:Reset()
+	e:GetHandler():ResetFlagEffect(1102515)
 end
 
 function CUNGUI.CheckAI(e)
@@ -203,16 +191,7 @@ function CUNGUI.CheckAI(e)
 			e1=e1:Clone()
 			Duel.RegisterEffect(e1,1)
 		end
-		if SP_RULE.RuleName then
-			Debug.Message("已启动规则：【" .. SP_RULE.RuleName .. "】，以下为规则详情。")
-		end
-		if SP_RULE.Message then
-			for _,v in pairs(SP_RULE.Message) do
-				Debug.Message(v)
-			end
-		else
-			Debug.Message("（详情不明）")
-		end
+		CUNGUI.HintRule()
 	end
 	e:Reset()
 end
@@ -234,24 +213,81 @@ function CUNGUI.HumanDraw(e,tp)
 	local c=Duel.CreateToken(tp,id)
     Duel.SendtoDeck(c,tp,SEQ_DECKTOP,REASON_RULE)
 	Duel.Draw(tp,1,REASON_RULE)
+	if tp ~= 0 or Duel.GetTurnCount(tp) > 1  then
+		CUNGUI.HintRule()
+	end
 end
 
-function RuleCardMove(e,tp)
+function CUNGUI.HintRule()
+	if SP_RULE.RuleName then
+		Debug.Message("已启动规则：【" .. SP_RULE.RuleName .. "】，以下为规则详情。")
+	end
+	if SP_RULE.Message then
+		for _,v in pairs(SP_RULE.Message) do
+			Debug.Message(v)
+		end
+	else
+		Debug.Message("（详情不明）")
+	end
+end
+
+function CUNGUI.RuleCardMove(e,tp)
 	local c=e:GetLabelObject()
 	if not c then
-		c=Duel.CreateToken(tp,e:GetLabel())
+		c=CUNGUI.CreateRuleCard(tp,e:GetLabel())
 		if SP_RULE and SP_RULE.InitRuleCard then
 			SP_RULE.InitRuleCard(c)
 		end
 		e:SetLabelObject(c)
 		CUNGUI.RuleCardGroup[tp]=c
 	end
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then
-		Duel.SendtoGrave(c,REASON_RULE)
-	end
 	if not c:IsLocation(LOCATION_REMOVED) then
 		Duel.Remove(c,POS_FACEUP,REASON_RULE)
 	end
+	if c:IsFacedown() then
+		Duel.SendtoGrave(c,REASON_RULE)
+	end
+end
+
+function CUNGUI.CreateRuleCard(tp,code)
+	local c=Duel.CreateToken(tp,code)
+	--[[if tp~=CUNGUI.AI then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_SPSUMMON_PROC_G)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetRange(LOCATION_REMOVED)
+		e1:SetCondition(function (e)
+			return e:GetHandler():IsFaceup()
+		end)
+		e1:SetOperation(function ()
+			CUNGUI.HintRule()
+		end)
+		c:RegisterEffect(e1)
+	end]]
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_REMOVED)
+	e2:SetCode(EFFECT_CANNOT_USE_AS_COST)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone(c)
+	e3:SetCode(EFFECT_CANNOT_TO_GRAVE)
+	c:RegisterEffect(e3)
+	local e4=e2:Clone(c)
+	e4:SetCode(EFFECT_CANNOT_TO_HAND)
+	c:RegisterEffect(e4)
+	local e5=e2:Clone(c)
+	e5:SetCode(EFFECT_CANNOT_TO_DECK)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e6:SetValue(aux.FALSE)
+	c:RegisterEffect(e6)
+	return c
 end
 
 function CUNGUI.GetRandomGambleCard(tp)
@@ -282,7 +318,7 @@ function CUNGUI.StartAI(tp)
 	end
 	
     Duel.Draw(tp,1,REASON_RULE)
-    Duel.Recover(tp,4000,REASON_RULE)
+    Duel.Recover(tp,500,REASON_RULE)
 	--adjust
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

@@ -1,4 +1,3 @@
---氷水艇エーギロカシス
 function c1295442.initial_effect(c)
 	--equip
 	local e1=Effect.CreateEffect(c)
