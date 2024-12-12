@@ -481,7 +481,7 @@ function CUNGUI.wormop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,CUNGUI.wormfilter2,tp,0,LOCATION_ONFIELD,1,nil,c)
     if #g>0 then
         local tc=g:GetFirst()
-        if c:IsLevelAbove(5)
+        if c:IsLevelAbove(5) then
             if tc:IsLocation(LOCATION_MZONE) then
                 local pos = Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEUP_DEFENSE)
                 Duel.ChangePosition(tc,pos)
