@@ -520,18 +520,19 @@ function CUNGUI.wormfilter2d(c)
 end
 function CUNGUI.wormfilter2(c,oc)
     if oc:IsLevelAbove(5) then
-        return CUNGUI.wormfilter2a(c) and CUNGUI.wormfilter2b(c)
+        return CUNGUI.wormfilter2a(c) or CUNGUI.wormfilter2b(c)
     end
-    return CUNGUI.wormfilter2c(c) and CUNGUI.wormfilter2d(c)
+    return CUNGUI.wormfilter2c(c) or CUNGUI.wormfilter2d(c)
 end
 function CUNGUI.wormtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(CUNGUI.wormfilter2,tp,0,LOCATION_ONFIELD,1,nil,e:GetHandler()) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	if chk==0 then return Duel.IsExistingMatchingCard(CUNGUI.wormfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e:GetHandler()) end
+    if CUNGUI.Used[e:GetHandler():GetOriginalCode()] == nil then CUNGUI.Used[e:GetHandler():GetOriginalCode()]={} end
+    CUNGUI.Used[e:GetHandler():GetOriginalCode()][e:GetLabel()]=Duel.GetTurnCount()
 end
 function CUNGUI.wormop2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,CUNGUI.wormfilter2,tp,0,LOCATION_ONFIELD,1,nil,c)
+	local g=Duel.SelectMatchingCard(tp,CUNGUI.wormfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,c)
     if #g>0 then
         local tc=g:GetFirst()
         if c:IsLevelAbove(5) then
