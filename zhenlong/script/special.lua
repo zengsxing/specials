@@ -32,7 +32,6 @@
 ·自己手卡的【溟界】怪兽得到以下效果。
 -对方把效果发动时，把手卡的这张卡丢弃才能发动。对方必须把卡组最上方的卡加入这张卡控制者的手卡，或者让那个发动无效。
 这个效果的发动后，自己直到结束阶段不能从手卡把【溟界】以外的怪兽效果发动。
-
 ]]--
 CUNGUI = {}
 CUNGUI.disabled={}
@@ -148,6 +147,7 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetDescription(103)
 	e0:SetRange(LOCATION_HAND)
 	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
 	e0:SetTargetRange(POS_FACEUP,1)
@@ -165,6 +165,7 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetDescription(102)
 	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_HAND)
 	e0:SetCondition(CUNGUI.alienspcon2)
@@ -540,13 +541,13 @@ function CUNGUI.wormop2(e,tp,eg,ep,ev,re,r,rp)
                 local pos = Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEUP_DEFENSE)
                 Duel.ChangePosition(tc,pos)
             else
-                Duel.SendtoGrave(tc)
+                Duel.SendtoGrave(tc,REASON_EFFECT)
             end
         else
             if tc:IsLocation(LOCATION_MZONE) then
                 Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
             else
-                Duel.SendtoGrave(tc)
+                Duel.SendtoGrave(tc,REASON_EFFECT)
             end
         end
     end
