@@ -33,6 +33,19 @@
 -对方把效果发动时，把手卡的这张卡丢弃才能发动。对方必须把卡组最上方的卡加入这张卡控制者的手卡，或者让那个发动无效。
 这个效果的发动后，自己直到结束阶段不能从手卡把【溟界】以外的怪兽效果发动。
 
+·自己手卡的【真龙】怪兽得到以下效果。
+-这张卡加入手卡的场合，把这张卡给对方观看才能发动。选对方场上1张卡解放，这张卡不用解放作召唤。
+
+·自己场上的【真龙】怪兽得到以下效果。
+-这张卡特殊召唤成功的场合才能发动。选对方场上1张卡解放，这张卡回到手卡。
+
+·自己手卡的【真龙】魔法·陷阱卡得到以下效果。
+-这张卡加入手卡的场合，把这张卡给对方观看才能发动。选对方场上1张卡解放，这张卡在场上表侧表示放置。
+
+·自己场上的【真龙】魔法·陷阱卡得到以下效果。
+作为这张卡被破坏的代替，可以把1张【真龙】卡从墓地·除外的卡加入手卡。
+这张卡要被除外的场合，作为代替回到手卡。
+
 ]]--
 CUNGUI = {}
 CUNGUI.disabled={}
@@ -213,7 +226,6 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e1:SetTarget(CUNGUI.eftgob)
 	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
-    
     --溟界-spsummon
 	e0=e0:CLone()
 	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -243,6 +255,188 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e1:SetTarget(CUNGUI.eftgob)
 	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
+
+	--summon with no tribute
+	if not CUNGUI.e_no_tribute then
+		CUNGUI.e_no_tribute=Effect.CreateEffect(c)
+		CUNGUI.e_no_tribute:SetDescription(aux.Stringid(123709,0))
+		CUNGUI.e_no_tribute:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		CUNGUI.e_no_tribute:SetType(EFFECT_TYPE_SINGLE)
+		CUNGUI.e_no_tribute:SetCode(EFFECT_SUMMON_PROC)
+		CUNGUI.e_no_tribute:SetCondition(CUNGUI.ntcon)
+		CUNGUI.e_no_tribute:SetOperation(CUNGUI.ntop)
+	end
+	--真龙
+	e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(3560069,0))
+	e0:SetCategory(CATEGORY_SUMMON+CATEGORY_RELEASE)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
+	e0:SetCode(EVENT_TO_HAND)
+	e0:SetCountLimit(1,3560069)
+	e0:SetCondition(CUNGUI.tdsumcon)
+	e0:SetTarget(CUNGUI.tdsumtg)
+	e0:SetOperation(CUNGUI.tdsumop)
+    e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e1:SetRange(LOCATION_REMOVED)
+    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetTargetRange(LOCATION_HAND,0)
+	e1:SetTarget(CUNGUI.eftgtd1)
+	e1:SetLabelObject(e0)
+	c:RegisterEffect(e1)
+	--这张卡特殊召唤的场合才能发动。选对方场上1张卡解放，这张卡回到手卡。
+	e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(1527418,0))
+	e0:SetCategory(CATEGORY_TOHAND+CATEGORY_RELEASE)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetTarget(CUNGUI.tdthtg)
+	e0:SetOperation(CUNGUI.tdthop)
+    e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e1:SetRange(LOCATION_REMOVED)
+    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(CUNGUI.eftgtd1)
+	e1:SetLabelObject(e0)
+	c:RegisterEffect(e1)
+	--这张卡加入手卡的场合，把这张卡给对方观看才能发动。选对方场上1张卡解放，这张卡在场上表侧表示放置。
+	e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(31076103,0))
+	e0:SetCategory(CATEGORY_RELEASE)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
+	e0:SetCode(EVENT_TO_HAND)
+	e0:SetTarget(CUNGUI.tdtftg)
+	e0:SetOperation(CUNGUI.tdtfop)
+    e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e1:SetRange(LOCATION_REMOVED)
+    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(CUNGUI.eftgtd2)
+	e1:SetLabelObject(e0)
+	c:RegisterEffect(e1)
+	--Destroy replace
+	e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_DESTROY_REPLACE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetRange(LOCATION_FZONE)
+	e0:SetTarget(CUNGUI.tddesreptg)
+	e0:SetOperation(CUNGUI.tddesrepop)
+    e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e1:SetRange(LOCATION_REMOVED)
+    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(CUNGUI.eftgtd2)
+	e1:SetLabelObject(e0)
+	c:RegisterEffect(e1)
+	--remove replace
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetRange(LOCATION_REMOVED)
+	e2:SetCode(EFFECT_REMOVE_REDIRECT)
+	e2:SetTarget(CUNGUI.tdredirtg)
+	e2:SetTargetRange(0xff,0xff)
+	e2:SetValue(LOCATION_HAND)
+	c:RegisterEffect(e2)
+end
+function CUNGUI.tdredirtg(e,c)
+	return c:IsSetCard(0xf9)
+end
+function CUNGUI.desrepfilter(c)
+	return c:IsAbleToHandAsCost() and c:IsFaceup() and c:IsSetCard(0xf9)
+end
+function CUNGUI.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not e:GetHandler():IsReason(REASON_RULE)
+		and Duel.IsExistingMatchingCard(CUNGUI.desrepfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+end
+function CUNGUI.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,CUNGUI.desrepfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+end
+function CUNGUI.tdaclimitreg(tp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(CUNGUI.tdaclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+
+function CUNGUI.tdtftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,0,LOCATION_ONFIELD,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,Duel.GetMatchingGroup(Card.IsReleasable,tp,0,LOCATION_ONFIELD,nil),1,0,0)
+	CUNGUI.tdaclimitreg(tp)
+end
+
+function CUNGUI.tdtfop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 and Duel.Release(g,REASON_EFFECT)>0 then
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end
+end
+
+function CUNGUI.tdthtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,0,LOCATION_ONFIELD,1,nil) and e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,Duel.GetMatchingGroup(Card.IsReleasable,tp,0,LOCATION_ONFIELD,nil),1,0,0)
+	CUNGUI.tdaclimitreg(tp)
+end
+function CUNGUI.tdthop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 and Duel.Release(g,REASON_EFFECT)>0 then
+		if c:IsRelateToEffect(e) then
+			Duel.SendtoHand(c,nil,REASON_EFFECT)
+		end
+	end
+end
+function CUNGUI.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+end
+function CUNGUI.ntop(e,tp,eg,ep,ev,re,r,rp,c)
+end
+function CUNGUI.tdsumcon(e,tp,eg,ep,ev,re,r,rp)
+	--给对方观看才能发动
+	return not c:IsPublic()
+end
+function CUNGUI.tdsumfilter(c)
+	return c:IsReleasable()
+end
+function CUNGUI.tdaclimit(e,re,tp)
+	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_REPTILE)
+end
+function CUNGUI.tdsumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsSummonable(true,CUNGUI.e_no_tribute) and Duel.IsExistingMatchingCard(Card.IsReleasable,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,Duel.GetMatchingGroup(Card.IsReleasable,tp,0,LOCATION_ONFIELD,nil),1,0,0)
+	CUNGUI.tdaclimitreg(tp)
+end
+function CUNGUI.tdsumop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	--选对方场上1张卡解放，这张卡不用解放作召唤。
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if g and #g>0 and Duel.Release(g,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
+		Duel.Summon(tp,c,true,CUNGUI.e_no_tribute)
+	end
 end
 function CUNGUI.alienspcon2(e,c)
 	if c==nil then return true end
@@ -511,6 +705,12 @@ function CUNGUI.eftgrept(e,c)
 end
 function CUNGUI.eftgob(e,c)
 	return c:IsSetCard(0x161) and c:IsType(TYPE_MONSTER)
+end
+function CUNGUI.eftgtd1(e,c)
+	return c:IsSetCard(0xf9) and c:IsType(TYPE_MONSTER)
+end
+function CUNGUI.eftgtd2(e,c)
+	return c:IsSetCard(0xf9) and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function CUNGUI.AdjustOperation(e,tp,eg,ep,ev,re,r,rp)
 	local card1 = Duel.CreateToken(0,54306223)
