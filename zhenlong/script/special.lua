@@ -362,12 +362,12 @@ end
 function CUNGUI.desrepfilter(c)
 	return c:IsAbleToHandAsCost() and c:IsFaceup() and c:IsSetCard(0xf9)
 end
-function CUNGUI.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function CUNGUI.tddesreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsReason(REASON_RULE)
 		and Duel.IsExistingMatchingCard(CUNGUI.desrepfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
-function CUNGUI.desrepop(e,tp,eg,ep,ev,re,r,rp)
+function CUNGUI.tddesrepop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,CUNGUI.desrepfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
