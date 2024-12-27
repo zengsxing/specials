@@ -1,6 +1,21 @@
 --蛇神 格
 function c82103466.initial_effect(c)
-	c:EnableReviveLimit()
+		--summon with 3 tribute
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(10000010,2))
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LIMIT_SUMMON_PROC)
+		e1:SetCondition(c82103466.ttcon)
+		e1:SetOperation(c82103466.ttop)
+		e1:SetValue(SUMMON_TYPE_ADVANCE)
+		c:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_LIMIT_SET_PROC)
+		e2:SetCondition(c82103466.setcon)
+		c:RegisterEffect(e2)
+	--c:EnableReviveLimit()
 	--connot special summon
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -57,7 +72,7 @@ function c82103466.initial_effect(c)
 	ex1:SetCode(EFFECT_CANNOT_LOSE_KOISHI)
 	ex1:SetTargetRange(1,0)
 	ex1:SetValue(1)
-	local ex2=Effect.CreateEffect(c)
+	--[[local ex2=Effect.CreateEffect(c)
 	ex2:SetType(EFFECT_TYPE_FIELD)
 	ex2:SetCode(0x10000000+82103466)
 	ex2:SetRange(LOCATION_MZONE)
@@ -75,7 +90,20 @@ function c82103466.initial_effect(c)
 				return fuc_win(player,reason)
 			end
 		end
-	end
+	end]]
+end
+function c82103466.ttcon(e,c,minc)
+	if c==nil then return true end
+	return minc<=3 and Duel.CheckTribute(c,3)
+end
+function c82103466.ttop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.SelectTribute(tp,c,3,3)
+	c:SetMaterial(g)
+	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
+end
+function c82103466.setcon(e,c,minc)
+	if not c then return true end
+	return false
 end
 function c82103466.cfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
