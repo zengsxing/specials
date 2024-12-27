@@ -72,6 +72,7 @@ function c82103466.initial_effect(c)
 	ex1:SetCode(EFFECT_CANNOT_LOSE_KOISHI)
 	ex1:SetTargetRange(1,0)
 	ex1:SetValue(1)
+	c:RegisterEffect(ex1)
 	--[[local ex2=Effect.CreateEffect(c)
 	ex2:SetType(EFFECT_TYPE_FIELD)
 	ex2:SetCode(0x10000000+82103466)
@@ -79,7 +80,6 @@ function c82103466.initial_effect(c)
 	ex2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	ex2:SetTargetRange(1,0)
 	c:RegisterEffect(ex2)
-	c:RegisterEffect(ex1)
 	if not c82103466.lose_check then
 		c82103466.lose_check=true
 		local fuc_win=Duel.Win
@@ -136,7 +136,7 @@ function c82103466.leaveop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Win(1-tp,WIN_REASON_RELAY_SOUL)
 end
 function c82103466.condition(e,tp)
-	return Duel.GetLP(tp)>0 and Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_LOSE_KOISHI)
+	return Duel.GetLP(tp)>0
 end
 function c82103466.operation(e,tp)
 	Duel.SetLP(tp,0)
