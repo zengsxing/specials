@@ -136,7 +136,7 @@ function c82103466.leaveop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Win(1-tp,WIN_REASON_RELAY_SOUL)
 end
 function c82103466.condition(e,tp)
-	return Duel.GetLP(tp)>0
+	return Duel.GetLP(tp)>0 and Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_LOSE_KOISHI)
 end
 function c82103466.operation(e,tp)
 	Duel.SetLP(tp,0)
