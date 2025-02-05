@@ -49,13 +49,13 @@ function c64202399.initial_effect(c)
 	e4:SetOperation(c64202399.spop)
 	c:RegisterEffect(e4)
 end
-function c64202399.costfilter(c)
-	return c:IsCode(89631139) and c:IsAbleToGraveAsCost()
+function c64202399.costfilter(c,tp)
+	return c:IsCode(89631139) and c:IsAbleToGraveAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
 function c64202399.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c64202399.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c64202399.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c64202399.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c64202399.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c64202399.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -88,7 +88,7 @@ function c64202399.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,c64202399.thfilter1,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,tc)
-		if not (tc:IsCode(24094653) or aux.IsCodeListed(c,89631139) or aux.IsCodeListed(c,23995346)) then
+		if not (tc:IsCode(24094653) or aux.IsCodeListed(c,89631139) or aux.IsCodeListed(tc,23995346)) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
