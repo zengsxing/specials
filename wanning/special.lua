@@ -578,21 +578,28 @@ oneTimeSkill(27970830, function(e,tp,eg,ep,ev,re,r,rp)
 end)
 
 --草船借箭（敌人操纵器）
+function controllercheck(c,e)
+	return c:IsAbleToChangeControler() and not c:IsImmuneToEffect(e)
+end
 endPhaseSkill(98045062, function(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(controllercheck,tp,0,LOCATION_MZONE,nil,e)
+	local rg=Group.CreateGroup()
 	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if g:GetCount()>ct then
-		g=g:Select(tp,ct,ct,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+		rg=g:Select(tp,ct,ct,nil)
+	else
+		rg=g:Clone()
 	end
-	for tc in aux.Next(g) do
+	for tc in aux.Next(rg) do
 		Duel.GetControl(tc,tp)
 	end
-	local sg=Duel.GetMatchingGroup(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,nil)
-	for tc in aux.Next(sg) do
-		Duel.SendtoGrave(tc,REASON_RULE)
+	g:Sub(rg)
+	for dc in aux.Next(g) do
+		Duel.SendtoGrave(dc,REASON_RULE)
 	end
 end, function(e,tp)
-	return Duel.GetTurnPlayer()==1-tp and Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_MZONE,nil)>=3
+	return Duel.GetTurnPlayer()==1-tp and Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_MZONE,nil)>=2
 end, true)
 
 wrapDeckSkill(98045062, function(e1)
@@ -660,7 +667,8 @@ function c37313786_op(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local g=Duel.GetDecktopGroup(1-tp,2*ct)
 		Duel.DisableShuffleCheck()
-		Duel.Remove(g,POS_FACEUP,REASON_RULE)
+		local sg=g:Filter(Card.IsAbleToRemove,nil)
+		Duel.Remove(sg,POS_FACEUP,REASON_RULE)
 	end
 	if ct2==4 then
 		local lp=Duel.GetLP(1-tp)-20220222
@@ -804,9 +812,9 @@ end
 
 standbyPhaseSkill(13513663,function (e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(function (tc)
-		return tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and tc:IsType(TYPE_NORMAL) and tc:IsFaceupEx() and tc:IsType(TYPE_MONSTER)
+		return tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and tc:IsType(TYPE_NORMAL) and (tc:IsFaceupEx() or tc:IsLocation(LOCATION_HAND+LOCATION_DECK)) and tc:IsType(TYPE_MONSTER)
 	end,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	if g:GetCount()==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then return false end
+	if g:GetCount()==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:SelectSubGroup(tp,aux.dabcheck,true,0,4)
 	Duel.SpecialSummon(sg,0,tp,tp,true,true,POS_FACEUP)
@@ -1224,7 +1232,12 @@ addSkill(92714517, function(e1)
 		if re:GetHandler():GetType()~=TYPE_TRAP then return end
 		local rg=Group.CreateGroup()
 		local g=Duel.GetDecktopGroup(1-tp,1)
-		if #g>0 then rg:Merge(g) end
+		if #g>0 then
+			local tc=g:GetFirst()
+			if tc:IsAbleToRemove() then
+				rg:AddCard(tc)
+			end
+		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
 		if #sg>0 then rg:Merge(sg) end
