@@ -5,6 +5,7 @@ function aux.PreloadUds()
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_EXTRA)
+  e1:SetCountLimit(1,20000000)
   local function alterf(c,e,tp,xyzc)
     if xyzc:IsSetCard(0x1048) then
       return c:IsSetCard(0x48) and aux.GetXyzNumber(c)==aux.GetXyzNumber(xyzc) and c:IsRank(xyzc:GetRank()-1) and not c:IsSetCard(0x1048)
