@@ -21,7 +21,7 @@ local function registerSkillForPlayer(tp, code)
 	for _,skill in ipairs(skills) do
 		local e1=Effect.GlobalEffect()
 		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-		skill(e1)
+		skill(e1,tp)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
@@ -60,15 +60,26 @@ local function phaseSkill(code, phase, op, con, both)
 	end)
 end
 
-local function oneTimeSkill(code, op)
-	addSkill(code, function(e1)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-							Duel.Hint(HINT_CARD,0,code)
-							op(e,tp,eg,ep,ev,re,r,rp)
-							e:Reset()
-					end)
+local onetimeSkillResolveOperationsPrior={
+	[0]={},
+	[1]={},
+}
+local onetimeSkillResolveOperations={
+	[0]={},
+	[1]={},
+}
+local function oneTimeSkill(code, op, prior)
+	addSkill(code, function(e1,tp)
+		local oneTimeSkillObject={
+			code=code,
+			op=op,
+			tp=tp,
+		}
+		if prior then
+			table.insert(onetimeSkillResolveOperationsPrior[tp], oneTimeSkillObject)
+		else
+			table.insert(onetimeSkillResolveOperations[tp], oneTimeSkillObject)
+		end
 	end)
 end
 
@@ -81,45 +92,52 @@ local function endPhaseSkill(code, op, con, both)
 end
 
 --重新开始
-phaseSkill(85852291, PHASE_STANDBY, function(e,tp,eg,ep,ev,re,r,rp)
+oneTimeSkill(85852291, function(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(43227,0)) then return end
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	local ct=#g
 	Duel.SendtoDeck(g,nil,0,REASON_RULE)
 	Duel.ShuffleDeck(tp)
 	Duel.Draw(tp,ct,REASON_RULE)
-end, function()
-	return Duel.GetTurnCount()==1
-end,true)
+end)
 
 --成金
 oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_RULE)
 	Duel.Draw(1-tp,1,REASON_RULE)
-end)
+end,true)
 
-local function initialize()
+local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
 	for tp=0,1 do
 		local codes={}
-	for _,code in ipairs(skillCodes) do
-		table.insert(codes,code)
-	end
+		for _,code in ipairs(skillCodes) do
+			table.insert(codes,code)
+		end
 		table.sort(codes)
 		local afilter={codes[1],OPCODE_ISCODE}
 		if #codes>1 then
-				for i=2,#codes do
-						table.insert(afilter,codes[i])
-						table.insert(afilter,OPCODE_ISCODE)
-						table.insert(afilter,OPCODE_OR)
-				end
+			for i=2,#codes do
+				table.insert(afilter,codes[i])
+				table.insert(afilter,OPCODE_ISCODE)
+				table.insert(afilter,OPCODE_OR)
+			end
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 		local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
-	skillSelections[tp]=ac
+		skillSelections[tp]=ac
 	end
 	for tp=0,1 do
-	registerSkillForPlayer(tp,skillSelections[tp])
+		registerSkillForPlayer(tp,skillSelections[tp])
+	end
+	-- resolve onetime skills
+	for _,onetimeSkillList in ipairs({onetimeSkillResolveOperationsPrior,onetimeSkillResolveOperations}) do
+		for tp=0,1 do
+			for _,onetimeSkillObject in ipairs(onetimeSkillList[tp]) do
+				Duel.Hint(HINT_CARD,0,onetimeSkillObject.code)
+				onetimeSkillObject.op(e,onetimeSkillObject.tp,eg,ep,ev,re,r,rp)
+			end
+		end
 	end
 end
 
@@ -156,8 +174,8 @@ function Auxiliary.PreloadUds()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
-	e1:SetOperation(function(e)
-		initialize()
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		initialize(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
 	end)
 	Duel.RegisterEffect(e1,0)
