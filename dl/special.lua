@@ -152,7 +152,7 @@ oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
 			current_type=current_type<<1
 		end
 		draw_type_count[max_tweaked_type]=draw_type_count[max_tweaked_type]-1
-		draw_type_count_tweaked[min_tweaked_type]=draw_type_count[min_tweaked_type]-draw_type_count_precise[min_tweaked_type]
+		draw_type_count_tweaked[max_tweaked_type]=draw_type_count[max_tweaked_type]-draw_type_count_precise[max_tweaked_type]
 		difference=difference-1
 	end
 
