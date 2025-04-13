@@ -81,7 +81,7 @@ local function endPhaseSkill(code, op, con, both)
 end
 
 --重新开始
-phaseSkill(85852291, PHASE_STANDBY, function(e,tp,eg,ep,ev,re,r,rp)
+phaseSkill(85852291, PHASE_DRAW, function(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(43227,0)) then return end
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	local ct=#g
@@ -90,7 +90,7 @@ phaseSkill(85852291, PHASE_STANDBY, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,ct,REASON_RULE)
 end, function()
 	return Duel.GetTurnCount()==1
-end)
+end,true)
 
 --成金
 oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
