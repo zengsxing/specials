@@ -107,6 +107,84 @@ oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(1-tp,1,REASON_RULE)
 end,true)
 
+--天平
+oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
+	local hg=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	local hand_count=#hg
+	Duel.SendtoDeck(hg,nil,0,REASON_RULE)
+	Duel.ShuffleDeck(tp)
+	local dg=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	local deck_count=#dg
+	local type_cards={}
+	local type_count={}
+	local current_type=TYPE_MONSTER
+	while current_type<=TYPE_TRAP do
+		type_cards[current_type]=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_DECK,0,nil,current_type)
+		type_count[current_type]=#type_cards[current_type]
+		current_type=current_type<<1
+	end
+
+	local draw_type_count={}
+	local draw_type_count_precise={}
+	local draw_type_count_tweaked={}
+	current_type=TYPE_MONSTER
+	local total_draw_count=0
+	while current_type<=TYPE_TRAP do
+		draw_type_count_precise[current_type]=type_count[current_type]*hand_count/deck_count
+		draw_type_count[current_type]=math.floor(draw_type_count_precise + 0.5)
+		draw_type_count_tweaked[current_type]=draw_type_count[current_type]-draw_type_count_precise[current_type]
+		total_draw_count=total_draw_count+draw_type_count[current_type]
+		current_type=current_type<<1
+	end
+
+	local difference=total_draw_count-hand_count
+	-- 这里是四舍五入的结果，但是可能有偏差
+	while difference>0 do
+		-- 抽多了，需要找一个偏差最大的少抽
+		local max_tweaked=0
+		local max_tweaked_type=0
+		current_type=TYPE_MONSTER
+		while current_type<=TYPE_TRAP do
+			if draw_type_count_tweaked[current_type]>max_tweaked then
+				max_tweaked=draw_type_count_tweaked[current_type]
+				max_tweaked_type=current_type
+			end
+			current_type=current_type<<1
+		end
+		draw_type_count[max_tweaked_type]=draw_type_count[max_tweaked_type]-1
+		draw_type_count_tweaked[min_tweaked_type]=draw_type_count[min_tweaked_type]-draw_type_count_precise[min_tweaked_type]
+		difference=difference-1
+	end
+
+	while difference<0 do
+		-- 抽少了，需要找一个偏差最小的多抽
+		local min_tweaked=0
+		local min_tweaked_type=0
+		current_type=TYPE_MONSTER
+		while current_type<=TYPE_TRAP do
+			if draw_type_count_tweaked[current_type]<min_tweaked then
+				min_tweaked=draw_type_count_tweaked[current_type]
+				min_tweaked_type=current_type
+			end
+			current_type=current_type<<1
+		end
+		draw_type_count[min_tweaked_type]=draw_type_count[min_tweaked_type]+1
+		draw_type_count_tweaked[min_tweaked_type]=draw_type_count[min_tweaked_type]-draw_type_count_precise[min_tweaked_type]
+		difference=difference+1
+	end
+
+	current_type=TYPE_TRAP
+	while current_type>=TYPE_MONSTER do
+		local g=type_cards[current_type]
+		local sg=g:RandomSelect(tp,draw_type_count[current_type])
+		for tc in aux.Next(sg) do
+			Duel.MoveSequence(tc,SEQ_DECKTOP)
+		end
+		current_type=current_type>>1
+	end
+	Duel.Draw(tp,hand_count,REASON_RULE)
+end,true)
+
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
 	for tp=0,1 do
