@@ -60,16 +60,27 @@ local function phaseSkill(code, phase, op, con, both)
   end)
 end
 
-local function oneTimeSkill(code, op)
-  addSkill(code, function(e1)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-	  					Duel.Hint(HINT_CARD,0,code)
-	  					op(e,tp,eg,ep,ev,re,r,rp)
-	  					e:Reset()
-					end)
-  end)
+local onetimeSkillResolveOperationsPrior={
+	[0]={},
+	[1]={},
+}
+local onetimeSkillResolveOperations={
+	[0]={},
+	[1]={},
+}
+local function oneTimeSkill(code, op, prior)
+	addSkill(code, function(e1,tp)
+		local oneTimeSkillObject={
+			code=code,
+			op=op,
+			tp=tp,
+		}
+		if prior then
+			table.insert(onetimeSkillResolveOperationsPrior[tp], oneTimeSkillObject)
+		else
+			table.insert(onetimeSkillResolveOperations[tp], oneTimeSkillObject)
+		end
+	end)
 end
 
 local function standbyPhaseSkill(code, op, con, both)
@@ -135,37 +146,37 @@ endPhaseSkill(19523799, function(e,tp,eg,ep,ev,re,r,rp)
 end)
 
 addSkill(19523799, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_ATTACK_COST)
-    e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(0,1)
-    e1:SetCost(c19523799_cost)
-    e1:SetOperation(c19523799_op)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_ATTACK_COST)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetCost(c19523799_cost)
+	e1:SetOperation(c19523799_op)
 end)
 
 addSkill(19523799, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_ACTIVATE_COST)
-    e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(0,1)
-    e1:SetCost(c19523799_cost)
-    e1:SetOperation(c19523799_op)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_ACTIVATE_COST)
+	e1:SetProperty(e1:GetProperty()|EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetCost(c19523799_cost)
+	e1:SetOperation(c19523799_op)
 end)
 
 addSkill(19523799, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_SPSUMMON_COST)
-    e1:SetTargetRange(0,0x7f)
-    e1:SetCost(c19523799_cost)
-    e1:SetOperation(c19523799_op)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_COST)
+	e1:SetTargetRange(0,0x7f)
+	e1:SetCost(c19523799_cost)
+	e1:SetOperation(c19523799_op)
 end)
 
 function c19523799_cost(e,c,tp)
-    return Duel.CheckLPCost(tp,400)
+	return Duel.CheckLPCost(tp,400)
 end
 
 function c19523799_op(e,tp,eg,ep,ev,re,r,rp)
-    Duel.PayLPCost(tp,400)
+	Duel.PayLPCost(tp,400)
 end
 
 for _,event in ipairs({EVENT_SUMMON_SUCCESS,EVENT_FLIP_SUMMON_SUCCESS,EVENT_SPSUMMON_SUCCESS}) do
@@ -277,18 +288,18 @@ addSkill(47529357, function(e1)
   end)
 end)
 addSkill(47529357, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_CANNOT_REMOVE)
-    e1:SetTargetRange(1,1)
-    e1:SetTarget(c47529357_efilter)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetTargetRange(1,1)
+	e1:SetTarget(c47529357_efilter)
 	e1:SetTarget(function (e,c,p)
 		return c:IsControler(e:GetHandlerPlayer())
 	end)
 end)
 function c47529357_efilter(e,c,rp,r,re)
-    local tp=e:GetHandlerPlayer()
-    return c:IsControler(tp) and re and r&REASON_EFFECT>0 and rp==1-tp
+	local tp=e:GetHandlerPlayer()
+	return c:IsControler(tp) and re and r&REASON_EFFECT>0 and rp==1-tp
 end
 function c69015963_filter(c,e,tp)
   return c:IsCanBeSpecialSummoned(e,0,tp,true,true) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
@@ -335,7 +346,7 @@ addSkill(13171876, function (e1)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(0,LOCATION_MZONE)
-    e1:SetValue(function (e,c)
+	e1:SetValue(function (e,c)
 		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_GRAVE)*(-500)
 	end)
 end)
@@ -344,7 +355,7 @@ addSkill(13171876, function (e1)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)
-    e1:SetValue(function (e,c)
+	e1:SetValue(function (e,c)
 		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_GRAVE)*(500)
 	end)
 	e1:SetTarget(function(e,c)
@@ -353,16 +364,16 @@ addSkill(13171876, function (e1)
 end)
 
 addSkill(13171876, function (e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(1,0)
-    e1:SetValue(3)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(3)
 end)
 
 wrapDeckSkill(13171876, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(function(e,c)
 		return c:IsFaceup() and c:IsCode(13171876)
@@ -379,7 +390,7 @@ wrapDeckSkill(13171876, function(e1)
 		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_CARD,0,code)
 			Duel.Hint(HINT_CARD,0,13171876)
-	        Duel.Remove(Duel.GetDecktopGroup(1-tp,5),POS_FACEUP,REASON_RULE)
+			Duel.Remove(Duel.GetDecktopGroup(1-tp,5),POS_FACEUP,REASON_RULE)
 		end)
 	
 end, function(e,tp,eg,ep,ev,re,r,rp)
@@ -620,7 +631,7 @@ wrapDeckSkill(98045062, function(e1)
 	e1:SetCondition(function (e,tp,eg,ep,ev,re,r,rp)
 		return rp==1-tp
 	end)
-    e1:SetOperation(function (e,tp,eg,ep,ev,re,r,rp)
+	e1:SetOperation(function (e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,98045062)
 		local rc=re:GetHandler()
 		if Duel.NegateEffect(ev,true) and rc:IsRelateToEffect(re) then
@@ -630,13 +641,13 @@ wrapDeckSkill(98045062, function(e1)
 end)
 
 wrapDeckSkill(98045062, function (e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CANNOT_BP)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BP)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCondition(function (e,tp,eg,ep,ev,re,r,rp)
 		return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)==0
 	end)
-    e1:SetTargetRange(0,1)
+	e1:SetTargetRange(0,1)
 end)
 
 --4个2（赌博）
@@ -788,26 +799,26 @@ oneTimeSkill(13513663, function(e,tp,eg,ep,ev,re,r,rp)
 end)
 
 function c13513663_con(e,c)
-    if c==nil then return true end
-    if c:IsHasEffect(EFFECT_NECRO_VALLEY) and c:IsLocation(LOCATION_GRAVE) then return false end
-    local tp=c:GetControler()
-    return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,100000000+c:GetOriginalCode())==0
+	if c==nil then return true end
+	if c:IsHasEffect(EFFECT_NECRO_VALLEY) and c:IsLocation(LOCATION_GRAVE) then return false end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,100000000+c:GetOriginalCode())==0
 end
 
 function c13513663_tg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,100000000+c:GetOriginalCode())==0
-        and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,100000000+c:GetOriginalCode())==0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.RegisterFlagEffect(tp,100000000+c:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 
 
 function c13513663_op(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-        Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-    end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 
 standbyPhaseSkill(13513663,function (e,tp,eg,ep,ev,re,r,rp)
@@ -829,20 +840,20 @@ oneTimeSkill(35952884, function(e,tp,eg,ep,ev,re,r,rp)
 end)
 
 addSkill(35952884, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-    e1:SetTargetRange(0,1)
-    e1:SetValue(function (e,re)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(0,1)
+	e1:SetValue(function (e,re)
 		return re:GetHandler():IsCode(94145021,27204311,91800273)
 	end)
 end)
 
 addSkill(35952884, function(e1)
 	e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_CANNOT_REMOVE)
-    e1:SetTargetRange(0,1)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetTargetRange(0,1)
 	e1:SetTarget(function (e,c,rp,r,re)
 		local tp=e:GetHandlerPlayer()
 		return c:IsFaceupEx() and c:IsControler(tp) and rp==1-tp and c:IsType(TYPE_SYNCHRO)
@@ -907,11 +918,11 @@ endPhaseSkill(31036355, function (e,tp,eg,ep,ev,re,r,rp)
 end, nil, true)
 
 addSkill(31036355,function (e1)
-    e1:SetDescription(aux.Stringid(37991342,0))
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_SUMMON_PROC)
+	e1:SetDescription(aux.Stringid(37991342,0))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SUMMON_PROC)
 	e1:SetTargetRange(LOCATION_HAND,0)
-    e1:SetTarget(function (e,c,minc)
+	e1:SetTarget(function (e,c,minc)
 		if c==nil then return true end
 		return c:IsLevelAbove(5) and c:IsLevelBelow(6) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 	end)
@@ -935,47 +946,47 @@ function c72283691_chainop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 addSkill(37626500, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CANNOT_REMOVE)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(1,1)
-    e1:SetTarget(c37626500_target)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,1)
+	e1:SetTarget(c37626500_target)
 end)
 
 addSkill(37626500, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-    e1:SetTargetRange(LOCATION_MZONE,0)
-    e1:SetValue(1)
-    e1:SetTarget(c37626500_target)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(1)
+	e1:SetTarget(c37626500_target)
 end)
 
 addSkill(37626500, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-    e1:SetTargetRange(LOCATION_MZONE,0)
-    e1:SetValue(1)
-    e1:SetTarget(c37626500_target)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(1)
+	e1:SetTarget(c37626500_target)
 end)
 
 addSkill(37626500, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_DIRECT_ATTACK)
-    e1:SetTargetRange(LOCATION_MZONE,0)
-    e1:SetValue(1)
-    e1:SetTarget(c37626500_target)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(1)
+	e1:SetTarget(c37626500_target)
 end)
 
 addSkill(37626500, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_UPDATE_ATTACK)
-    e1:SetTargetRange(0,LOCATION_MZONE)
-    e1:SetCondition(function (e,tp)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetCondition(function (e,tp)
 		return Duel.IsExistingMatchingCard(function (c)
 			return c:IsType(TYPE_RITUAL) and c:IsFaceup()
 		end,tp,LOCATION_MZONE,0,1,nil)
 	end)
-    e1:SetValue(-3000)
+	e1:SetValue(-3000)
 end)
 
 function c37626500_target(e,c,rp,r,re)
@@ -1046,38 +1057,38 @@ oneTimeSkill(94820406,function (e,tp)
 end)
 
 addSkill(94820406, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CHAIN_MATERIAL)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(1,0)
-    e1:SetTarget(function (e,te,tp)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHAIN_MATERIAL)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(function (e,te,tp)
 		if te:GetHandler():GetOriginalCode()~=94820406 then return Group.CreateGroup() end
 		return Duel.GetMatchingGroup(function (c)
 			return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave() and not c:IsImmuneToEffect(te)
 		end,tp,LOCATION_EXTRA+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_HAND,0,nil)
 	end)
-    e1:SetOperation(function (e,te,tp,tc,mat,sumtype)
+	e1:SetOperation(function (e,te,tp,tc,mat,sumtype)
 		if not sumtype then sumtype=SUMMON_TYPE_FUSION end
 		tc:SetMaterial(mat)
 		Duel.SendtoGrave(mat,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 		Duel.SpecialSummon(tc,sumtype,tp,tp,false,false,POS_FACEUP)
 		end)
-    e1:SetValue(aux.TRUE)
+	e1:SetValue(aux.TRUE)
 end)
 
 wrapDeckSkill(94820406, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e1:SetTargetRange(LOCATION_MZONE,0)
-    e1:SetValue(aux.tgoval)
+	e1:SetValue(aux.tgoval)
 	e1:SetTarget(function (e,c)
 		return c:IsType(TYPE_FUSION) and c:IsSetCard(0x6008) and c:IsFaceup()
 	end)
 end)
 
 wrapDeckSkill(94820406, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetCondition(function (e)
 		local ph=Duel.GetCurrentPhase()
@@ -1089,24 +1100,24 @@ wrapDeckSkill(94820406, function(e1)
 end)
 
 wrapDeckSkill(94820406, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-    e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1:SetOperation(function (e,tp)
 		local c=Duel.GetAttacker()
 		if c:IsType(TYPE_FUSION) and c:IsSetCard(0x6008) and c:IsFaceup() then
-            local e1=Effect.CreateEffect(e:GetHandler())
-            e1:SetType(EFFECT_TYPE_SINGLE)
-            e1:SetCode(EFFECT_SET_BASE_ATTACK)
-            e1:SetValue(c:GetBaseAttack()*2)
-            e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-            c:RegisterEffect(e1)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_BASE_ATTACK)
+			e1:SetValue(c:GetBaseAttack()*2)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			c:RegisterEffect(e1)
 		end
 	end)
 end)
 
 wrapDeckSkill(51684157, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetCondition(function (e)
 		local ph=Duel.GetCurrentPhase()
@@ -1122,39 +1133,39 @@ end)
 
 addSkill(51684157, function(e1)
 	e1:SetDescription(aux.Stringid(37991342,0))
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_SUMMON_PROC)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SUMMON_PROC)
 		e1:SetTargetRange(LOCATION_HAND,0)
-    e1:SetCondition(function (e,c,minc)
+	e1:SetCondition(function (e,c,minc)
 		if c==nil then return true end
 		return minc==0 and (c:IsRace(RACE_WYRM) or c:IsSetCard(0x1a2)) and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 	end)
 end)
 
 addSkill(51684157, function (e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(1,0)
-    e1:SetValue(999)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(999)
 end)
 
 addSkill(51684157, function (e1)
 	e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_CANNOT_SUMMON)
-    e1:SetTargetRange(1,0)
-    e1:SetTarget(function (e,c)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(function (e,c)
 		return not (c:IsRace(RACE_WYRM) or c:IsSetCard(0x1a2))
 	end)
 end)
 
 addSkill(51684157, function (e1)
 	e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_CANNOT_MSET)
-    e1:SetTargetRange(1,0)
-    e1:SetTarget(function (e,c)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_MSET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(function (e,c)
 		return not (c:IsRace(RACE_WYRM) or c:IsSetCard(0x1a2))
 	end)
 end)
@@ -1180,8 +1191,8 @@ standbyPhaseSkill(51684157, function (e,tp,eg,ep,ev,re,r,rp)
 end)
 
 wrapDeckSkill(92714517, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetTargetRange(LOCATION_ONFIELD,0)
 	e1:SetCondition(function (e)
 		local tp=e:GetHandlerPlayer()
@@ -1216,18 +1227,18 @@ standbyPhaseSkill(92714517, function (e,tp,eg,ep,ev,re,r,rp)
 end, nil, true)
 
 addSkill(92714517, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-    e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-    e1:SetTargetRange(LOCATION_SZONE,0)
-    e1:SetTarget(function (e,c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetTargetRange(LOCATION_SZONE,0)
+	e1:SetTarget(function (e,c)
 		return c:GetType()==TYPE_TRAP and c:IsSetCard(0x17e)
 	end)
 end)
 
 addSkill(92714517, function(e1)
-    e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-    e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetOperation(function (e,tp,eg,ep,ev,re,r,rp)
 		if re:GetHandler():GetType()~=TYPE_TRAP then return end
 		local rg=Group.CreateGroup()
@@ -1255,23 +1266,23 @@ standbyPhaseSkill(55795155, function (e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:FilterSelect(tp,function (c)
 			return not c:IsForbidden() and c:CheckUniqueOnField(tp,LOCATION_SZONE)
 		end,0,ct,nil)
-        if sg:GetCount()>0 then
+		if sg:GetCount()>0 then
 			for tc in aux.Next(sg) do
 				if Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 					g:RemoveCard(tc)
 				end
 			end
 		end
-    end
+	end
 	if g:GetCount()>0 then
 		Duel.SendtoExtraP(g,nil,REASON_EFFECT)
-    end
+	end
 end)
 
 addSkill(55795155, function(e1)
 	e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetCode(EFFECT_SKIP_DP)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_SKIP_DP)
 	e1:SetTargetRange(1,0)
 	e1:SetCondition(function (e)
 		local tp=e:GetHandlerPlayer()
@@ -1281,7 +1292,7 @@ end)
 
 addSkill(55795155, function(e1)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-    e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(function (e,tp,eg)
 		return eg:IsExists(function (c)
 		return c:IsSummonPlayer(tp) and c:IsSummonType(SUMMON_TYPE_PENDULUM)
@@ -1330,14 +1341,14 @@ addSkill(21570001, function (e1)
 	e1:SetTarget(function (e,c)
 		return c:IsCode(56099748) and Duel.GetAttacker() and Duel.GetAttacker()==c and c:IsControler(e:GetHandlerPlayer())
 	end)
-    e1:SetValue(function (e,c)
+	e1:SetValue(function (e,c)
 		return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)*(800)
 	end)
 end)
 
 addSkill(21570001, function (e1)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_DESTROY_REPLACE)
+	e1:SetCode(EFFECT_DESTROY_REPLACE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetTarget(function (e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetDecktopGroup(tp,1)
@@ -1348,12 +1359,12 @@ addSkill(21570001, function (e1)
 		end
 		return Duel.SelectYesNo(tp,aux.Stringid(897409,0))
 	end)
-    e1:SetValue(function (e,c)
+	e1:SetValue(function (e,c)
 		local tp=e:GetHandlerPlayer()
 		return c:IsControler(tp) and c:IsOnField()
 			and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 	end)
-    e1:SetOperation(function (e,tp,eg,ep,ev,re,r,rp)
+	e1:SetOperation(function (e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,21570001)
 		local g=Duel.GetDecktopGroup(tp,1)
 		if g:GetCount()>0 then
@@ -1364,7 +1375,7 @@ end)
 
 addSkill(48356796, function (e1)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-    e1:SetCode(EVENT_PAY_LPCOST)
+	e1:SetCode(EVENT_PAY_LPCOST)
 	e1:SetOperation(function (e,tp)
 		local lp=Duel.GetLP(tp)
 		lp=lp+10000
@@ -1381,10 +1392,10 @@ end)
 
 addSkill(48356796, function (e2)
 	e2:SetType(EFFECT_TYPE_FIELD)
-    e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e2:SetCode(EFFECT_DRAW_COUNT)
-    e2:SetTargetRange(1,0)
-    e2:SetValue(function (e)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_DRAW_COUNT)
+	e2:SetTargetRange(1,0)
+	e2:SetValue(function (e)
 		local tp=e:GetHandlerPlayer()
 		local val=6
 		if Duel.GetFlagEffect(tp,19403423)>0 then val=val+1 end
@@ -1515,35 +1526,46 @@ end)
 local function initialize()
   local skillCodes=getAllSkillCodes()
   for tp=0,1 do
-    local codes={}
+	local codes={}
 	for _,code in ipairs(skillCodes) do
 		table.insert(codes,code)
 	end
-    table.sort(codes)
-    local afilter={codes[1],OPCODE_ISCODE}
-    if #codes>1 then
-        for i=2,#codes do
-            table.insert(afilter,codes[i])
-            table.insert(afilter,OPCODE_ISCODE)
-            table.insert(afilter,OPCODE_OR)
-        end
-    end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-    local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
+	table.sort(codes)
+	local afilter={codes[1],OPCODE_ISCODE}
+	if #codes>1 then
+		for i=2,#codes do
+			table.insert(afilter,codes[i])
+			table.insert(afilter,OPCODE_ISCODE)
+			table.insert(afilter,OPCODE_OR)
+		end
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
 	skillSelections[tp]=ac
   end
   for tp=0,1 do
-	registerSkillForPlayer(tp,skillSelections[tp])
+		registerSkillForPlayer(tp,skillSelections[tp])
   end
+
+	-- resolve onetime skills
+	for _,onetimeSkillList in ipairs({onetimeSkillResolveOperationsPrior,onetimeSkillResolveOperations}) do
+		for tp=0,1 do
+			for _,onetimeSkillObject in ipairs(onetimeSkillList[tp]) do
+				Duel.Hint(HINT_CARD,0,onetimeSkillObject.code)
+				onetimeSkillObject.op(e,onetimeSkillObject.tp,eg,ep,ev,re,r,rp)
+			end
+		end
+	end
 end
 
 function Auxiliary.PreloadUds()
+	-- skill init
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
-	e1:SetOperation(function(e)
-		initialize()
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		initialize(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
 	end)
 	Duel.RegisterEffect(e1,0)
