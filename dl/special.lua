@@ -131,7 +131,7 @@ oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
 	local total_draw_count=0
 	while current_type<=TYPE_TRAP do
 		draw_type_count_precise[current_type]=type_count[current_type]*hand_count/deck_count
-		draw_type_count[current_type]=math.floor(draw_type_count_precise + 0.5)
+		draw_type_count[current_type]=math.floor(draw_type_count_precise[current_type] + 0.5)
 		draw_type_count_tweaked[current_type]=draw_type_count[current_type]-draw_type_count_precise[current_type]
 		total_draw_count=total_draw_count+draw_type_count[current_type]
 		current_type=current_type<<1
