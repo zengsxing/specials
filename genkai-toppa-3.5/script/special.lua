@@ -38,6 +38,27 @@ function Card.IsOrigSetCard(c,setcode)
     return CUNGUI._IsSetCard(c, setcode)
 end
 
+function CUNGUI.regsplimit(tc,tp)
+	local code=tc:GetOriginalCodeRule()
+	local race=tc:GetOriginalRace()
+	
+	local e1=Effect.CreateEffect(tc)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(CUNGUI.sylcheckfunc(code,race))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	
+end
+
+function CUNGUI.sylcheckfunc(code,race)
+	return function(e,c,sump,sumtype,sumpos,targetp,se)
+		return c:GetOriginalRace()==race and c:GetOriginalCodeRule()~=code
+	end
+end
+
 function Auxiliary.PreloadUds()
 	--adjust
 	local e1=Effect.GlobalEffect()
