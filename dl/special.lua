@@ -174,12 +174,12 @@ false)
 
 --注定一抽
 local function repcon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetDrawCount(tp)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil)
+	local cur_lp = Duel.GetLP(tp)
+    return Duel.GetDrawCount(tp)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) and lp_record[tp] - cur_lp >= 2000 and Duel.GetTurnPlayer()==tp
 end
 local function repop(e,tp,eg,ep,ev,re,r,rp)
-	local tp=Duel.GetTurnPlayer()
-	local dt=Duel.GetDrawCount(tp)
-	if dt>0 and Duel.SelectYesNo(tp,1108) then
+	if Duel.SelectYesNo(tp,1108) then
+		Duel.Hint(HINT_CARD,0,2295831)
 		local e1=Effect.GlobalEffect()
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -195,35 +195,21 @@ local function repop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	end
+	lp_record[tp] = Duel.GetLP(tp)
 	e:Reset()
 end
 
-local function bufcon(e,tp,eg,ep,ev,re,r,rp)
-	local cur_lp=Duel.GetLP(tp)
-	return Duel.GetTurnPlayer()~=tp and cur_lp < lp_record[tp] and lp_record[tp] - cur_lp >= 2000
-end
-
-local function bufreg(e,tp,eg,ep,ev,re,r,rp)
-	local e7=Effect.GlobalEffect()
+wrapDeckSkill(2295831, function(e7)
 	e7:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e7:SetCode(EVENT_PREDRAW)
 	e7:SetCountLimit(1)
 	e7:SetCondition(repcon)
 	e7:SetOperation(repop)
-	Duel.RegisterEffect(e7,tp)
-	lp_record[tp]=cur_lp
-end
+end)
 
 oneTimeSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
 	lp_record[tp]=Duel.GetLP(tp)
-	local ge2=Effect.GlobalEffect()
-	ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	ge2:SetCode(EVENT_TURN_END)
-	ge2:SetCountLimit(1)
-	ge2:SetCondition(bufcon)
-	ge2:SetOperation(bufreg)
-	Duel.RegisterEffect(ge2,tp)
-end,true)
+end)
 
 --成金
 oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
