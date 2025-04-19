@@ -1,6 +1,6 @@
 local skillLists={}
 local skillSelections={}
-local lp_record=0
+local lp_record={[0]=0,[1]=0}
 local function addSkill(code, skill)
 	if not skillLists[code] then
 		skillLists[code]={}
@@ -197,27 +197,30 @@ local function repop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	e:Reset()
 end
-local function bufreg(e,tp,eg,ep,ev,re,r,rp)
+
+local function bufcon(e,tp,eg,ep,ev,re,r,rp)
 	local cur_lp=Duel.GetLP(tp)
-	local comp = (cur_lp < lp_record) and (lp_record-cur_lp>=10)
-	if comp then
-		local e7=Effect.GlobalEffect()
-		e7:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e7:SetCode(EVENT_PREDRAW)
-		e7:SetCountLimit(1)
-		e7:SetCondition(repcon)
-		e7:SetOperation(repop)
-		Duel.RegisterEffect(e7,tp)
-	end
-	lp_record=cur_lp
+	return Duel.GetTurnPlayer()~=tp and cur_lp < lp_record[tp] and lp_record[tp] - cur_lp >= 2000
+end
+
+local function bufreg(e,tp,eg,ep,ev,re,r,rp)
+	local e7=Effect.GlobalEffect()
+	e7:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e7:SetCode(EVENT_PREDRAW)
+	e7:SetCountLimit(1)
+	e7:SetCondition(repcon)
+	e7:SetOperation(repop)
+	Duel.RegisterEffect(e7,tp)
+	lp_record[tp]=cur_lp
 end
 
 oneTimeSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
-	lp_record=Duel.GetLP(tp)
+	lp_record[tp]=Duel.GetLP(tp)
 	local ge2=Effect.GlobalEffect()
 	ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	ge2:SetCode(EVENT_TURN_END)
 	ge2:SetCountLimit(1)
+	ge2:SetCondition(bufcon)
 	ge2:SetOperation(bufreg)
 	Duel.RegisterEffect(ge2,tp)
 end,true)
