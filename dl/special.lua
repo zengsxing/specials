@@ -116,12 +116,6 @@ oneTimeSkill(85852291, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,ct,REASON_RULE)
 end)
 
---成金
-oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_RULE)
-	Duel.Draw(1-tp,1,REASON_RULE)
-end,true)
-
 --青眼白龙
 local function lvcheck(c)
 	return c:IsFaceup() and c:IsLevelAbove(5)
@@ -293,7 +287,7 @@ oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
 		current_type=current_type>>1
 	end
 	Duel.Draw(tp,hand_count,REASON_RULE)
-end,true)
+end)
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
