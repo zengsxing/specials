@@ -75,7 +75,8 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.CheckRemoveOverlayCard(tp,1,1,2,REASON_EFFECT) then
 		Duel.RemoveOverlayCard(tp,1,1,2,2,REASON_EFFECT)
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local g=Duel.GetTarget()
+		local a,b=Duel.GetFirstTarget()
+		local g=Group.FromCards(a,b)
 		for tc in aux.Next(g) do
 			if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 				local e1=Effect.CreateEffect(c)

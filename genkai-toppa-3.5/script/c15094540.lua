@@ -38,17 +38,24 @@ end
 function s.rmfilter1(c,tp)
 	local loc=c:GetLocation()
 	return c:IsFaceupEx() and c:IsSetCard(0xac) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
-		and Duel.IsExistingTarget(s.rmfilter2,tp,0,loc,1,nil)
+		and Duel.IsExistingTarget(s.rmfilter2,tp,0,loc,2,nil)
 end
 function s.rmfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(s.rmfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,2,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectTarget(tp,s.rmfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,2,2,nil,tp)
-	local loc=g1:GetFirst():GetLocation()
+	if chk==0 then return Duel.IsExistingTarget(s.rmfilter1,tp,LOCATION_MZONE,0,2,nil,tp)
+		or Duel.IsExistingTarget(s.rmfilter1,tp,LOCATION_GRAVE,0,2,nil,tp) end
+	local loc1 = 0
+	local loc2 = 1
+	local g1 = nil
+	while loc1 ~= loc2 do
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		g1=Duel.SelectTarget(tp,s.rmfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,2,2,nil,tp)
+		loc1=g1:GetFirst():GetLocation()
+		loc2=g1:GetNext():GetLocation()
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectTarget(tp,s.rmfilter2,tp,0,loc,2,2,nil)
 	g1:Merge(g2)

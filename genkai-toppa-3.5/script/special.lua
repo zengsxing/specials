@@ -1,29 +1,3 @@
---[[
-开局时，双方将1张一色之劳（83404468）从卡组外表侧表示除外。
-这场决斗中这张卡不是表侧表示除外的场合，这张卡表侧表示除外。
-这张卡得到以下效果外文本。
-
-场上4星以下的【森罗】怪兽得到以下效果。
-·这张卡不受效果影响。这个效果不会被无效化。
-手卡中5星以上的【森罗】怪兽得到以下效果。
-·这张卡可以从手卡特殊召唤。
-
-手牌·墓地的【无限起动】怪兽得到以下效果。
-这个卡名的这个效果1回合只能使用1次。
-自己·对方回合才能发动。这张卡在场上特殊召唤。从卡组把1只【无限起动】怪兽特殊召唤。
-
-场上的【无限起动】怪兽得到以下效果。
-自己·对方回合1次，宣言1个1~13的等级、1个属性、1个种族才能发动。
-双方场上所有怪兽变为那个等级、属性、种族，卡名当作【无名氏】使用。
-
-手卡原本卡名是【魔厨】的卡得到以下效果。
-这个卡名的这个效果1回合只能使用1次。
-把这张卡从手卡丢弃才能发动。从卡组·墓地选1张【魔厨】怪兽和1张【食谱】卡加入手卡。
-
-场上原本卡名是【魔厨】的怪兽得到以下效果。
-卡被解放时发动。选场上最多有那个相同数量的卡烧掉。
-
-]]--
 CUNGUI = {}
 CUNGUI.disabled={}
 CUNGUI.RuleCards=Group.CreateGroup()
@@ -36,6 +10,21 @@ end
 
 function Card.IsOrigSetCard(c,setcode)
     return CUNGUI._IsSetCard(c, setcode)
+end
+
+CUNGUI._Exile = Duel.Exile
+function Duel.Exile(targ,reason)
+	if aux.GetValueType(targ) == "Card" then
+		targ = Group.FromCards(targ)
+	end
+	local g=Group.CreateGroup()
+	for tc in aux.Next(targ) do
+		if tc:GetOverlayCount()>0 then
+			g:AddCard(tc:GetOverlayGroup())
+		end
+		g:AddCard(tc)
+	end
+	return CUNGUI._Exile(g,reason)
 end
 
 function CUNGUI.regsplimit(tc,tp)
@@ -112,14 +101,14 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCondition(aux.TRUE)
 	e0:SetRange(LOCATION_HAND)
-	e0:SetCondition(CUNGUI.sylspcon)
 	c:RegisterEffect(e0)
     e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e1:SetRange(LOCATION_REMOVED)
     e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTargetRange(LOCATION_HAND,0)
 	e1:SetTarget(CUNGUI.eftgsyl2)
 	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
@@ -207,7 +196,7 @@ end
 function CUNGUI.bdnthtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return
         Duel.IsExistingMatchingCard(CUNGUI.bdnthfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
-        and Duel.IsExistingMatchingCard(CUNGUI.bdnthfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
+        and Duel.IsExistingMatchingCard(CUNGUI.bdnthfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function CUNGUI.bdnthop(e,tp,eg,ep,ev,re,r,rp)
@@ -217,9 +206,11 @@ function CUNGUI.bdnthop(e,tp,eg,ep,ev,re,r,rp)
     local g2=Duel.SelectMatchingCard(tp,CUNGUI.bdnthfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
     if #g1>0 then
         Duel.SendtoHand(g1,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g1)
     end
     if #g2>0 then
         Duel.SendtoHand(g2,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g2)
     end
 end
 function CUNGUI.inftchtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -270,6 +261,7 @@ function CUNGUI.inftspop(e,tp,eg,ep,ev,re,r,rp)
     if not c:IsRelateToEffect(e) then return end
     Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
     if #g>0 then
+		Duel.BreakEffect()
         Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
     end
 end

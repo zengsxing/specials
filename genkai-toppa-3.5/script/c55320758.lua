@@ -41,7 +41,7 @@ end
 function s.ntcon(e,c,minc)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return minc==0 and c:IsLevelAbove(9) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil))
 end
 function s.spfilter(c,e,tp)
@@ -74,7 +74,8 @@ function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e,tp)
 end
 function s.mtop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetTarget()
+	local a,b=Duel.GetFirstTarget()
+	local g=Group.FromCards(a,b)
 	for tc in aux.Next(g) do
 		if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)

@@ -52,7 +52,8 @@ function s.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,tc,1,0,0)
 end
 function s.posop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetTarget()
+	local a,b=Duel.GetFirstTarget()
+	local g=Group.FromCards(a,b)
 	if Duel.RemoveOverlayCard(tp,1,1,1,2,REASON_EFFECT)~=0 then
 		for tc in aux.Next(g) do
 			if tc:IsRelateToEffect(e) and  then

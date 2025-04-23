@@ -40,10 +40,14 @@ function c51473858.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c51473858.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	local a,b=Duel.GetFirstTarget()
+	local g=Group.FromCards(a,b)
+	for tc in aux.Next(g) do
+		if tc:IsRelateToEffect(e) then
+			Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
+	Duel.SpecialSummonComplete()
 end
 function c51473858.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

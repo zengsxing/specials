@@ -72,7 +72,8 @@ function c34001672.xmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c34001672.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetTarget()
+	local a,b=Duel.GetFirstTarget()
+	local g=Group.FromCards(a,b)
 	for tc in aux.Next(g) do
 		if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 			local og=tc:GetOverlayGroup()
