@@ -1,6 +1,6 @@
 local skillLists={}
 local skillSelections={}
-
+local lp_record={[0]=0,[1]=0}
 local function addSkill(code, skill)
 	if not skillLists[code] then
 		skillLists[code]={}
@@ -48,10 +48,25 @@ end
 local function phaseSkill(code, phase, op, con, both)
 	wrapDeckSkill(code, function(e1)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+phase)
+		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetCountLimit(1,0x7ffffff-code-phase)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-			return (both or Duel.GetTurnPlayer()==tp) and (not con or con(e,tp,eg,ep,ev,re,r,rp))
+			return (both or Duel.GetTurnPlayer()==tp) and Duel.GetCurrentPhase()==phase and (not con or con(e,tp,eg,ep,ev,re,r,rp))
+		end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+			Duel.Hint(HINT_CARD,0,code)
+			op(e,tp,eg,ep,ev,re,r,rp)
+		end)
+	end)
+end
+
+local function mainphaseSkill(code, op, con, both)
+	wrapDeckSkill(code, function(e1)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		e1:SetCountLimit(1)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+			return (both or Duel.GetTurnPlayer()==tp) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and (not con or con(e,tp,eg,ep,ev,re,r,rp))
 		end)
 		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_CARD,0,code)
@@ -99,6 +114,95 @@ oneTimeSkill(85852291, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(g,nil,0,REASON_RULE)
 	Duel.ShuffleDeck(tp)
 	Duel.Draw(tp,ct,REASON_RULE)
+end)
+
+--青眼白龙
+local function lvcheck(c)
+	return c:IsFaceup() and c:IsLevelAbove(5)
+end
+mainphaseSkill(89631139,
+function(ce,ctp)
+	local g=Duel.GetMatchingGroup(lvcheck,ctp,LOCATION_MZONE,0,nil)
+	local atk=g:GetCount()*300
+	local ag=Duel.GetMatchingGroup(Card.IsFaceup,ctp,LOCATION_MZONE,0,nil)
+	for tc in aux.Next(ag) do
+		local e3=Effect.CreateEffect(ce:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_UPDATE_ATTACK)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetValue(atk)
+		tc:RegisterEffect(e3)
+	end
+	Duel.RegisterFlagEffect(ctp,89631139,RESET_PHASE+PHASE_END,0,1)
+end,
+function(ce,ctp) 
+	local g=Duel.GetMatchingGroup(lvcheck,ctp,LOCATION_MZONE,0,nil)
+	return Duel.GetFlagEffect(ctp,89631139)==0 and #g>0 
+end,
+false)
+
+--黑魔术师
+local function lvcheck(c)
+	return c:IsFaceup()
+end
+mainphaseSkill(46986414,
+function(ce,ctp)
+	local g=Duel.GetMatchingGroup(nil,ctp,LOCATION_MZONE,0,nil)
+	local atk=g:GetCount()*100
+	local ag=Duel.GetMatchingGroup(Card.IsFaceup,ctp,LOCATION_MZONE,0,nil)
+	for tc in aux.Next(ag) do
+		local e3=Effect.CreateEffect(ce:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_UPDATE_ATTACK)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetValue(atk)
+		tc:RegisterEffect(e3)
+	end
+	Duel.RegisterFlagEffect(ctp,46986414,RESET_PHASE+PHASE_END,0,1)
+end,
+function(ce,ctp) 
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,ctp,LOCATION_MZONE,0,nil)
+	return Duel.GetFlagEffect(ctp,46986414)==0 and #g>0 
+end,
+false)
+
+--注定一抽
+local function repcon(e,tp,eg,ep,ev,re,r,rp)
+	local cur_lp = Duel.GetLP(tp)
+    return Duel.GetDrawCount(tp)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) and lp_record[tp] - cur_lp >= 2000 and Duel.GetTurnPlayer()==tp
+end
+local function repop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.SelectYesNo(tp,1108) then
+		Duel.Hint(HINT_CARD,0,2295831)
+		local e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_DRAW_COUNT)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW)
+		e1:SetValue(0)
+		Duel.RegisterEffect(e1,tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		end
+	end
+	lp_record[tp] = Duel.GetLP(tp)
+	e:Reset()
+end
+
+wrapDeckSkill(2295831, function(e7)
+	e7:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e7:SetCode(EVENT_PREDRAW)
+	e7:SetCountLimit(1)
+	e7:SetCondition(repcon)
+	e7:SetOperation(repop)
+end)
+
+oneTimeSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
+	lp_record[tp]=Duel.GetLP(tp)
 end)
 
 --成金
@@ -183,7 +287,7 @@ oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
 		current_type=current_type>>1
 	end
 	Duel.Draw(tp,hand_count,REASON_RULE)
-end,true)
+end)
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
