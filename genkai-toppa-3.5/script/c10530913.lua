@@ -67,7 +67,7 @@ function c10530913.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		end
 	else
-		Duel.SendtoHand(mg,nil,REASON_EFFECT)
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
 function c10530913.thcon(e,tp,eg,ep,ev,re,r,rp)

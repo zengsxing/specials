@@ -81,7 +81,7 @@ function CUNGUI.useoncecondition(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function CUNGUI.RegisterRuleEffect(c,tp)
-	--森罗-4星以下
+	--森罗
 	--immune
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -151,10 +151,10 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	--exile
 	e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(75425043,0))
-	e0:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e0:SetRange(LOCATION_MZONE)
     e0:SetCode(EVENT_RELEASE)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
 	e0:SetCondition(CUNGUI.bdnexcon)
 	e0:SetTarget(CUNGUI.bdnextg)
 	e0:SetOperation(CUNGUI.bdnexop)
@@ -162,16 +162,18 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e1:SetRange(LOCATION_REMOVED)
     e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetTargetRange(LOCATION_HAND,0)
+	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(CUNGUI.eftgbdn2)
 	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
 end
 function CUNGUI.bdnexcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==0
+	Debug.Message(Duel.GetCurrentChain())
+	return Duel.GetCurrentChain()<2
 end
 function CUNGUI.bdnextg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return true end
+    if chk==0 then return Duel.GetFlagEffect(tp,87654321)==0 end
+	Duel.RegisterFlagEffect(tp,87654321,RESET_CHAIN,0,1)
     e:SetLabel(eg:GetCount())
 end
 function CUNGUI.bdnexop(e,tp,eg,ep,ev,re,r,rp)
@@ -277,7 +279,7 @@ function CUNGUI.efilter(e,te)
 end
 --森罗
 function CUNGUI.eftgsyl1(e,c)
-	return c:IsSetCard(0x90) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4)
+	return c:IsSetCard(0x90) and c:IsType(TYPE_MONSTER)
 end
 function CUNGUI.eftgsyl2(e,c)
 	return c:IsSetCard(0x90) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(5)

@@ -70,6 +70,6 @@ function c70222318.tgop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		end
 	else
-		Duel.SendtoHand(mg,nil,REASON_EFFECT)
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
