@@ -37,23 +37,26 @@ function c71100270.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCanOverlay()
 end
 function c71100270.xmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and c71100270.filter(chkc) end
+	if chkc then return false end
 	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,1,2,REASON_EFFECT)
-		and Duel.IsExistingTarget(c71100270.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+		and Duel.IsExistingTarget(c71100270.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	Duel.SelectTarget(tp,c71100270.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SelectTarget(tp,c71100270.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,2,nil)
 end
 function c71100270.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if Duel.RemoveOverlayCard(tp,1,1,4,4,REASON_EFFECT)~=0
-		and c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
-		local og=tc:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
+	local g=Group.FromCards(Duel.GetFirstTarget())
+	if Duel.RemoveOverlayCard(tp,1,1,4,4,REASON_EFFECT)~=0 then
+		for tc in aux.Next(g) do
+			if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+				local og=tc:GetOverlayGroup()
+				if og:GetCount()>0 then
+					Duel.SendtoGrave(og,REASON_RULE)
+				end
+				tc:CancelToGrave()
+				Duel.Overlay(c,Group.FromCards(tc))
+			end
 		end
-		tc:CancelToGrave()
-		Duel.Overlay(c,Group.FromCards(tc))
 	end
 end
 function c71100270.repfilter(c,tp)

@@ -56,10 +56,11 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		loc1=g1:GetFirst():GetLocation()
 		loc2=g1:GetNext():GetLocation()
 	end
+	if not g1 or #g1 ~= 2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectTarget(tp,s.rmfilter2,tp,0,loc,2,2,nil)
+	local g2=Duel.SelectTarget(tp,s.rmfilter2,tp,0,g1:GetFirst():GetLocation(),2,2,nil)
 	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,g1:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,2,0,0)
 end
 function s.rmopfilter(c,e)
 	return c:IsType(TYPE_MONSTER) and c:IsRelateToEffect(e)
@@ -114,7 +115,7 @@ function s.dncheck(g)
 			tbl[tc:GetCode()] = 1
 		else
 			tbl[tc:GetCode()] = tbl[tc:GetCode()] + 1
-		endif
+		end
 		if tbl[tc:GetCode()] > 2 then
 			return false
 		end

@@ -54,16 +54,21 @@ end
 function s.filter(c)
 	return c:IsSetCard(0x1a1) and c:IsAbleToGrave() and not c:IsCode(id)
 end
+function s.filter2(c)
+	return c:IsSetCard(0x1a1) and c:IsFaceup()
+end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.dfilter,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_MZONE,0,2,nil)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,s.dfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	if Duel.Destroy(g,REASON_EFFECT)<1 then return end
+	local g=Duel.SelectMatchingCard(tp,s.dfilter,tp,LOCATION_MZONE,0,2,2,nil)
+	if Duel.Destroy(g,REASON_EFFECT)<2 then return end
 	local tg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=tg:SelectSubGroup(tp,s.dncheck,false,1,4)
@@ -77,7 +82,7 @@ function s.dncheck(g)
 			tbl[tc:GetCode()] = 1
 		else
 			tbl[tc:GetCode()] = tbl[tc:GetCode()] + 1
-		endif
+		end
 		if tbl[tc:GetCode()] > 2 then
 			return false
 		end

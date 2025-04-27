@@ -56,7 +56,7 @@ function s.posop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.FromCards(a,b)
 	if Duel.RemoveOverlayCard(tp,1,1,1,2,REASON_EFFECT)~=0 then
 		for tc in aux.Next(g) do
-			if tc:IsRelateToEffect(e) and  then
+			if tc:IsRelateToEffect(e) then
 				Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
 			end
 		end
