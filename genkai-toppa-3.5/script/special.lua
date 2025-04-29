@@ -116,11 +116,8 @@ function CUNGUI.RegisterRuleEffect(c,tp)
 	e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(75425043,0))
 	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e0:SetType(EFFECT_TYPE_QUICK_O)
-	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e0:SetCondition(CUNGUI.useoncecondition)
-	e0:SetLabel(1)
 	e0:SetTarget(CUNGUI.inftsptg)
 	e0:SetOperation(CUNGUI.inftspop)
     e1=Effect.CreateEffect(c)
@@ -273,6 +270,49 @@ function CUNGUI.inftspop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
         Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
     end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(CUNGUI.inftsplimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	if not CUNGUI.inftreg then
+		CUNGUI.inftreg = true
+		--reg
+		local e4=Effect.CreateEffect(c)
+		e4:SetCategory(CATEGORY_DESTROY)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e4:SetCode(EVENT_SUMMON_SUCCESS)
+		e4:SetOperation(CUNGUI.inftregop)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function CUNGUI.inftregop(e,tp,eg)
+	for tc in aux.Next(eg) do
+		local race = tc:GetRace()
+		if CUNGUI.inftlimit[tp] ~= race and CUNGUI.inftlimit[tp+2] ~= race then
+			if CUNGUI.inftlimit[tp]==0 then
+				CUNGUI.inftlimit[tp] = race
+			elseif CUNGUI.inftlimit[tp+2] == 0 then
+				CUNGUI.inftlimit[tp+2] = race
+			else
+				Duel.SendtoGrave(tc,REASON_RULE)
+			end
+		end
+	end
+end
+CUNGUI.inftlimit = {}
+CUNGUI.inftlimit[0]=0
+CUNGUI.inftlimit[1]=0
+CUNGUI.inftlimit[2]=0
+CUNGUI.inftlimit[3]=0
+function CUNGUI.inftsplimit(e,c)
+	local tp=e:GetHandlerPlayer()
+	return (c:IsRace(CUNGUI.inftlimit[tp]) or CUNGUI.inftlimit[tp]==0)
+		or (c:IsRace(CUNGUI.inftlimit[tp+2]) or CUNGUI.inftlimit[tp+2]==0)
 end
 function CUNGUI.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
