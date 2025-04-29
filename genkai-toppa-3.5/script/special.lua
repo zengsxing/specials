@@ -282,17 +282,19 @@ function CUNGUI.inftspop(e,tp,eg,ep,ev,re,r,rp)
 		CUNGUI.inftreg = true
 		--reg
 		local e4=Effect.CreateEffect(c)
-		e4:SetCategory(CATEGORY_DESTROY)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e4:SetCode(EVENT_SUMMON_SUCCESS)
+		e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 		e4:SetOperation(CUNGUI.inftregop)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e4,tp)
 	end
 end
 function CUNGUI.inftregop(e,tp,eg)
 	for tc in aux.Next(eg) do
 		local race = tc:GetRace()
+		Debug.Message("race:"..tostring(race))
+		Debug.Message("inftlimit-tp:"..tostring(CUNGUI.inftlimit[tp]))
+		Debug.Message("inftlimit-tp+2:"..tostring(CUNGUI.inftlimit[tp+2]))
 		if CUNGUI.inftlimit[tp] ~= race and CUNGUI.inftlimit[tp+2] ~= race then
 			if CUNGUI.inftlimit[tp]==0 then
 				CUNGUI.inftlimit[tp] = race
@@ -311,6 +313,9 @@ CUNGUI.inftlimit[2]=0
 CUNGUI.inftlimit[3]=0
 function CUNGUI.inftsplimit(e,c)
 	local tp=e:GetHandlerPlayer()
+	Debug.Message("con-race:"..tostring(c:GetRace()))
+	Debug.Message("con-inftlimit-tp:"..tostring(CUNGUI.inftlimit[tp]))
+	Debug.Message("con-inftlimit-tp+2:"..tostring(CUNGUI.inftlimit[tp+2]))
 	return not ((c:IsRace(CUNGUI.inftlimit[tp]) or CUNGUI.inftlimit[tp]==0)
 		or (c:IsRace(CUNGUI.inftlimit[tp+2]) or CUNGUI.inftlimit[tp+2]==0))
 end
