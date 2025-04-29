@@ -311,8 +311,8 @@ CUNGUI.inftlimit[2]=0
 CUNGUI.inftlimit[3]=0
 function CUNGUI.inftsplimit(e,c)
 	local tp=e:GetHandlerPlayer()
-	return (c:IsRace(CUNGUI.inftlimit[tp]) or CUNGUI.inftlimit[tp]==0)
-		or (c:IsRace(CUNGUI.inftlimit[tp+2]) or CUNGUI.inftlimit[tp+2]==0)
+	return not ((c:IsRace(CUNGUI.inftlimit[tp]) or CUNGUI.inftlimit[tp]==0)
+		or (c:IsRace(CUNGUI.inftlimit[tp+2]) or CUNGUI.inftlimit[tp+2]==0))
 end
 function CUNGUI.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
