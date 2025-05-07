@@ -1,6 +1,8 @@
 local skillLists={}
 local skillSelections={}
 local lp_record={[0]=0,[1]=0}
+local need_shuffle={[0]=true,[1]=true}
+
 local function addSkill(code, skill)
 	if not skillLists[code] then
 		skillLists[code]={}
@@ -239,7 +241,7 @@ oneTimeSkill(3643300, function(e,tp,eg,ep,ev,re,r,rp)
         if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
         Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
     end
-end,true)
+end)
 --毅力
 oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 	local rc=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,nil):GetFirst()
@@ -304,16 +306,17 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 	end
 	)
 	Duel.RegisterEffect(e1,tp)
-end,true)
+end)
 
 --成金
 oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_RULE)
 	Duel.Draw(1-tp,1,REASON_RULE)
-end,true)
+end)
 
 --天平
 oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
+	need_shuffle[tp]=false
 	local hg=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	local hand_count=#hg
 	Duel.SendtoDeck(hg,nil,0,REASON_RULE)
@@ -458,7 +461,8 @@ local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 		registerSkillForPlayer(tp,skillSelections[tp])
 	end
 	-- resolve onetime skills
-	for _,onetimeSkillList in ipairs({onetimeSkillResolveOperationsPrior,onetimeSkillResolveOperations}) do
+	-- for _,onetimeSkillList in ipairs({onetimeSkillResolveOperationsPrior,onetimeSkillResolveOperations}) do
+	function resolveOnetimeSkill(onetimeSkillList)
 		for tp=0,1 do
 			for _,onetimeSkillObject in ipairs(onetimeSkillList[tp]) do
 				Duel.Hint(HINT_CARD,0,onetimeSkillObject.code)
@@ -466,6 +470,17 @@ local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+	resolveOnetimeSkill(onetimeSkillResolveOperationsPrior)
+	for tp=0,1 do
+		if need_shuffle[tp] then
+			local hg=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+			local hand_count=#hg
+			Duel.SendtoDeck(hg,nil,0,REASON_RULE)
+			Duel.ShuffleDeck(tp)
+			Duel.Draw(tp,hand_count,REASON_RULE)
+		end
+	end
+	resolveOnetimeSkill(onetimeSkillResolveOperations)
 end
 
 function Auxiliary.PreloadUds()
