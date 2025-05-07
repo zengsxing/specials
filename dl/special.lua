@@ -435,7 +435,7 @@ oneTimeSkill(23446369, function (e,tp,eg,ep,ev,re,r,rp)
 		_e:Reset()
 	end)
     Duel.RegisterEffect(e2,tp)
-end)
+end,true)
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
