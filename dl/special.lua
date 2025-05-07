@@ -391,7 +391,7 @@ oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
 		current_type=current_type>>1
 	end
 	Duel.Draw(tp,hand_count,REASON_RULE)
-end)
+end,true)
 
 --幻惑之眼
 oneTimeSkill(23446369, function (e,tp,eg,ep,ev,re,r,rp)
