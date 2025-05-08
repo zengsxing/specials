@@ -393,49 +393,54 @@ oneTimeSkill(67443336, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,hand_count,REASON_RULE)
 end,true)
 
---幻惑之眼
-oneTimeSkill(23446369, function (e,tp,eg,ep,ev,re,r,rp)
-	local codeList = {94689206,68304193,72270339,76794549,4928565,60764609,572850,65734501,73956664,36521307,35844557,34022970,78872731,37961969,81275020,13533678,76145933,74078255,9674034,90241276,52947044,98567237,48130397,77103950,93729896,2107608,92714517,80453041,74586817,90953320,75433814,48905153,86066372,24094258,29301450,49867899,2463794}
+local function addMakerPool(code, codeList)
 	table.sort(codeList)
-	local afilter = {codeList[1], OPCODE_ISCODE}
-	for i = 2, #codeList do
-		table.insert(afilter,codeList[i])
-		table.insert(afilter,OPCODE_ISCODE)
-		table.insert(afilter,OPCODE_OR)
-	end
-	local g = Group.CreateGroup()
-	for i = 1, 3 do
-		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_CODE)
-		local ac=Duel.AnnounceCard(tp, table.unpack(afilter))
-		g:AddCard(Duel.CreateToken(tp, ac))
-	end
-	Duel.SendtoDeck(g, tp, 2, REASON_RULE)
-	Duel.BreakEffect()
-	Duel.Draw(1 - tp, 1, REASON_RULE)
-	local e1=Effect.CreateEffect(e:GetHandler())
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
-    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-    e1:SetTargetRange(0, 1)
-    e1:SetValue(HALF_DAMAGE)
-	e1:SetCondition(function (_e)
-		local ph=Duel.GetCurrentPhase()
-		local _tp = _e:GetHandlerPlayer()
-		return (ph >= PHASE_BATTLE_START and ph <= PHASE_BATTLE) and Duel.GetTurnPlayer() == _tp
-	end)
-    Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-    e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
-    e2:SetCode(EVENT_PHASE + PHASE_BATTLE)
-	e2:SetCondition(function (_e, _tp)
-		return Duel.GetTurnPlayer() == _tp
-	end)
-    e2:SetOperation(function (_e)
-		e1:Reset()
-		_e:Reset()
-	end)
-    Duel.RegisterEffect(e2,tp)
-end,true)
+	oneTimeSkill(code, function (e,tp,eg,ep,ev,re,r,rp)
+		local afilter = {codeList[1], OPCODE_ISCODE}
+		for i = 2, #codeList do
+			table.insert(afilter,codeList[i])
+			table.insert(afilter,OPCODE_ISCODE)
+			table.insert(afilter,OPCODE_OR)
+		end
+		local g = Group.CreateGroup()
+		for i = 1, 3 do
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_CODE)
+			local ac=Duel.AnnounceCard(tp, table.unpack(afilter))
+			g:AddCard(Duel.CreateToken(tp, ac))
+		end
+		Duel.SendtoDeck(g, tp, 2, REASON_RULE)
+		Duel.BreakEffect()
+		Duel.Draw(1 - tp, 1, REASON_RULE)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(0, 1)
+		e1:SetValue(HALF_DAMAGE)
+		e1:SetCondition(function (_e)
+			local ph=Duel.GetCurrentPhase()
+			local _tp = _e:GetHandlerPlayer()
+			return (ph >= PHASE_BATTLE_START and ph <= PHASE_BATTLE) and Duel.GetTurnPlayer() == _tp
+		end)
+	    	Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+    		e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_PHASE + PHASE_BATTLE)
+		e2:SetCondition(function (_e, _tp)
+			return Duel.GetTurnPlayer() == _tp
+		end)
+    		e2:SetOperation(function (_e)
+			e1:Reset()
+			_e:Reset()
+		end)
+    		Duel.RegisterEffect(e2,tp)
+	end,true)
+end
+
+--幻惑之眼
+addMakerPool(23446369, {94689206,68304193,72270339,76794549,4928565,60764609,572850,65734501,73956664,36521307,35844557,34022970,78872731,37961969,81275020,13533678,76145933,74078255,9674034,90241276,52947044,98567237,48130397,77103950,93729896,2107608,92714517,80453041,74586817,90953320,75433814,48905153,86066372,24094258,29301450,49867899,2463794})
+--无脸幻想魔术师
+addMakerPool(15173384, {32731036,6637331,33854624,72656408,17266660,1845204,2295440,18144506,32807846,35261759,35726888,44362883,49238328,72892473,73628505,81439173,83764718,84211599,85106525,24224830,65681983,67723438,73468603,45112597,38342335,45819647,2857636,8264361,9839945,30674956,48815792,73309655,97661969,75452921,34755994,41999284,60303245,94259633,93039339,6983839,90590303,46772449,66011101})
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
@@ -462,7 +467,7 @@ local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	end
 	-- resolve onetime skills
 	-- for _,onetimeSkillList in ipairs({onetimeSkillResolveOperationsPrior,onetimeSkillResolveOperations}) do
-	function resolveOnetimeSkill(onetimeSkillList)
+	local function resolveOnetimeSkill(onetimeSkillList)
 		for tp=0,1 do
 			for _,onetimeSkillObject in ipairs(onetimeSkillList[tp]) do
 				Duel.Hint(HINT_CARD,0,onetimeSkillObject.code)
