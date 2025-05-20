@@ -536,14 +536,14 @@ local function emcheck(c)
 	return c:IsSetCard(0x99,0x98,0x9f,0x20f8,0x10f8)
 end
 oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,76840111)==0 then return end
+	if not Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then return end
 	local pc1=Duel.CreateToken(tp,24094258)
 	local pc2=Duel.CreateToken(tp,76794549)
 	Duel.SendtoDeck(pc1,tp,0,REASON_RULE)
 	Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
 end)
 oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,76840111)==0 then return end
+	if not Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then return end
 	local pc1=Duel.CreateToken(tp,94415058)
 	local pc2=Duel.CreateToken(tp,20409757)
 	if Duel.SelectYesNo(tp,97) then
