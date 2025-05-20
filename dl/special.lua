@@ -88,6 +88,30 @@ local function mainphaseSkill(code, op, con, both)
 	end)
 end
 
+local function mainphaseSkillEx(code, op, con, both , count , countid ,duellimit,desc)
+	if not countid then countid=code end
+	wrapDeckSkill(code, function(e1)
+		if desc then e1:SetDescription(desc) end
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+			if count and Duel.GetFlagEffect(tp,countid)>=count then return false end
+			return (both or Duel.GetTurnPlayer()==tp) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and (not con or con(e,tp,eg,ep,ev,re,r,rp))
+		end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+			Duel.Hint(HINT_CARD,0,code)
+			op(e,tp,eg,ep,ev,re,r,rp)
+			if count then
+				if duellimit then
+					Duel.RegisterFlagEffect(tp,countid,0,0,1)
+				else
+					Duel.RegisterFlagEffect(tp,countid,RESET_PHASE+PHASE_END,0,1)
+				end
+			end
+		end)
+	end)
+end
+
 local onetimeSkillResolveOperationsPrior={
 	[0]={},
 	[1]={},
@@ -536,14 +560,14 @@ local function emcheck(c)
 	return c:IsSetCard(0x99,0x98,0x9f,0x20f8,0x10f8)
 end
 oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,76840111)==0 then return end
+	if not Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then return end
 	local pc1=Duel.CreateToken(tp,24094258)
 	local pc2=Duel.CreateToken(tp,76794549)
 	Duel.SendtoDeck(pc1,tp,0,REASON_RULE)
 	Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
 end)
 oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,76840111)==0 then return end
+	if not Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then return end
 	local pc1=Duel.CreateToken(tp,94415058)
 	local pc2=Duel.CreateToken(tp,20409757)
 	if Duel.SelectYesNo(tp,97) then
@@ -554,7 +578,7 @@ end)
 local function pmcheck(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsAbleToHand()
 end
-mainphaseSkill(76840111,
+mainphaseSkillEx(76840111,
 function(ce,ctp)
 	local g=Duel.GetMatchingGroup(pmcheck,ctp,LOCATION_EXTRA,0,nil)
 	Duel.SendtoHand(g:Select(ctp,1,1,nil),ctp,REASON_RULE)
@@ -563,7 +587,7 @@ function(ce,ctp)
 	local g=Duel.GetMatchingGroup(pmcheck,ctp,LOCATION_EXTRA,0,nil)
 	return #g>0 and Duel.GetFlagEffect(ctp,76840111)>0
 end,
-false)
+false,1,76840112)
 local function fivesplimit(e,c,tp,sumtp,sumpos)
 	return c:IsLevel(5) or c:IsRank(5) and sumtp&SUMMON_TYPE_XYZ>0
 end
@@ -594,30 +618,46 @@ local function godcheck(c)
 	if aux.IsCodeOrListed(c,10000000) or aux.IsCodeOrListed(c,10000010) or aux.IsCodeOrListed(c,10000020) then bool=true end
 	return bool and c:IsAbleToHand()
 end
-mainphaseSkill(78665705,
+local function disgodcheck(c)
+	return godcheck(c) and c:IsDiscardable()
+end
+mainphaseSkillEx(78665705,
 function(ce,ctp)
 	local g=Duel.GetMatchingGroup(MRcheck,ctp,LOCATION_GRAVE,0,nil)
 	Duel.SendtoHand(g:Select(ctp,1,1,nil),ctp,REASON_RULE)
-	Duel.RegisterFlagEffect(ctp,78665705,0,0,1)
 end,
 function(ce,ctp) 
 	local g=Duel.GetMatchingGroup(MRcheck,ctp,LOCATION_GRAVE,0,nil)
-	return Duel.GetFlagEffect(ctp,78665705)==0 and #g>0 
+	return #g>0
 end,
-false)
+false,1,78665705,true,1110)
 
-mainphaseSkill(78665705,
+mainphaseSkillEx(78665705,
 function(ce,ctp)
 	local g=Duel.GetMatchingGroup(godcheck,ctp,LOCATION_DECK,0,nil)
-	if Duel.DiscardHand(ctp,Card.IsDiscardable,1,1,REASON_RULE+REASON_DISCARD,nil,REASON_EFFECT)>0 then
+	if Duel.DiscardHand(ctp,disgodcheck,1,1,REASON_RULE+REASON_DISCARD,nil,REASON_EFFECT)>0 then
 		Duel.SendtoHand(g:Select(ctp,1,1,nil),ctp,REASON_RULE)
 	end
 end,
 function(ce,ctp) 
 	local g=Duel.GetMatchingGroup(godcheck,ctp,LOCATION_DECK,0,nil)
-	return #g>0 and Duel.IsExistingMatchingCard(Card.IsDiscardable,ctp,LOCATION_HAND,0,1,nil,REASON_RULE)
+	return #g>0 and Duel.IsExistingMatchingCard(disgodcheck,ctp,LOCATION_HAND,0,1,nil,REASON_RULE)
 end,
-false)
+false,3,78665706,false,1109)
+
+local function godaclimit(e,re,tp)
+	local rc=re:GetHandler()
+	return not godcheck(rc) and rc:IsType(TYPE_MONSTER)
+end
+oneTimeSkill(78665705, function(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(godaclimit)
+	Duel.RegisterEffect(e1,tp)
+end)
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
