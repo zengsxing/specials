@@ -659,6 +659,42 @@ oneTimeSkill(78665705, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end)
 
+--电子龙
+local function cyberfilter(c)
+	return c:IsSetCard(0x93) and c:IsType(TYPE_MONSTER)
+end
+oneTimeSkill(77565204, function(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(cyberfilter,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then
+		local e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CHANGE_LEVEL)
+		e1:SetTargetRange(LOCATION_MZONE,0)
+		e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_MACHINE))
+		e1:SetValue(5)
+		Duel.RegisterEffect(e1,tp)
+		local pc1=Duel.CreateToken(tp,1546123)
+		local pc2=Duel.CreateToken(tp,84058253)
+		local pc3=Duel.CreateToken(tp,74157028)
+		Duel.SendtoDeck(pc1,tp,2,REASON_RULE)
+		Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
+		Duel.SendtoDeck(pc3,tp,2,REASON_RULE)
+		Duel.RegisterFlagEffect(tp,77565204,0,0,1)
+	end
+end)
+local function cybertograve(c)
+	return c:IsSetCard(0x1093) and c:IsAbleToGrave()
+end
+mainphaseSkillEx(77565204,
+function(ce,ctp)
+	local g=Duel.GetMatchingGroup(cybertograve,ctp,LOCATION_DECK,0,nil)
+	Duel.SendtoGrave(g:Select(ctp,1,1,nil),REASON_RULE)
+end,
+function(ce,ctp)
+	local g=Duel.GetMatchingGroup(cybertograve,ctp,LOCATION_DECK,0,nil)
+	return #g>0 and Duel.GetFlagEffect(ctp,77565204)>0
+end,
+false,1,77565205,true)
+
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
 	for tp=0,1 do
