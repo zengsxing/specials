@@ -526,8 +526,6 @@ local function addMakerPool(code, codeList)
 			g:AddCard(Duel.CreateToken(tp, ac))
 		end
 		Duel.SendtoDeck(g, tp, 2, REASON_RULE)
-		Duel.BreakEffect()
-		Duel.Draw(1 - tp, 1, REASON_RULE)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
@@ -552,6 +550,15 @@ local function addMakerPool(code, codeList)
 		end)
 			Duel.RegisterEffect(e2,tp)
 	end,true)
+	oneTimeSkill(code, function (e,tp,eg,ep,ev,re,r,rp)
+		local e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_HAND_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(3)
+		Duel.RegisterEffect(e1,tp)
+	end)
 end
 
 --幻惑之眼
@@ -678,26 +685,68 @@ oneTimeSkill(77565204, function(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 		local pc1=Duel.CreateToken(tp,1546123)
 		local pc2=Duel.CreateToken(tp,84058253)
-		local pc3=Duel.CreateToken(tp,74157028)
+		local pc3=Duel.CreateToken(tp,46724542)
 		Duel.SendtoDeck(pc1,tp,2,REASON_RULE)
 		Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
 		Duel.SendtoDeck(pc3,tp,2,REASON_RULE)
 		Duel.RegisterFlagEffect(tp,77565204,0,0,1)
 	end
 end)
-local function cybertograve(c)
-	return c:IsSetCard(0x1093) and c:IsAbleToGrave()
+local function msplimit1(e,re,tp)
+	local c=re:GetHandler()
+	return c:IsType(TYPE_MONSTER) and not c:IsRace(RACE_MACHINE+RACE_DRAGON)
 end
 mainphaseSkillEx(77565204,
 function(ce,ctp)
-	local g=Duel.GetMatchingGroup(cybertograve,ctp,LOCATION_DECK,0,nil)
-	Duel.SendtoGrave(g:Select(ctp,1,1,nil),REASON_RULE)
+	local gc1=Duel.CreateToken(tp,77625948)
+	local gc2=Duel.CreateToken(tp,41230939)
+	local gc3=Duel.CreateToken(tp,3019642)
+	local gc4=Duel.CreateToken(tp,70095154)
+	local g=Group.FromCards(gc1,gc2,gc3,gc4)
+	Duel.SendtoGrave(g,REASON_RULE)
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(msplimit1)
+	Duel.RegisterEffect(e1,ctp)
 end,
 function(ce,ctp)
-	local g=Duel.GetMatchingGroup(cybertograve,ctp,LOCATION_DECK,0,nil)
-	return #g>0 and Duel.GetFlagEffect(ctp,77565204)>0
+	return Duel.GetFlagEffect(ctp,77565204)>0
 end,
-false,1,77565205,true)
+false,1,77565205,true,1103)
+
+local function cybertograve(c,tp)
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c,tp)>=2
+end
+local function msplimit2(e,re,tp)
+	local c=re:GetHandler()
+	return c:IsType(TYPE_MONSTER) and not c:IsRace(RACE_MACHINE)
+end
+mainphaseSkillEx(77565204,
+function(ce,ctp)
+	local g=Duel.GetMatchingGroup(cybertograve,ctp,LOCATION_HAND+LOCATION_MZONE,0,nil,ctp)
+	if Duel.SendtoGrave(g:Select(ctp,1,1,nil),REASON_RULE)>0 then
+		for i=1,2 do
+			local token=Duel.CreateToken(ctp,26439287)
+			Duel.SpecialSummonStep(token,0,ctp,ctp,false,false,POS_FACEUP_ATTACK)
+		end
+		Duel.SpecialSummonComplete()
+	end
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(msplimit2)
+	Duel.RegisterEffect(e1,ctp)
+end,
+function(ce,ctp)
+	local g=Duel.GetMatchingGroup(cybertograve,ctp,LOCATION_HAND+LOCATION_MZONE,0,nil,ctp)
+	return #g>0 and Duel.GetFlagEffect(ctp,77565204)>0 and Duel.IsPlayerCanSpecialSummonMonster(ctp,26439287,0x1093,TYPE_EFFECT,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(ctp,59822133)
+end,
+false,1,77565205,true,1075)
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
