@@ -144,6 +144,7 @@ local function endPhaseSkill(code, op, con, both)
 end
 
 --重新开始
+--[[
 oneTimeSkill(85852291, function(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(43227,0)) then return end
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
@@ -241,6 +242,7 @@ end)
 oneTimeSkill(2295831, function(e,tp,eg,ep,ev,re,r,rp)
 	lp_record[tp]=Duel.GetLP(tp)
 end)
+]]
 --传说的渔夫
 local function activate_check(c,tp)
 	return c:GetActivateEffect():IsActivatable(tp,true,true)
@@ -343,6 +345,7 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end)
 --抽卡放弃
+--[[
 local function skipdrcon(e,tp,eg,ep,ev,re,r,rp,chk)
 	return aux.IsPlayerCanNormalDraw(tp) and Duel.IsPlayerCanDiscardDeck(tp,1) and Duel.GetTurnPlayer()==tp
 end
@@ -362,6 +365,7 @@ oneTimeSkill(3701074, function(e,tp,eg,ep,ev,re,r,rp)
 	ge1:SetOperation(skipdrop)
 	Duel.RegisterEffect(ge1,tp)
 end,true)
+]]
 
 --生命增加
 oneTimeSkill(47852924, function(e,tp,eg,ep,ev,re,r,rp)
