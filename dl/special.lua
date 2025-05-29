@@ -810,7 +810,7 @@ mainphaseSkillList(77565204,
 	end,
 		con=function(e,tp) 
 		local g=Duel.GetMatchingGroup(cybertograve,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
-		return Duel.GetFlagEffect(tp,77565204)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPE_EFFECT,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		return Duel.GetFlagEffect(tp,77565204)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPES_TOKEN_MONSTER,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
 	end,
 	count=1,
 	countid=77565205,
@@ -869,7 +869,7 @@ mainphaseSkillList(19642774,
 	end,
 	con=function(e,tp) 
 		local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
-		return Duel.GetFlagEffect(tp,19642774)>0 and #g>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,48421595,0x1017,TYPE_TUNER,200,400,2,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)
+		return Duel.GetFlagEffect(tp,19642774)>0 and #g>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,48421595,0x1017,TYPES_TOKEN_MONSTER+TYPE_TUNER,200,400,2,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)
 	end,
 	count=1,
 	countid=19642775,
