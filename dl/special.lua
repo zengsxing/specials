@@ -112,6 +112,59 @@ local function mainphaseSkillEx(code, op, con, both , count , countid ,duellimit
 	end)
 end
 
+local function mainphaseSkillList(code,...)
+	local configs = {...}
+	wrapDeckSkill(code, function(e1)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_FREE_CHAIN)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+			if not (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) then return false end
+			for _, config in ipairs(configs) do
+				if (config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count) then
+					return true
+				end
+			end
+			return false
+		end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+			Duel.Hint(HINT_CARD,0,code)
+			local available = {}
+			for _, config in ipairs(configs) do
+				local both = config.both
+				local turn_cond = both or (Duel.GetTurnPlayer() == tp)
+				if turn_cond then
+					local count = config.count
+					local countid = config.countid or code
+					if count and Duel.GetFlagEffect(tp, countid) >= count then
+					else
+						local con = config.con
+						if not con or con(e,tp,eg,ep,ev,re,r,rp) then
+							table.insert(available, config)
+						end
+					end
+				end
+			end
+			local options={}
+			for i, config in ipairs(configs) do
+				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)				
+				table.insert(options,{enabled,config.desc})
+			end
+			local selected=aux.SelectFromOptions(tp,table.unpack(options))
+			local config=configs[selected]
+			if config then
+				config.op(e,tp,eg,ep,ev,re,r,rp)
+				if config.count then
+					if config.duellimit then
+						Duel.RegisterFlagEffect(tp,config.countid,0,0,1)
+					else
+						Duel.RegisterFlagEffect(tp,config.countid,RESET_PHASE+PHASE_END,0,1)
+					end
+				end
+			end
+		end)
+	end)
+end
+
 local onetimeSkillResolveOperationsPrior={
 	[0]={},
 	[1]={},
@@ -633,30 +686,37 @@ end
 local function disgodcheck(c)
 	return godcheck(c) and c:IsDiscardable()
 end
-mainphaseSkillEx(78665705,
-function(e,tp)
-	local g=Duel.GetMatchingGroup(MRcheck,tp,LOCATION_GRAVE,0,nil)
-	Duel.SendtoHand(g:Select(tp,1,1,nil),tp,REASON_RULE)
-end,
-function(e,tp) 
-	local g=Duel.GetMatchingGroup(MRcheck,tp,LOCATION_GRAVE,0,nil)
-	return #g>0
-end,
-false,1,78665705,true,1110)
-
-mainphaseSkillEx(78665705,
-function(e,tp)
-	local g=Duel.GetMatchingGroup(godcheck,tp,LOCATION_DECK,0,nil)
-	if Duel.DiscardHand(tp,disgodcheck,1,1,REASON_RULE+REASON_DISCARD,nil,REASON_EFFECT)>0 then
+mainphaseSkillList(78665705,
+{
+	op=function(e,tp)
+		local g=Duel.GetMatchingGroup(MRcheck,tp,LOCATION_GRAVE,0,nil)
 		Duel.SendtoHand(g:Select(tp,1,1,nil),tp,REASON_RULE)
-	end
-end,
-function(e,tp) 
-	local g=Duel.GetMatchingGroup(godcheck,tp,LOCATION_DECK,0,nil)
-	return #g>0 and Duel.IsExistingMatchingCard(disgodcheck,tp,LOCATION_HAND,0,1,nil,REASON_RULE)
-end,
-false,3,78665706,false,1109)
-
+	end,
+	con=function(e,tp) 
+		local g=Duel.GetMatchingGroup(MRcheck,tp,LOCATION_GRAVE,0,nil)
+		return #g>0
+	end,
+	count=1,
+	countid=78665705,
+	duellimit=true,
+	desc=1110
+},
+{
+	op=function(e,tp)
+		local g=Duel.GetMatchingGroup(godcheck,tp,LOCATION_DECK,0,nil)
+		if Duel.DiscardHand(tp,disgodcheck,1,1,REASON_RULE+REASON_DISCARD,nil,REASON_EFFECT)>0 then
+			Duel.SendtoHand(g:Select(tp,1,1,nil),tp,REASON_RULE)
+		end
+	end,
+		con=function(e,tp) 
+		local g=Duel.GetMatchingGroup(godcheck,tp,LOCATION_DECK,0,nil)
+		return #g>0 and Duel.IsExistingMatchingCard(disgodcheck,tp,LOCATION_HAND,0,1,nil,REASON_RULE)
+	end,
+	count=3,
+	countid=78665706,
+	desc=1104
+}
+)
 local function godaclimit(e,re,tp)
 	local rc=re:GetHandler()
 	return not godcheck(rc) and rc:IsType(TYPE_MONSTER)
@@ -704,11 +764,9 @@ end
 local function cybertograve(c,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c,tp)>=2
 end
-mainphaseSkillEx(77565204,
-function(e,tp)
-	local g=Duel.GetMatchingGroup(cybertograve,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
-	local bool=#g>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPE_EFFECT,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
-	if aux.SelectFromOptions(tp,{true,1103},{bool,1075})==1 then
+mainphaseSkillList(77565204,
+{
+	op=function(e,tp)
 		local gc1=Duel.CreateToken(tp,77625948)
 		local gc2=Duel.CreateToken(tp,41230939)
 		local gc3=Duel.CreateToken(tp,3019642)
@@ -723,7 +781,18 @@ function(e,tp)
 		e1:SetTargetRange(1,0)
 		e1:SetValue(msplimit1)
 		Duel.RegisterEffect(e1,tp)
-	else
+	end,
+	con=function(e,tp) 
+		return Duel.GetFlagEffect(tp,77565204)>0
+	end,
+	count=1,
+	countid=77565205,
+	duellimit=true,
+	desc=1103
+},
+{
+	op=function(e,tp)
+		local g=Duel.GetMatchingGroup(cybertograve,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
 		if Duel.SendtoGrave(g:Select(tp,1,1,nil),REASON_RULE)>0 then
 			for i=1,2 do
 				local token=Duel.CreateToken(tp,26439287)
@@ -738,13 +807,92 @@ function(e,tp)
 		e1:SetTargetRange(1,0)
 		e1:SetValue(msplimit2)
 		Duel.RegisterEffect(e1,tp)
+	end,
+		con=function(e,tp) 
+		local g=Duel.GetMatchingGroup(cybertograve,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
+		return Duel.GetFlagEffect(tp,77565204)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPES_TOKEN_MONSTER,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+	end,
+	count=1,
+	countid=77565205,
+	duellimit=true,
+	desc=1075
+}
+)
+
+--革命的时花
+local function fleurfilter(c)
+	return c:IsAttack(2900) and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_MONSTER)
+end
+oneTimeSkill(19642774, function(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(fleurfilter,tp,LOCATION_DECK+LOCATION_HAND,0,7,nil) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_SUMMON_PROC)
+		e1:SetTargetRange(LOCATION_HAND,0)
+		e1:SetCondition(function(e,c,minc)
+			if c==nil then return true end
+			return minc==0 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		end)
+		e1:SetTarget(function (e,c)
+			return c:IsAttack(2900) and c:IsRace(RACE_SPELLCASTER)
+		end)
+		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterFlagEffect(tp,19642774,0,0,1)
 	end
-end,
-function(e,tp)
-	local g=Duel.GetMatchingGroup(cybertograve,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
-	return #g>0 and Duel.GetFlagEffect(tp,77565204)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPE_EFFECT,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
-end,
-false,1,77565205,true)
+end)
+function fleurtoDeckfilter(c,tp)
+	return c:IsAbleToDeck() and Duel.GetMZoneCount(tp,c,tp)>0
+end
+function fleurtoLvfilter(c,tp)
+	return c:IsFaceup() and c:IsLevelAbove(2)
+end
+mainphaseSkillList(19642774,
+{
+	op=function(e,tp) 
+		local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
+		if Duel.SendtoDeck(g:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
+			local token=Duel.CreateToken(tp,48421595)
+			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+			local tc=Duel.GetMatchingGroup(fleurtoLvfilter,tp,LOCATION_MZONE,0,nil):CancelableSelect(tp,1,1,nil):GetFirst()
+			if tc then
+				local lv=1
+				if tc:IsLevelAbove(3) then lv=Duel.AnnounceNumber(tp,1,2) end
+				local e1=Effect.CreateEffect(token)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_LEVEL)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e1:SetValue(-lv)
+				tc:RegisterEffect(e1)
+			end
+		end
+	end,
+	con=function(e,tp) 
+		local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
+		return Duel.GetFlagEffect(tp,19642774)>0 and #g>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,48421595,0x1017,TYPES_TOKEN_MONSTER+TYPE_TUNER,200,400,2,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)
+	end,
+	count=1,
+	countid=19642775,
+	duellimit=true,
+	desc=1118
+},
+{
+	op=function(e,tp) 
+		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,TYPE_MONSTER)
+		if Duel.SendtoGrave(g:Select(tp,1,1,nil),REASON_RULE)>0 then
+			local token=Duel.CreateToken(tp,36405256)
+			Duel.SendtoHand(token,tp,REASON_RULE)
+		end
+	end,
+	con=function(e,tp) 
+		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,TYPE_MONSTER)
+		return Duel.GetFlagEffect(tp,19642774)>0 and #g>0 
+	end,
+	count=1,
+	countid=19642776,
+	desc=1104
+}
+)
 
 local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 	local skillCodes=getAllSkillCodes()
