@@ -146,13 +146,12 @@ local function mainphaseSkillList(code,...)
 			end
 			local options={}
 			for i, config in ipairs(configs) do
-				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)				
+				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)			
 				table.insert(options,{enabled,config.desc})
 			end
 			local selected=aux.SelectFromOptions(tp,table.unpack(options))
 			local config=configs[selected]
 			if config then
-				config.op(e,tp,eg,ep,ev,re,r,rp)
 				if config.count then
 					if config.duellimit then
 						Duel.RegisterFlagEffect(tp,config.countid,0,0,1)
@@ -160,6 +159,7 @@ local function mainphaseSkillList(code,...)
 						Duel.RegisterFlagEffect(tp,config.countid,RESET_PHASE+PHASE_END,0,1)
 					end
 				end
+				config.op(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end)
 	end)
@@ -853,8 +853,9 @@ mainphaseSkillList(19642774,
 		if Duel.SendtoDeck(g:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
 			local token=Duel.CreateToken(tp,48421595)
 			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-			local tc=Duel.GetMatchingGroup(fleurtoLvfilter,tp,LOCATION_MZONE,0,nil):CancelableSelect(tp,1,1,nil):GetFirst()
-			if tc then
+			local g=Duel.GetMatchingGroup(fleurtoLvfilter,tp,LOCATION_MZONE,0,nil):CancelableSelect(tp,1,1,nil)
+			if g then
+				local tc=g:GetFirst()
 				local lv=1
 				if tc:IsLevelAbove(3) then lv=Duel.AnnounceNumber(tp,1,2) end
 				local e1=Effect.CreateEffect(token)
@@ -890,7 +891,7 @@ mainphaseSkillList(19642774,
 	end,
 	count=1,
 	countid=19642776,
-	desc=1104
+	desc=1190
 }
 )
 
