@@ -146,7 +146,7 @@ local function mainphaseSkillList(code,...)
 			end
 			local options={}
 			for i, config in ipairs(configs) do
-				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)			
+				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)
 				table.insert(options,{enabled,config.desc})
 			end
 			local selected=aux.SelectFromOptions(tp,table.unpack(options))
@@ -624,20 +624,20 @@ local function emcheck(c)
 	return c:IsSetCard(0x99,0x98,0x9f,0x20f8,0x10f8)
 end
 oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then return end
-	local pc1=Duel.CreateToken(tp,24094258)
-	local pc2=Duel.CreateToken(tp,76794549)
-	Duel.SendtoDeck(pc1,tp,0,REASON_RULE)
-	Duel.Remove(pc2,POS_FACEDOWN,REASON_RULE)
-	Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
-end)
-oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then return end
-	local pc1=Duel.CreateToken(tp,94415058)
-	local pc2=Duel.CreateToken(tp,20409757)
-	if Duel.SelectYesNo(tp,97) then
-		Duel.MoveToField(pc1,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-		Duel.MoveToField(pc2,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	if Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then
+		Duel.RegisterFlagEffect(tp,76840111,0,0,1)
+		local pc1=Duel.CreateToken(tp,24094258)
+		local pc2=Duel.CreateToken(tp,76794549)
+		Duel.Remove(pc1,POS_FACEDOWN,REASON_RULE)
+		Duel.SendtoDeck(pc1,tp,0,REASON_RULE)
+		Duel.Remove(pc2,POS_FACEDOWN,REASON_RULE)
+		Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
+		local pc1=Duel.CreateToken(tp,94415058)
+		local pc2=Duel.CreateToken(tp,20409757)
+		if Duel.SelectYesNo(tp,97) then
+			Duel.MoveToField(pc1,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+			Duel.MoveToField(pc2,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+		end
 	end
 end)
 local function pmcheck(c)
@@ -653,21 +653,6 @@ function(e,tp)
 	return #g>0 and Duel.GetFlagEffect(tp,76840111)>0
 end,
 false,1,76840112)
-local function fivesplimit(e,c,tp,sumtp,sumpos)
-	return c:IsLevel(5) or c:IsRank(5) and sumtp&SUMMON_TYPE_XYZ>0
-end
-oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(emcheck,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil) then
-		Duel.RegisterFlagEffect(tp,76840111,0,0,1)
-	end
-	local e1=Effect.GlobalEffect()
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(fivesplimit)
-	Duel.RegisterEffect(e1,tp)
-end)
 
 --三幻神
 local function MRcheck(c)
@@ -810,7 +795,7 @@ mainphaseSkillList(77565204,
 	end,
 		con=function(e,tp) 
 		local g=Duel.GetMatchingGroup(cybertograve,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
-		return Duel.GetFlagEffect(tp,77565204)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPES_TOKEN_MONSTER,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		return Duel.GetFlagEffect(tp,77565204)>0 and #g>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,26439287,0x1093,TYPES_TOKEN_MONSTER,1100,600,3,RACE_MACHINE,ATTRIBUTE_LIGHT,POS_FACEUP_ATTACK) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
 	end,
 	count=1,
 	countid=77565205,
