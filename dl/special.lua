@@ -146,7 +146,7 @@ local function mainphaseSkillList(code,...)
 			end
 			local options={}
 			for i, config in ipairs(configs) do
-				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)		  
+				local enabled=(config.both or Duel.GetTurnPlayer()==tp) and (not config.con or config.con(e,tp,eg,ep,ev,re,r,rp)) and (not config.count or Duel.GetFlagEffect(tp,config.countid)<config.count)
 				table.insert(options,{enabled,config.desc})
 			end
 			local selected=aux.SelectFromOptions(tp,table.unpack(options))
@@ -628,6 +628,7 @@ oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(tp,76840111,0,0,1)
 		local pc1=Duel.CreateToken(tp,24094258)
 		local pc2=Duel.CreateToken(tp,76794549)
+		Duel.Remove(pc1,POS_FACEDOWN,REASON_RULE)
 		Duel.SendtoDeck(pc1,tp,0,REASON_RULE)
 		Duel.Remove(pc2,POS_FACEDOWN,REASON_RULE)
 		Duel.SendtoDeck(pc2,tp,2,REASON_RULE)
