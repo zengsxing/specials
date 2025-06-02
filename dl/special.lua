@@ -326,7 +326,7 @@ oneTimeSkill(3643300, function(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEDOWN,true)
 		local te=tc:GetActivateEffect()
 		te:UseCountLimit(tp,1,true)
 		local tep=tc:GetControler()
@@ -669,7 +669,10 @@ local function godcheck(c)
 		if v==code then bool=true break end
 	end
 	if aux.IsCodeOrListed(c,10000000) or aux.IsCodeOrListed(c,10000010) or aux.IsCodeOrListed(c,10000020) then bool=true end
-	return bool and c:IsAbleToHand()
+	return bool
+end
+local function godthcheck(c)
+	return godcheck(c) and c:IsAbleToHand()
 end
 local function disgodcheck(c)
 	return godcheck(c) and c:IsDiscardable()
@@ -691,13 +694,13 @@ mainphaseSkillList(78665705,
 },
 {
 	op=function(e,tp)
-		local g=Duel.GetMatchingGroup(godcheck,tp,LOCATION_DECK,0,nil)
+		local g=Duel.GetMatchingGroup(godthcheck,tp,LOCATION_DECK,0,nil)
 		if Duel.DiscardHand(tp,disgodcheck,1,1,REASON_RULE+REASON_DISCARD,nil,REASON_EFFECT)>0 then
 			Duel.SendtoHand(g:Select(tp,1,1,nil),tp,REASON_RULE)
 		end
 	end,
 		con=function(e,tp) 
-		local g=Duel.GetMatchingGroup(godcheck,tp,LOCATION_DECK,0,nil)
+		local g=Duel.GetMatchingGroup(godthcheck,tp,LOCATION_DECK,0,nil)
 		return #g>0 and Duel.IsExistingMatchingCard(disgodcheck,tp,LOCATION_HAND,0,1,nil,REASON_RULE)
 	end,
 	count=3,
@@ -707,7 +710,7 @@ mainphaseSkillList(78665705,
 )
 local function godaclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return not godcheck(rc) and rc:IsType(TYPE_MONSTER+TYPE_SPELL)
+	return not godcheck(rc) and rc:IsType(TYPE_MONSTER+TYPE_TRAP)
 end
 local function godsplimit(e,c)
 	return not godcheck(c)
