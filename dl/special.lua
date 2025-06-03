@@ -1068,6 +1068,9 @@ end
 function ddpfilter(c,e,tp)
 	return c:IsSetCard(0xaf) and c:IsType(TYPE_PENDULUM) and c:IsFaceupEx()
 end
+function ddseqfilter(c)
+	return c:GetSequence()==0 or c:GetSequence()==4
+end
 mainphaseSkillList(46372010,
 {
 	op=function(e,tp)
@@ -1094,7 +1097,9 @@ mainphaseSkillList(46372010,
 	op=function(e,tp) 
 		local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 		local g2=Duel.GetMatchingGroup(ddpfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,nil,e,tp)
-		if Duel.Destroy(g1:Select(tp,2,2,nil),REASON_RULE)==2 then
+		local sg=Duel.GetFieldGroup(tp,LOCATION_SZONE,0):Filter(ddseqfilter,nil)
+		if #sg<2 then sg:Merge(g1:Select(tp,2-#sg,2-#sg,sg)) end
+		if Duel.Destroy(sg,REASON_RULE)==2 then
 			local pg=g2:Select(tp,2,2,nil)
 			Duel.MoveToField(pg:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			Duel.MoveToField(pg:GetNext(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
@@ -1103,7 +1108,7 @@ mainphaseSkillList(46372010,
 	con=function(e,tp) 
 		local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 		local g2=Duel.GetMatchingGroup(ddpfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,nil,e,tp)
-		return Duel.GetFlagEffect(tp,46372010)>0 and #g1>=2 and #g2>=2 and Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1)
+		return Duel.GetFlagEffect(tp,46372010)>0 and #g1>=2 and #g2>=2
 	end,
 	count=1,
 	countid=46372012,
