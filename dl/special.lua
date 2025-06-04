@@ -642,7 +642,7 @@ oneTimeSkill(76840111, function(e,tp,eg,ep,ev,re,r,rp)
 			Duel.MoveToField(pc2,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		end
 	end
-end)
+end,true)
 local function pmcheck(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsAbleToHand()
 end
@@ -715,7 +715,7 @@ end
 local function godsplimit(e,c)
 	return not godcheck(c)
 end
-oneTimeSkill(78665705, function(e,tp,eg,ep,ev,re,r,rp)
+oneTimeSkill(78665705,function(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
@@ -765,7 +765,7 @@ oneTimeSkill(77565204, function(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g,tp,2,REASON_RULE)
 		Duel.RegisterFlagEffect(tp,77565204,0,0,1)
 	end
-end)
+end,true)
 local function msplimit1(e,re,tp)
 	local c=re:GetHandler()
 	return c:IsType(TYPE_MONSTER) and not c:IsRace(RACE_MACHINE+RACE_DRAGON)
@@ -1066,7 +1066,10 @@ function ddspfilter(c,e,tp)
 	return c:IsSetCard(0xaf) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(ddcostfilter,tp,LOCATION_MZONE,0,1,nil,tp,c)
 end
 function ddpfilter(c,e,tp)
-	return c:IsSetCard(0xaf) and c:IsType(TYPE_PENDULUM)
+	return c:IsSetCard(0xaf) and c:IsType(TYPE_PENDULUM) and c:IsFaceupEx()
+end
+function ddseqfilter(c)
+	return c:GetSequence()==0 or c:GetSequence()==4
 end
 mainphaseSkillList(46372010,
 {
@@ -1076,7 +1079,7 @@ mainphaseSkillList(46372010,
 		local rc=Duel.SelectMatchingCard(tp,ddcostfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,sc)
 		Duel.Release(rc,REASON_RULE)
 		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)>0 and sc:IsType(TYPE_XYZ) then
-			local og=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,0,nil):CancelableSelect(tp,1,2,nil)
+			local og=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,0,sc):CancelableSelect(tp,1,2,nil)
 			if og then
 				Duel.Overlay(sc,og)
 			end
@@ -1094,7 +1097,9 @@ mainphaseSkillList(46372010,
 	op=function(e,tp) 
 		local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 		local g2=Duel.GetMatchingGroup(ddpfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,nil,e,tp)
-		if Duel.Destroy(g1:Select(tp,2,2,nil),REASON_RULE)==2 then
+		local sg=Duel.GetFieldGroup(tp,LOCATION_SZONE,0):Filter(ddseqfilter,nil)
+		if #sg<2 then sg:Merge(g1:Select(tp,2-#sg,2-#sg,sg)) end
+		if Duel.Destroy(sg,REASON_RULE)==2 then
 			local pg=g2:Select(tp,2,2,nil)
 			Duel.MoveToField(pg:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			Duel.MoveToField(pg:GetNext(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
@@ -1103,7 +1108,7 @@ mainphaseSkillList(46372010,
 	con=function(e,tp) 
 		local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 		local g2=Duel.GetMatchingGroup(ddpfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,nil,e,tp)
-		return Duel.GetFlagEffect(tp,46372010)>0 and #g1>=2 and #g2>=2 and Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1)
+		return Duel.GetFlagEffect(tp,46372010)>0 and #g1>=2 and #g2>=2
 	end,
 	count=1,
 	countid=46372012,
@@ -1122,10 +1127,13 @@ oneTimeSkill(33396948, function(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.FromCards(sc1,sc2,sc3,sc4,sc5)
 	Duel.Remove(g,POS_FACEUP,REASON_RULE)
 	Duel.SendtoDeck(g,tp,2,REASON_RULE)
-	local e1=Effect.GlobalEffect()
+	local e1=Effect.CreateEffect(sc5)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e1:SetCountLimit(1)
+	e1:SetCondition(function (e,tp)
+		return Duel.GetTurnPlayer()==tp
+	end)
 	e1:SetOperation(function (e,tp)
 		Duel.Recover(tp,1000,REASON_RULE)
 	end)
@@ -1143,16 +1151,16 @@ oneTimeSkill(33396948, function(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(function (e,c) 
+	e3:SetTarget(function (e,c)
 		return c:IsCode(83257450) and c:IsFaceup()
 	end)
-	e1:SetValue(1)
+	e3:SetValue(1)
 	Duel.RegisterEffect(e3,tp)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_UPDATE_ATTACK)
 	e4:SetValue(1000)
 	Duel.RegisterEffect(e4,tp)
-end)
+end,true)
 function costchange(e,re,rp,val)
 	if re and re:GetHandler():IsSetCard(0x1ae) then
 		return 0
