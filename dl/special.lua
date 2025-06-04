@@ -350,10 +350,11 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCondition(function(...) 
-		return Duel.GetLP(tp) <= 0 
+	e1:SetCondition(function(...)
+		return Duel.GetLP(tp) <= 0 and not special_adjusting
 	end)
 	e1:SetOperation(function(...)
+		special_adjusting=true
 		local ge2=Effect.CreateEffect(rc)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge2:SetCode(EVENT_PHASE+PHASE_END)
@@ -396,6 +397,7 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,1)
 		end
 		Duel.RegisterEffect(e1,tp)
+		special_adjusting=false
 	end
 	)
 	Duel.RegisterEffect(e1,tp)
@@ -1005,7 +1007,7 @@ mainphaseSkillList(93224848,
 		if Duel.SendtoDeck(g:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
 			local tg=Duel.GetMatchingGroup(beastthfilter,tp,LOCATION_DECK,0,nil)
 			Duel.SendtoHand(tg:Select(tp,1,1,nil),tp,REASON_RULE)
-		end	
+		end 
 	end,
 	con=function(e,tp)
 		local cg=Duel.GetMatchingGroup(beastfilter,tp,LOCATION_HAND,0,nil)
@@ -1019,7 +1021,7 @@ mainphaseSkillList(93224848,
 },
 {
 	op=function(e,tp) 
-		local g1=Duel.GetMatchingGroup(beasttdfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,tp)	  
+		local g1=Duel.GetMatchingGroup(beasttdfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,tp)  
 		if Duel.SendtoDeck(g1:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
 			local g2=Duel.GetMatchingGroup(beastspfilter,tp,LOCATION_DECK,0,nil,e,tp)
 			Duel.SpecialSummon(g2:Select(tp,1,1,nil),0,tp,tp,false,false,POS_FACEUP)
@@ -1247,9 +1249,12 @@ function Auxiliary.PreloadUds()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
+	e1:SetCondition(function() return not special_adjusting end)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		special_adjusting=true
 		initialize(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
+		special_adjusting=false
 	end)
 	Duel.RegisterEffect(e1,0)
 end
