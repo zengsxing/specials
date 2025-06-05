@@ -844,7 +844,7 @@ local function fleurfilter(c)
 	return c:IsAttack(2900) and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_MONSTER)
 end
 oneTimeSkill(19642774, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(fleurfilter,tp,LOCATION_DECK+LOCATION_HAND,0,7,nil) then
+	if Duel.IsExistingMatchingCard(fleurfilter,tp,LOCATION_DECK+LOCATION_HAND,0,6,nil) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_SUMMON_PROC)
@@ -869,48 +869,55 @@ end
 mainphaseSkillList(19642774,
 {
 	op=function(e,tp) 
-		local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
-		if Duel.SendtoDeck(g:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
+		--local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
+		--if Duel.SendtoDeck(g:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
 			local token=Duel.CreateToken(tp,48421595)
 			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 			local g=Duel.GetMatchingGroup(fleurtoLvfilter,tp,LOCATION_MZONE,0,nil):CancelableSelect(tp,1,1,nil)
 			if g then
 				local tc=g:GetFirst()
-				local lv=1
-				if tc:IsLevelAbove(3) then lv=Duel.AnnounceNumber(tp,1,2) end
+				local lv=0
+				if tc:IsLevelAbove(3) then
+					lv=Duel.AnnounceNumber(tp,-2,-1,0,1,2)
+				elseif tc:IsLevel(2) then
+					lv=Duel.AnnounceNumber(tp,-1,0,1,2)
+				elseif tc:IsLevel(1) then
+					lv=Duel.AnnounceNumber(tp,0,1,2)
+				end
 				local e1=Effect.CreateEffect(token)
 				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_LEVEL)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				e1:SetValue(-lv)
+				e1:SetValue(lv)
 				tc:RegisterEffect(e1)
 			end
-		end
+		--end
 	end,
 	con=function(e,tp) 
-		local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
-		return Duel.GetFlagEffect(tp,19642774)>0 and #g>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,48421595,0x1017,TYPES_TOKEN_MONSTER+TYPE_TUNER,200,400,2,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)
+		--local g=Duel.GetMatchingGroup(fleurtoDeckfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
+		return Duel.GetFlagEffect(tp,19642774)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,48421595,0x1017,TYPES_TOKEN_MONSTER+TYPE_TUNER,200,400,2,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)
 	end,
 	count=1,
 	countid=19642775,
-	desc=1118
+	desc=1062
 },
 {
 	op=function(e,tp) 
-		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,TYPE_MONSTER)
-		if Duel.SendtoGrave(g:Select(tp,1,1,nil),REASON_RULE)>0 then
+		--local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,TYPE_MONSTER)
+		--if Duel.SendtoGrave(g:Select(tp,1,1,nil),REASON_RULE)>0 then
 			local token=Duel.CreateToken(tp,36405256)
-			Duel.SendtoHand(token,tp,REASON_RULE)
-		end
+			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+		--end
 	end,
 	con=function(e,tp) 
-		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,TYPE_MONSTER)
-		return Duel.GetFlagEffect(tp,19642774)>0 and #g>0 
+		--local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,TYPE_MONSTER)
+		return Duel.GetFlagEffect(tp,19642774)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,36405256,0,TYPES_TOKEN_MONSTER,2900,0,8,RACE_PLANT,ATTRIBUTE_DARK,POS_FACEUP)
 	end,
 	count=1,
 	countid=19642776,
-	desc=1190
+	duellimit=true,
+	desc=1118
 }
 )
 
