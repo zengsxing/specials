@@ -425,12 +425,15 @@ oneTimeSkill(3701074, function(e,tp,eg,ep,ev,re,r,rp)
 end,true)
 ]]
 
+--[[
 --生命增加
 oneTimeSkill(47852924, function(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,Duel.GetLP(tp)+1500)
 end)
+]]
 
 --最后的赌博
+--[[
 local function dicecon(e,tp)
 	return Duel.GetTurnCount()>=3 and Duel.GetTurnPlayer()==tp and Duel.GetFlagEffect(tp,3280747)==0 and Duel.GetMatchingGroupCount(Card.IsDiscardable,tp,LOCATION_HAND,0,nil)>=2
 end
@@ -443,8 +446,9 @@ local function diceop(e,tp)
 	local dice=Duel.TossDice(tp,1)
 	Duel.Draw(tp,dice,REASON_RULE)
 end
-standbyPhaseSkill(3280747, diceop, dicecon, false)
+standbyPhaseSkill(3280747, diceop, dicecon, false)]]
 
+--[[
 ----幸运的朋友
 local function coincon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==tp and Duel.GetLP(tp)<=1000
@@ -468,6 +472,7 @@ oneTimeSkill(37812118, function(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(coinop)
 	Duel.RegisterEffect(e1,tp)
 end)
+]]
 
 --神秘抽卡
 local function hdchangecon(e,tp)
