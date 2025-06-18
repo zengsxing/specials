@@ -1521,7 +1521,6 @@ oneTimeSkill(97345699, function(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
 		e1:SetRange(LOCATION_HAND)
-		e1:SetCountLimit(1,2347477)
 		e1:SetValue(worldmatval)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
@@ -1534,7 +1533,7 @@ local function worldcostfilter(c)
 	return c:IsSetCard(0x11b,0xfd,0x104,0x116,0x10c,0xfe) and c:IsDiscardable()
 end
 local function worldspfilter(c,e,tp)
-	return c:IsSetCard(0xfe) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or c:IsAbleToHand()
+	return c:IsSetCard(0xfe) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or c:IsAbleToHand())
 end
 mainphaseSkillEx(97345699,
 function(e,tp)
