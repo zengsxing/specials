@@ -1420,7 +1420,7 @@ local function alterextg(e,c)
 	return c:GetSequence()==5 or c:GetSequence()==6
 end
 oneTimeSkill(25533642, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK+LOCATION_HAND,0,8,nil,0x103) and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK+LOCATION_HAND,0,8,nil,TYPE_TRAP) then
+	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK+LOCATION_HAND,0,8,nil,0x103) and Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_DECK+LOCATION_HAND,0,6,nil,TYPE_TRAP) then
 		local sc1=Duel.CreateToken(tp,61470213)
 		local sc2=Duel.CreateToken(tp,1508649)
 		local sc3=Duel.CreateToken(tp,93503294)
