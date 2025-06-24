@@ -1084,10 +1084,17 @@ mainphaseSkillList(93224848,
 )
 
 --契约漏洞
+local function dddamval(e,re,val,r,rp,rc)
+	if bit.band(r,REASON_EFFECT)~=0 and re:GetHandler():IsSetCard(0xae) then return 0
+	else return val end
+end
+local function checkMainDeck(c)
+	return c:IsSetCard(0xaf,0xae)
+end
 oneTimeSkill(46372010, function(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK+LOCATION_HAND,0,12,nil,0xaf,0xae) then
+	if Duel.IsExistingMatchingCard(checkMainDeck,tp,0xff,0,12,nil) then
 		local sc=Duel.CreateToken(tp,46372010)
-		Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+		Duel.SSet(tp,sc)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_CHANGE_DAMAGE)
@@ -1101,10 +1108,6 @@ oneTimeSkill(46372010, function(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(tp,46372010,0,0,1)
 	end
 end)
-local function dddamval(e,re,val,r,rp,rc)
-	if bit.band(r,REASON_EFFECT)~=0 and re:GetHandler():IsSetCard(0xae) then return 0
-	else return val end
-end
 local function ddcostfilter(c,tp,sc)
 	return c:IsFaceup() and c:IsSetCard(0xaf) and c:IsLevelAbove(6)
 		and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsReleasable()
@@ -1380,13 +1383,15 @@ mainphaseSkillList(44874522,
 		local dg=g:Select(tp,1,1,nil)
 		Duel.ConfirmCards(tp,dg)
 		if Duel.SendtoDeck(dg,tp,2,REASON_RULE)>0 then
-			local sg=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND,0,nil,0x7)
-			Duel.SendtoHand(sg:Select(tp,1,1,nil),tp,REASON_RULE)
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
+			local sg=Duel.SelectMatchingCard(tp, function(ac) return ac:IsSetCard(0x7) and ac:IsAbleToHand() end, tp ,LOCATION_DECK,0,1,1,nil)
+			Duel.SendtoHand(sg,tp,REASON_RULE)
+			Duel.ConfirmCards(1-tp,sg)
 		end
 	end,
 	con=function(e,tp) 
 		local g=Duel.GetMatchingGroup(gearcheck,tp,LOCATION_HAND,0,nil)
-		local sg=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND,0,nil,0x7)
+		local sg=Duel.GetMatchingGroup(function(ac) return ac:IsSetCard(0x7) and ac:IsAbleToHand() end,tp,LOCATION_DECK,0,nil)
 		return #g>0 and #sg>0
 	end,
 	count=1,
@@ -1396,7 +1401,7 @@ mainphaseSkillList(44874522,
 {
 	op=function(e,tp)
 		local sc=Duel.CreateToken(tp,70147689)
-		Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,LOCATION_SZONE,true)
+		Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
@@ -1522,6 +1527,7 @@ oneTimeSkill(97345699, function(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
 		e1:SetRange(LOCATION_HAND)
 		e1:SetValue(worldmatval)
+		e1:SetCountLimit(1,7345699)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 		e2:SetTargetRange(LOCATION_HAND,0)
