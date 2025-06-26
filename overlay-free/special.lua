@@ -106,10 +106,10 @@ RITUAL = {
     e:SetCondition(function (this_e)
       local this_c = this_e:GetHandler()
       if not RITUAL.CHK_FUNC(this_e:GetHandlerPlayer()) then return false end
-      return this_c:IsType(TYPE_RITUAL) and this_c:IsType(TYPE_MONSTER) and this_c:IsRace(RACE_WARRIOR + RACE_FAIRY)
+      return this_c:IsType(TYPE_RITUAL) and this_c:IsType(TYPE_MONSTER) and this_c:IsRace(RACE_WARRIOR + RACE_FAIRY + RACE_REPTILE)
     end)
     e:SetTarget(function (this_e,tp,eg,ep,ev,re,r,rp,chk,this_c)
-      local lp = this_c:GetLevel() * 500
+      local lp = this_c:GetLevel() * 100
       if Duel.CheckLPCost(tp, lp) then
         e:SetLabel(lp)
         return true
