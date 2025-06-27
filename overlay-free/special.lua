@@ -14,13 +14,19 @@ function aux.PreloadUds()
     end
   end
   local params={aux.FALSE,13,2,2,alterf,aux.Stringid(58600555,2),nil}
+  local function getAlterMethod(methodName)
+    local fullName = "Xyz" .. methodName .. "Alter"
+    local fullName2 = "Xyz" .. fullName
+    local func = aux[fullName] or aux[fullName2]
+    return func(table.unpack(params))
+  end
 	e1:SetCondition(function(e,tp,...)
-    return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode()+10)==0 and Auxiliary.XyzConditionAlter(table.unpack(params))(e,tp,...)
+    return Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode()+10)==0 and getAlterMethod("Condition")(e,tp,...)
   end)
-	e1:SetTarget(Auxiliary.XyzTargetAlter(table.unpack(params)))
+	e1:SetTarget(getAlterMethod("Target"))
 	e1:SetOperation(function(e,tp,...)
     Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode()+10,RESET_PHASE+PHASE_END,0,1)
-    return Auxiliary.XyzOperationAlter(table.unpack(params))(e,tp,...)
+    return getAlterMethod("Operation")(e,tp,...)
   end)
   e1:SetValue(SUMMON_TYPE_XYZ)
 
