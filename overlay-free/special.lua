@@ -16,7 +16,7 @@ function aux.PreloadUds()
   local params={aux.FALSE,13,2,2,alterf,aux.Stringid(58600555,2),nil}
   local function getAlterMethod(methodName)
     local fullName = "Xyz" .. methodName .. "Alter"
-    local fullName2 = "Xyz" .. fullName
+    local fullName2 = "Xyz" .. methodName
     local func = aux[fullName] or aux[fullName2]
     return func(table.unpack(params))
   end
