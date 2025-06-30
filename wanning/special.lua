@@ -1526,22 +1526,29 @@ end)
 local function initialize()
   local skillCodes=getAllSkillCodes()
   for tp=0,1 do
-	local codes={}
-	for _,code in ipairs(skillCodes) do
-		table.insert(codes,code)
-	end
-	table.sort(codes)
-	local afilter={codes[1],OPCODE_ISCODE}
-	if #codes>1 then
-		for i=2,#codes do
-			table.insert(afilter,codes[i])
-			table.insert(afilter,OPCODE_ISCODE)
-			table.insert(afilter,OPCODE_OR)
+		local codes={}
+		for _,code in ipairs(skillCodes) do
+			table.insert(codes,code)
 		end
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
-	skillSelections[tp]=ac
+		table.sort(codes)
+		local afilter={codes[1],OPCODE_ISCODE}
+		if #codes>1 then
+			for i=2,#codes do
+				table.insert(afilter,codes[i])
+				table.insert(afilter,OPCODE_ISCODE)
+				table.insert(afilter,OPCODE_OR)
+			end
+		end
+		local skillKey = "selected_skill_" .. tostring(tp)
+		local prevSkill = Duel.GetRegistryValue(skillKey)
+		if prevSkill then
+			skillSelections[tp]=tonumber(prevSkill)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+			local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
+			skillSelections[tp]=ac
+			Duel.SetRegistryValue(skillKey,ac)
+		end
   end
   for tp=0,1 do
 		registerSkillForPlayer(tp,skillSelections[tp])

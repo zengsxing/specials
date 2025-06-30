@@ -1580,9 +1580,16 @@ local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 				table.insert(afilter,OPCODE_OR)
 			end
 		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-		local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
-		skillSelections[tp]=ac
+		local skillKey = "selected_skill_" .. tostring(tp)
+		local prevSkill = Duel.GetRegistryValue(skillKey)
+		if prevSkill then
+			skillSelections[tp]=tonumber(prevSkill)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+			local ac=Duel.AnnounceCardSilent(tp,table.unpack(afilter))
+			skillSelections[tp]=ac
+			Duel.SetRegistryValue(skillKey,ac)
+		end
 	end
 	for tp=0,1 do
 		registerSkillForPlayer(tp,skillSelections[tp])
