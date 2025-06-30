@@ -1696,7 +1696,8 @@ local function initialize(e,_tp,eg,ep,ev,re,r,rp)
 				table.insert(afilter,OPCODE_OR)
 			end
 		end
-		local skillKey = "selected_skill_" .. tostring(tp)
+		local player_type = Duel.GetRegistryValue("player_type_" .. tostring(tp))
+		local skillKey = "selected_skill_" .. player_type
 		local prevSkill = Duel.GetRegistryValue(skillKey)
 		if prevSkill then
 			skillSelections[tp]=tonumber(prevSkill)
