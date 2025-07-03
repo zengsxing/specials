@@ -1635,7 +1635,7 @@ local function sendop(e,tp)
 		Duel.RegisterFlagEffect(tp,52159691,0,0,0)
 	end
 end
-startPhaseSkill(52159691, sendop, sendcon, false)
+standbyPhaseSkill(52159691, sendop, sendcon, false)
 
 --复制猫
 local function cpdrcon(e,tp,eg,ep,ev,re,r,rp)
