@@ -61,7 +61,7 @@ end
 local function phaseSkill(code, phase, op, con, both)
 	wrapDeckSkill(code, function(e1)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+phase)
+		e1:SetCode(phase)
 		e1:SetCountLimit(1,0x7ffffff-code-phase)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
 			return (both or Duel.GetTurnPlayer()==tp) and Duel.GetCurrentPhase()==phase and (not con or con(e,tp,eg,ep,ev,re,r,rp))
@@ -191,12 +191,16 @@ local function oneTimeSkill(code, op, prior)
 	end)
 end
 
+local function startPhaseSkill(code, op, con, both)
+	phaseSkill(code, EVENT_PHASE_START+PHASE_DRAW, op, con, both)
+end
+
 local function standbyPhaseSkill(code, op, con, both)
-	phaseSkill(code, PHASE_STANDBY, op, con, both)
+	phaseSkill(code, EVENT_PHASE+PHASE_STANDBY, op, con, both)
 end
 
 local function endPhaseSkill(code, op, con, both)
-	phaseSkill(code, PHASE_END, op, con, both)
+	phaseSkill(code, EVENT_PHASE+PHASE_END, op, con, both)
 end
 
 --重新开始
@@ -355,17 +359,6 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 	end)
 	e1:SetOperation(function(...)
 		special_adjusting=true
-		local ge2=Effect.CreateEffect(rc)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_PHASE+PHASE_END)
-		ge2:SetCountLimit(1)
-		ge2:SetReset(RESET_PHASE+PHASE_END)
-		ge2:SetOperation(function(...)
-			Duel.SetLP(tp,1) 
-			ge1:Reset()
-		end)
-		Duel.RegisterEffect(ge2,tp)
-
 
 		local function skipcon(ge)
 			return Duel.GetTurnCount()~=ge:GetLabel()
@@ -490,8 +483,7 @@ mainphaseSkill(48712195, hdchangeop, hdchangecon, false)
 
 --成金
 oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_RULE)
-	--Duel.Draw(1-tp,1,REASON_RULE)
+	Duel.Draw(e:GetHandler():GetControler(),1,REASON_RULE)
 end)
 
 --天平
@@ -1647,30 +1639,32 @@ local function sendop(e,tp)
 		Duel.RegisterFlagEffect(tp,52159691,0,0,0)
 	end
 end
-standbyPhaseSkill(52159691, sendop, sendcon, false)
+startPhaseSkill(52159691, sendop, sendcon, false)
 
 --复制猫
 local function cpdrcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_DRAW and eg:IsExists(Card.IsReason,1,nil,REASON_RULE)
+	return Duel.GetTurnPlayer()==e:GetHandler():GetControler() and Duel.GetCurrentPhase()==PHASE_DRAW and eg:IsExists(Card.IsReason,1,nil,REASON_RULE)
 end
 local function cpdrop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(Card.IsReason,nil,REASON_RULE)
-	Duel.ConfirmCards(1-tp,g)
-	local cg=Group.CreateGroup()
-	if g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
-		cg:AddCard(Duel.CreateToken(tp,82385847))
-		cg:AddCard(Duel.CreateToken(tp,82385847))
+	if Duel.GetTurnPlayer()==eg:GetFirst():GetControler() then
+		local g=eg:Filter(Card.IsReason,nil,REASON_RULE)
+		Duel.ConfirmCards(1-tp,g)
+		local cg=Group.CreateGroup()
+		if g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
+			cg:AddCard(Duel.CreateToken(tp,82385847))
+			cg:AddCard(Duel.CreateToken(tp,82385847))
+		end
+		if g:IsExists(Card.IsType,1,nil,TYPE_SPELL) then
+			cg:AddCard(Duel.CreateToken(tp,19230407))
+			cg:AddCard(Duel.CreateToken(tp,19230407))
+		end
+		if g:IsExists(Card.IsType,1,nil,TYPE_TRAP) then
+			cg:AddCard(Duel.CreateToken(tp,10045474))
+			cg:AddCard(Duel.CreateToken(tp,10045474))
+		end
+		Duel.SendtoHand(cg,tp,REASON_RULE)
+		Duel.ConfirmCards(1-tp,cg)
 	end
-	if g:IsExists(Card.IsType,1,nil,TYPE_SPELL) then
-		cg:AddCard(Duel.CreateToken(tp,19230407))
-		cg:AddCard(Duel.CreateToken(tp,19230407))
-	end
-	if g:IsExists(Card.IsType,1,nil,TYPE_TRAP) then
-		cg:AddCard(Duel.CreateToken(tp,10045474))
-		cg:AddCard(Duel.CreateToken(tp,10045474))
-	end
-	Duel.SendtoHand(cg,tp,REASON_RULE)
-	Duel.ConfirmCards(1-tp,cg)
 end
 oneTimeSkill(88032456, function(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.GlobalEffect()
