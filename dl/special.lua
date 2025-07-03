@@ -65,7 +65,7 @@ local function phaseSkill(code, phase, op, con, both)
 		if phase==EVENT_PHASE_START+PHASE_DRAW then
 			phase=PHASE_DRAW
 		else
-			phase-=EVENT_PHASE
+			phase=phase-EVENT_PHASE
 		end
 		e1:SetCountLimit(1,0x7ffffff-code-phase)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
