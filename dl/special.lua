@@ -63,7 +63,7 @@ local function phaseSkill(code, phase, op, con, both)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(phase)
 		if phase==EVENT_PHASE_START+PHASE_DRAW then
-			phase==PHASE_DRAW
+			phase=PHASE_DRAW
 		else
 			phase-=EVENT_PHASE
 		end
