@@ -21,7 +21,7 @@ local function registerSkillForPlayer(tp, code)
   for _,skill in ipairs(skills) do
 	local e1=Effect.GlobalEffect()
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	skill(e1)
+	skill(e1,tp)
 	Duel.RegisterEffect(e1,tp)
   end
 end
