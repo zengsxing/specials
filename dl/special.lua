@@ -479,7 +479,7 @@ mainphaseSkill(48712195, hdchangeop, hdchangecon, false)
 
 --成金
 oneTimeSkill(70368879, function(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(e:GetHandler():GetControler(),1,REASON_RULE)
+	Duel.Draw(tp,1,REASON_RULE)
 end)
 
 --天平
@@ -1639,28 +1639,26 @@ standbyPhaseSkill(52159691, sendop, sendcon, false)
 
 --复制猫
 local function cpdrcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==e:GetHandler():GetControler() and Duel.GetCurrentPhase()==PHASE_DRAW and eg:IsExists(Card.IsReason,1,nil,REASON_RULE)
+	return Duel.GetTurnPlayer()==eg:GetFirst():GetControler() and Duel.GetCurrentPhase()==PHASE_DRAW and eg:IsExists(Card.IsReason,1,nil,REASON_RULE)
 end
 local function cpdrop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetTurnPlayer()==eg:GetFirst():GetControler() then
-		local g=eg:Filter(Card.IsReason,nil,REASON_RULE)
-		Duel.ConfirmCards(1-tp,g)
-		local cg=Group.CreateGroup()
-		if g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
-			cg:AddCard(Duel.CreateToken(tp,82385847))
-			cg:AddCard(Duel.CreateToken(tp,82385847))
-		end
-		if g:IsExists(Card.IsType,1,nil,TYPE_SPELL) then
-			cg:AddCard(Duel.CreateToken(tp,19230407))
-			cg:AddCard(Duel.CreateToken(tp,19230407))
-		end
-		if g:IsExists(Card.IsType,1,nil,TYPE_TRAP) then
-			cg:AddCard(Duel.CreateToken(tp,10045474))
-			cg:AddCard(Duel.CreateToken(tp,10045474))
-		end
-		Duel.SendtoHand(cg,tp,REASON_RULE)
-		Duel.ConfirmCards(1-tp,cg)
+	local g=eg:Filter(Card.IsReason,nil,REASON_RULE)
+	Duel.ConfirmCards(1-tp,g)
+	local cg=Group.CreateGroup()
+	if g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
+		cg:AddCard(Duel.CreateToken(tp,82385847))
+		cg:AddCard(Duel.CreateToken(tp,82385847))
 	end
+	if g:IsExists(Card.IsType,1,nil,TYPE_SPELL) then
+		cg:AddCard(Duel.CreateToken(tp,19230407))
+		cg:AddCard(Duel.CreateToken(tp,19230407))
+	end
+	if g:IsExists(Card.IsType,1,nil,TYPE_TRAP) then
+		cg:AddCard(Duel.CreateToken(tp,10045474))
+		cg:AddCard(Duel.CreateToken(tp,10045474))
+	end
+	Duel.SendtoHand(cg,tp,REASON_RULE)
+	Duel.ConfirmCards(1-tp,cg)
 end
 oneTimeSkill(88032456, function(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.GlobalEffect()
