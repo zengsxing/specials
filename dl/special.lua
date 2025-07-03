@@ -62,6 +62,11 @@ local function phaseSkill(code, phase, op, con, both)
 	wrapDeckSkill(code, function(e1)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(phase)
+		if phase==EVENT_PHASE_START+PHASE_DRAW then
+			phase==PHASE_DRAW
+		else
+			phase-=EVENT_PHASE
+		end
 		e1:SetCountLimit(1,0x7ffffff-code-phase)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
 			return (both or Duel.GetTurnPlayer()==tp) and Duel.GetCurrentPhase()==phase and (not con or con(e,tp,eg,ep,ev,re,r,rp))
@@ -359,10 +364,16 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 	end)
 	e1:SetOperation(function(...)
 		special_adjusting=true
-
-		local function skipcon(ge)
-			return Duel.GetTurnCount()~=ge:GetLabel()
-		end
+		local ge2=Effect.CreateEffect(rc)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_PHASE+PHASE_END)
+		ge2:SetCountLimit(1)
+		ge2:SetReset(RESET_PHASE+PHASE_END)
+		ge2:SetOperation(function(...)
+			Duel.SetLP(tp,1) 
+			ge1:Reset()
+		end)
+		Duel.RegisterEffect(ge2,tp)
 		local e1=Effect.CreateEffect(rc)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_CHANGE_DAMAGE)
@@ -375,21 +386,6 @@ oneTimeSkill(74677422, function(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
-
-		local ph=Duel.GetCurrentPhase()
-		local e1=Effect.CreateEffect(rc)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_SKIP_BP)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-		e1:SetTargetRange(1,0)
-		if Duel.GetTurnPlayer()==tp and ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then
-			e1:SetLabel(Duel.GetTurnCount())
-			e1:SetCondition(skipcon)
-			e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,2)
-		else
-			e1:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_SELF_TURN,1)
-		end
-		Duel.RegisterEffect(e1,tp)
 		special_adjusting=false
 	end
 	)
