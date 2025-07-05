@@ -1638,11 +1638,14 @@ end
 standbyPhaseSkill(52159691, sendop, sendcon, false)
 
 --复制猫
+local function drcheck(c,tp)
+	return c:IsControler(tp) and c:IsReason(REASON_RULE)
+end
 local function cpdrcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==eg:GetFirst():GetControler() and Duel.GetCurrentPhase()==PHASE_DRAW and eg:IsExists(Card.IsReason,1,nil,REASON_RULE)
+	return Duel.GetTurnPlayer()==eg:GetFirst():GetControler() and Duel.GetCurrentPhase()==PHASE_DRAW and eg:IsExists(drcheck,1,nil,tp)
 end
 local function cpdrop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(Card.IsReason,nil,REASON_RULE)
+	local g=eg:Filter(drcheck,nil,tp)
 	Duel.ConfirmCards(1-tp,g)
 	local cg=Group.CreateGroup()
 	if g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
