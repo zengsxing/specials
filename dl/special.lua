@@ -3,7 +3,8 @@ local skillSelections={}
 local lp_record={[0]=0,[1]=0}
 local need_shuffle={[0]=true,[1]=true}
 local toss_coin=Duel.TossCoin
-
+local labget=Effect.GetLabel
+local getattack=Card.GetAttack
 function Duel.TossCoin(player,count)
 	local tmp_count=count
 	if Duel.GetLP(player)<=1000 and Duel.GetFlagEffect(player,37812118)>0 then
@@ -667,7 +668,7 @@ false,1,76840112)
 local function MRcheck(c)
 	return c:IsCode(83764718) and c:IsAbleToHand()
 end
-local exgodlist={79339613,85182315,85758066,59094601,79868386,269012,39913299,5253985,7373632,32247099,79387392,42166000}
+local exgodlist={79339613,85182315,85758066,59094601,79868386,269012,39913299,5253985,7373632,32247099,79387392,42166000,83764718}
 local function godcheck(c)
 	local bool=false
 	local code=c:GetCode()
@@ -681,7 +682,7 @@ local function godthcheck(c)
 	return godcheck(c) and c:IsAbleToHand()
 end
 local function disgodcheck(c)
-	return godcheck(c) and c:IsDiscardable()
+	return c:IsDiscardable(REASON_RULE)
 end
 mainphaseSkillList(78665705,
 {
@@ -695,18 +696,18 @@ mainphaseSkillList(78665705,
 	end,
 	count=1,
 	countid=78665705,
-	duellimit=true,
+	duellimit=false,
 	desc=1110
 },
 {
 	op=function(e,tp)
-		local g=Duel.GetMatchingGroup(godthcheck,tp,LOCATION_DECK,0,nil)
+		local g=Duel.GetMatchingGroup(godthcheck,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		if Duel.DiscardHand(tp,disgodcheck,1,1,REASON_RULE+REASON_DISCARD,nil,REASON_EFFECT)>0 then
 			Duel.SendtoHand(g:Select(tp,1,1,nil),tp,REASON_RULE)
 		end
 	end,
 		con=function(e,tp) 
-		local g=Duel.GetMatchingGroup(godthcheck,tp,LOCATION_DECK,0,nil)
+		local g=Duel.GetMatchingGroup(godthcheck,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 		return #g>0 and Duel.IsExistingMatchingCard(disgodcheck,tp,LOCATION_HAND,0,1,nil,REASON_RULE)
 	end,
 	count=3,
@@ -955,6 +956,21 @@ oneTimeSkill(91706817, function(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTarget(aux.TargetBoolFunction(Card.IsOriginalCodeRule,35199656))
 		e1:SetValue(61283655)
 		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.GlobalEffect()
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_UPDATE_ATTACK)
+		e2:SetTargetRange(LOCATION_MZONE,0)
+		e2:SetTarget(function (e,c)
+			return c:IsSetCard(0xfb)
+		end)
+		e2:SetValue(500)
+		Duel.RegisterEffect(e2,tp)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_UPDATE_ATTACK)
+		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e3:SetTarget(function(ce,cc) return not cc:IsSetCard(0xfb) end)
+		e3:SetValue(-500)
+		Duel.RegisterEffect(e3,tp)
 		Duel.RegisterFlagEffect(tp,91706817,0,0,1)
 	end
 end)
@@ -1025,7 +1041,10 @@ local function beastthfilter(c)
 		or aux.IsCodeListed(c,6007213) or aux.IsCodeListed(c,32491822) or aux.IsCodeListed(c,69890967)) and c:IsAbleToHand()
 end
 local function beasttdfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() and Duel.GetMZoneCount(tp,c,tp)>0
+	return c:IsType(TYPE_MONSTER) and (c:IsAbleToDeck() or c:IsAbleToGrave()) and Duel.GetMZoneCount(tp,c,tp)>0
+end
+local function resolvecheck(c,tp)
+	return c:IsAbleToDeck() or c:IsDiscardable(REASON_RULE)
 end
 local function beastspfilter(c,e,tp)
 	return c:IsCode(6007213,32491822,69890967) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -1036,29 +1055,51 @@ mainphaseSkillList(93224848,
 		local cg=Duel.GetMatchingGroup(beastfilter,tp,LOCATION_HAND,0,nil)
 		if #cg>1 then cg=cg:Select(tp,1,1,nil) end
 		Duel.ConfirmCards(1-tp,cg)
-		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
-		if Duel.SendtoDeck(g:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
-			local tg=Duel.GetMatchingGroup(beastthfilter,tp,LOCATION_DECK,0,nil)
-			Duel.SendtoHand(tg:Select(tp,1,1,nil),tp,REASON_RULE)
+		local g=Duel.GetMatchingGroup(resolvecheck,tp,LOCATION_HAND,0,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+		local og=g:Select(tp,1,1,nil)
+		local num=0
+		if og:GetCount()>0 then
+			local tc=og:GetFirst()
+			if tc:IsAbleToDeck() and (not tc:IsDiscardable(REASON_RULE) or Duel.SelectOption(tp,1105,501)==0) then
+				num=Duel.SendtoDeck(tc,nil,2,REASON_RULE)
+			elseif tc:IsDiscardable(REASON_RULE) then
+				num=Duel.SendtoGrave(tc,REASON_RULE+REASON_DISCARD)
+			end
+			if num>0 then
+				local tg=Duel.GetMatchingGroup(beastthfilter,tp,LOCATION_DECK,0,nil)
+				Duel.SendtoHand(tg:Select(tp,1,1,nil),tp,REASON_RULE)
+			end
 		end 
 	end,
 	con=function(e,tp)
 		local cg=Duel.GetMatchingGroup(beastfilter,tp,LOCATION_HAND,0,nil)
-		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
+		local g=Duel.GetMatchingGroup(resolvecheck,tp,LOCATION_HAND,0,nil)
 		local tg=Duel.GetMatchingGroup(beastthfilter,tp,LOCATION_DECK,0,nil)
 		return #cg>0 and #g>0 and #tg>0
 	end,
-	count=2,
+	count=3,
 	countid=93224848,
 	desc=1190
 },
 {
 	op=function(e,tp) 
 		local g1=Duel.GetMatchingGroup(beasttdfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,tp)  
-		if Duel.SendtoDeck(g1:Select(tp,1,1,nil),tp,2,REASON_RULE)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+		local og=g1:Select(tp,1,1,nil)
+		local num=0
+		if og:GetCount()>0 then
+			local tc=og:GetFirst()
+			if tc:IsAbleToDeck() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1105,1103)==0) then
+				num=Duel.SendtoDeck(tc,nil,2,REASON_RULE)
+			elseif tc:IsAbleToGrave() then
+				num=Duel.SendtoGrave(tc,REASON_RULE)
+			end
+			if num>0 then
 			local g2=Duel.GetMatchingGroup(beastspfilter,tp,LOCATION_DECK,0,nil,e,tp)
 			Duel.SpecialSummon(g2:Select(tp,1,1,nil),0,tp,tp,false,false,POS_FACEUP)
-		end
+			end
+		end 
 	end,
 	con=function(e,tp) 
 		local g1=Duel.GetMatchingGroup(beasttdfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,tp)
@@ -1156,6 +1197,11 @@ mainphaseSkillList(46372010,
 )
 
 --爷爷的卡
+local function acvcheck(e,ct)
+    local p=e:GetHandlerPlayer()
+    local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
+    return te:GetHandler():IsCode(37613663)
+end
 oneTimeSkill(33396948, function(e,tp,eg,ep,ev,re,r,rp)
 	local sc1=Duel.CreateToken(tp,8124921)
 	local sc2=Duel.CreateToken(tp,44519536)
@@ -1198,6 +1244,17 @@ oneTimeSkill(33396948, function(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetCode(EFFECT_UPDATE_ATTACK)
 	e4:SetValue(1000)
 	Duel.RegisterEffect(e4,tp)
+
+	local e5=Effect.CreateEffect(sc5)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e5:SetTargetRange(0xff,0xff)
+	e5:SetValue(acvcheck)
+	Duel.RegisterEffect(e5,tp)
+	local e6=e5:Clone()
+	e6:SetCode(EFFECT_CANNOT_DISEFFECT)
+	Duel.RegisterEffect(e6,tp)
+
 end,true)
 local function costchange(e,re,rp,val)
 	if re and re:GetHandler():IsSetCard(0x1ae) then
@@ -1207,18 +1264,27 @@ local function costchange(e,re,rp,val)
 	end
 end
 --御巫
+function battlediscon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+    local rc=re:GetHandler()
+    local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_PLAYER)
+    return bit.band(loc,LOCATION_ONFIELD)~=0 and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) and rc:GetControler()==1-tp
+end
+function battledisop(e,tp,eg,ep,ev,re,r,rp)
+    Duel.NegateEffect(ev)
+end
 oneTimeSkill(79912449, function(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK+LOCATION_HAND,0,10,nil,0x18d) then
 		local sc=Duel.CreateToken(tp,17255673)
 		Duel.MoveToField(sc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		local e1=Effect.GlobalEffect()
 		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 		e1:SetTargetRange(LOCATION_ONFIELD,0)
 		e1:SetTarget(function (e,c)
-			return c:IsSetCard(0x18d) and c:IsFaceup()
+			return (c:IsSetCard(0x18d) or c:IsType(TYPE_EQUIP)) and c:IsFaceup()
 		end)
-		e1:SetValue(1)
+		e1:SetValue(aux.tgoval)
 		Duel.RegisterEffect(e1,tp)
 		local e2=Effect.GlobalEffect()
 		e2:SetType(EFFECT_TYPE_FIELD)
@@ -1229,6 +1295,21 @@ oneTimeSkill(79912449, function(e,tp,eg,ep,ev,re,r,rp)
 		end)
 		e2:SetValue(1)
 		Duel.RegisterEffect(e2,tp)
+		local e3=Effect.CreateEffect(sc)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_DISABLE)
+		e3:SetTargetRange(0,LOCATION_ONFIELD)
+		e3:SetTarget(function(...) 
+						local ph=Duel.GetCurrentPhase()
+   		 				return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+					end)
+		Duel.RegisterEffect(e3,tp)
+		local e4=Effect.CreateEffect(sc)
+		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e4:SetCode(EVENT_CHAIN_SOLVING)
+		e4:SetCondition(battlediscon)
+		e4:SetOperation(cbattledisop)
+		Duel.RegisterEffect(e4,tp)
 	end
 end)
 --仪式
@@ -1263,7 +1344,7 @@ oneTimeSkill(88301833, function(e,tp,eg,ep,ev,re,r,rp)
 			return eg:IsExists(rispfilter,1,nil,tp)
 		end)
 		e3:SetOperation(function (e,tp)
-			local g=Duel.GetMatchingGroup(Card.IsLevelAbove,tp,LOCATION_GRAVE,0,nil,6)
+			local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_MONSTER)
 			if #g>0 then
 				local sg=g:CancelableSelect(tp,1,1,nil)
 				if sg then Duel.SendtoHand(sg,tp,nil,REASON_RULE) end
@@ -1287,6 +1368,23 @@ oneTimeSkill(88301833, function(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end)
 		Duel.RegisterEffect(e4,tp)
+		local rc=Duel.GetFirstMatchingCard(nil,tp,LOCATION_HAND,0,nil)
+		local e5=Effect.CreateEffect(rc)
+		e5:SetType(EFFECT_TYPE_FIELD)
+		e5:SetCode(EFFECT_CHANGE_LEVEL)
+		e5:SetTargetRange(LOCATION_HAND+LOCATION_GRAVE,0)
+		e5:SetTarget(function(ce,cc) return cc:IsType(TYPE_RITUAL) and cc:IsLevelAbove(1) end)
+		e5:SetValue(1)
+		Duel.RegisterEffect(e5,tp)
+		Duel.RegisterFlagEffect(tp,88301833,0,0,0)
+		function Card.GetAttack(card)
+			local gp=card:GetControler()
+			if Duel.GetFlagEffect(gp,88301833)>0 and card:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and card:IsType(TYPE_RITUAL) then
+				return 1000
+			else
+				return getattack(card)
+			end
+		end
 	end
 end)
 --炎兽
@@ -1311,6 +1409,15 @@ oneTimeSkill(64178424,function(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetTarget(cylvtg)
 		Duel.RegisterEffect(e1,tp)
 		Duel.RegisterFlagEffect(tp,64178424,0,0,0)
+	end
+	
+	function Effect.GetLabel(effect)
+		if aux.GetValueType(effect:GetHandler())=="Card" 
+			and effect:GetHandler():IsSetCard(0x119) and effect:GetHandler():IsType(TYPE_FUSION|TYPE_LINK) then
+			return 1
+		else
+			return labget(effect)
+		end
 	end
 end,true)
 local function saspfilter(c,e,tp,lv)
