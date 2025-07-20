@@ -586,7 +586,7 @@ addMakerPool(23446369, {27204311,10000080,102380,55063751,78661338,34267821,4214
 --无脸幻想魔术师
 addMakerPool(15173384, {94689206,68304193,76794549,32909498,6637331,33854624,91800273,73356503,17266660,1845204,2295440,18144506,32807846,35261759,35726888,46411259,49238328,54447022,60682203,72892473,73628505,75500286,81439173,83764718,84211599,85106525,24224830,48130397,65681983,67723438,73468603,31423101,3280747,64697231,23002292,37818794,21044178,4280258,24094258,29301450,50588353,39064822,70369116,3679218})
 
---霸道灵摆
+--[[霸道灵摆
 local function emcheck(c)
 	return c:IsSetCard(0x99,0x98,0x9f,0x20f8,0x10f8)
 end
@@ -1163,6 +1163,7 @@ mainphaseSkillList(46372010,
 	desc=1160
 }
 )
+]]--
 
 --爷爷的卡
 local function acvcheck(e,ct)
@@ -1231,7 +1232,7 @@ local function costchange(e,re,rp,val)
 		return val
 	end
 end
---御巫
+--[[御巫
 function battlediscon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
     local rc=re:GetHandler()
@@ -1280,6 +1281,7 @@ oneTimeSkill(79912449, function(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e4,tp)
 	end
 end)
+]]--
 --仪式
 local function rispfilter(c,tp)
 	return c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:IsControler(tp)
@@ -1355,7 +1357,7 @@ oneTimeSkill(88301833, function(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end)
---炎兽
+--[[炎兽
 local function cylvtg(e,c)
 	return c:IsLevel(2,3) and c:IsRace(RACE_CYBERSE)
 end
@@ -1791,9 +1793,9 @@ mainphaseSkillList(74218258,
 	desc=1193
 }
 )
-
+]]--
 --人鱼泪
-function tearcheck(c)
+local function tearcheck(c)
 	return c:IsCode(1845204) or c:IsSetCard(0x9d)
 end
 oneTimeSkill(77103950, function(e,tp,eg,ep,ev,re,r,rp)
