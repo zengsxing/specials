@@ -1910,7 +1910,7 @@ mainphaseSkillList(6498706,
 	desc=1118
 })
 local function tokendesop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetLabelObject(),REASON_EFFECT)>0
+	Duel.Destroy(e:GetLabelObject(),REASON_EFFECT)
 	if not e:GetLabelObject():IsOnField() then e:Reset() end
 end
 
